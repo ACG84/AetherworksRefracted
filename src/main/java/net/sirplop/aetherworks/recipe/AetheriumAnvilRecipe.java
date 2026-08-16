@@ -18,7 +18,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.sirplop.aetherworks.util.WeightedList;
 
 import javax.annotation.Nullable;
@@ -160,7 +160,7 @@ public class AetheriumAnvilRecipe implements IAetheriumAnvilRecipe {
             for (JsonElement element : outputJson) {
                 JsonObject stackObj = element.getAsJsonObject();
                 if (stackObj.has("tag")) {
-                    TagKey<Item> output = ItemTags.create(new ResourceLocation(GsonHelper.getAsString(stackObj, "tag")));
+                    TagKey<Item> output = ItemTags.create(ResourceLocation.parse(GsonHelper.getAsString(stackObj, "tag")));
                     double chance = stackObj.getAsJsonPrimitive("chance").getAsDouble();
                     result.add(Either.right(output), chance);
                 } else {

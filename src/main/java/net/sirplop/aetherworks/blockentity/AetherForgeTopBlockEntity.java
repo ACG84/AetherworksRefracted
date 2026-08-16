@@ -12,8 +12,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import com.rekindled.embers.compat.legacy.capabilities.Capability;
+import com.rekindled.embers.compat.legacy.LazyOptional;
 import net.sirplop.aetherworks.AWRegistry;
 
 public class AetherForgeTopBlockEntity extends BlockEntity implements IExtraDialInformation, IExtraCapabilityInformation{

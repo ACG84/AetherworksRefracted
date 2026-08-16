@@ -1,50 +1,48 @@
 package net.sirplop.aetherworks.network;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraftforge.common.util.LogicalSidedProvider;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.api.capabilities.IAetheriometerCap;
 import net.sirplop.aetherworks.capabilities.AetheriometerChunk;
 import net.sirplop.aetherworks.capabilities.AetheriometerChunkCapability;
 
-import java.util.function.Supplier;
+public record MessageSyncAetheriometer(ChunkPos pos, int set) implements CustomPacketPayload {
 
-public class MessageSyncAetheriometer {
-    private final ChunkPos pos;
-    private final int set;
+    public static final CustomPacketPayload.Type<MessageSyncAetheriometer> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "sync_aetheriometer"));
 
-    public MessageSyncAetheriometer(ChunkPos pos, int set) {
-        this.pos = pos;
-        this.set = set;
+    public static final StreamCodec<RegistryFriendlyByteBuf, MessageSyncAetheriometer> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_LONG.map(ChunkPos::new, ChunkPos::toLong), MessageSyncAetheriometer::pos,
+            ByteBufCodecs.INT, MessageSyncAetheriometer::set,
+            MessageSyncAetheriometer::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static void encode(MessageSyncAetheriometer msg, FriendlyByteBuf buf) {
-        buf.writeChunkPos(msg.pos);
-        buf.writeInt(msg.set);
-    }
-    public static MessageSyncAetheriometer decode(FriendlyByteBuf buf) {
-        return new MessageSyncAetheriometer(buf.readChunkPos(), buf.readInt());
+    public static void handle(MessageSyncAetheriometer msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> handleClient(msg));
     }
 
-    public static void handle(MessageSyncAetheriometer msg, Supplier<NetworkEvent.Context> ctx) {
-
-        if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> {
-                final var optionalLevel = LogicalSidedProvider.CLIENTWORLD.get(LogicalSide.CLIENT);
-
-                optionalLevel.ifPresent(world -> {
-                    final IAetheriometerCap data = AetheriometerChunkCapability
-                            .getData(world, msg.pos)
-                            .orElseThrow(UnsupportedOperationException::new);
-
-                    if (data instanceof final AetheriometerChunk chunk) {
-                        chunk.setDataNoUpdate(msg.set);
-                    }
-                });
-            });
+    @OnlyIn(Dist.CLIENT)
+    private static void handleClient(MessageSyncAetheriometer msg) {
+        //LogicalSidedProvider is gone; on the client the level is simply Minecraft's.
+        var level = Minecraft.getInstance().level;
+        if (level == null)
+            return;
+        final IAetheriometerCap data = AetheriometerChunkCapability.getData(level, msg.pos());
+        if (data instanceof final AetheriometerChunk chunk) {
+            chunk.setDataNoUpdate(msg.set());
         }
-        ctx.get().setPacketHandled(true);
     }
 }

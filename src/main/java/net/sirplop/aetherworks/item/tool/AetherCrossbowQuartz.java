@@ -25,7 +25,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.api.damage.EffectDamageCrossbowQuartz;
 import net.sirplop.aetherworks.util.Utils;
@@ -109,7 +109,7 @@ public class AetherCrossbowQuartz extends AetherCrossbow {
         ProjectileFireball fireball = new ProjectileFireball(entity, launchPos, direction, size, lifetime, effect);
         fireball.setColor(Utils.AETHERIUM_PROJECTILE_COLOR);
         EmberProjectileEvent event = new EmberProjectileEvent(entity, stack, 1, fireball);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
             for (IProjectilePreset projectile : event.getProjectiles()) {
                 projectile.shoot(level);

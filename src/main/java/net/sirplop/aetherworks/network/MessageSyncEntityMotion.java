@@ -1,63 +1,55 @@
 package net.sirplop.aetherworks.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.client.AetherShieldReflectHandler;
 import org.joml.Vector3f;
 
-import java.util.function.Supplier;
+public record MessageSyncEntityMotion(int syncTarget, Vector3f deltaMotion, float yRot,
+                                      float yRotO) implements CustomPacketPayload {
 
-public class MessageSyncEntityMotion {
-    private final int syncTarget;
-    private final Vector3f deltaMotion;
-    private final float yRot;
-    private final float yRotO;
+    public static final CustomPacketPayload.Type<MessageSyncEntityMotion> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "sync_entity_motion"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, MessageSyncEntityMotion> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, MessageSyncEntityMotion::syncTarget,
+            ByteBufCodecs.VECTOR3F, MessageSyncEntityMotion::deltaMotion,
+            ByteBufCodecs.FLOAT, MessageSyncEntityMotion::yRot,
+            ByteBufCodecs.FLOAT, MessageSyncEntityMotion::yRotO,
+            MessageSyncEntityMotion::new);
 
     public MessageSyncEntityMotion(Entity ent, Vector3f deltaMotion, float yRot, float yRotO) {
-        this.syncTarget = ent.getId();
-        this.deltaMotion = deltaMotion;
-        this.yRot = yRot;
-        this.yRotO = yRotO;
-    }
-    public MessageSyncEntityMotion(int syncTarget, Vector3f deltaMotion, float yRot, float yRotO) {
-        this.syncTarget = syncTarget;
-        this.deltaMotion = deltaMotion;
-        this.yRot = yRot;
-        this.yRotO = yRotO;
+        this(ent.getId(), deltaMotion, yRot, yRotO);
     }
 
-    public static void encode(MessageSyncEntityMotion msg, FriendlyByteBuf buf)
-    {
-        buf.writeInt(msg.syncTarget);
-        buf.writeVector3f(msg.deltaMotion);
-        buf.writeFloat(msg.yRot);
-        buf.writeFloat(msg.yRotO);
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static MessageSyncEntityMotion decode(FriendlyByteBuf buf) {
-
-        return new MessageSyncEntityMotion(buf.readInt(), buf.readVector3f(), buf.readFloat(), buf.readFloat());
-    }
-
-    public static void handle(MessageSyncEntityMotion msg, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> handleClient(msg));
-        }
-        ctx.get().setPacketHandled(true);
+    public static void handle(MessageSyncEntityMotion msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> handleClient(msg));
     }
 
     @OnlyIn(Dist.CLIENT)
     private static void handleClient(MessageSyncEntityMotion msg) {
-        Entity ent = Minecraft.getInstance().level.getEntity(msg.syncTarget);
-        ent.setDeltaMovement(new Vec3(msg.deltaMotion.x, msg.deltaMotion.y, msg.deltaMotion.z));
-        ent.setYRot(msg.yRot);
-        ent.yRotO = msg.yRotO;
+        Entity ent = Minecraft.getInstance().level.getEntity(msg.syncTarget());
+        if (ent == null)
+            return;
+        ent.setDeltaMovement(new Vec3(msg.deltaMotion().x, msg.deltaMotion().y, msg.deltaMotion().z));
+        ent.setYRot(msg.yRot());
+        ent.yRotO = msg.yRotO();
         AetherShieldReflectHandler.setReflected((Projectile)ent);
     }
 }

@@ -15,7 +15,7 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import org.joml.Vector3f;
@@ -25,10 +25,10 @@ import java.util.function.Consumer;
 public class AWViscousFluidType extends ViscousFluidType {
     public AWViscousFluidType(Properties properties, FluidInfo info) {
         super(properties, info);
-        this.RENDER_OVERLAY = new ResourceLocation(Aetherworks.MODID, "textures/overlay/" + info.name + ".png");
-        this.TEXTURE_STILL = new ResourceLocation(Aetherworks.MODID, "block/fluid/" + info.name + "_still");
-        this.TEXTURE_FLOW = new ResourceLocation(Aetherworks.MODID, "block/fluid/" + info.name + "_flow");
-        this.TEXTURE_OVERLAY = new ResourceLocation(Aetherworks.MODID, "block/fluid/" + info.name + "_overlay");
+        this.RENDER_OVERLAY = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/overlay/" + info.name + ".png");
+        this.TEXTURE_STILL = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/fluid/" + info.name + "_still");
+        this.TEXTURE_FLOW = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/fluid/" + info.name + "_flow");
+        this.TEXTURE_OVERLAY = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/fluid/" + info.name + "_overlay");
     }
 
     public final ResourceLocation RENDER_OVERLAY;

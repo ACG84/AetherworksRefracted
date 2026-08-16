@@ -32,9 +32,9 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.api.item.IToggleItem;
@@ -129,7 +129,7 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
     }
 
     public static void attachGem(ItemStack holder, ItemStack gem) {
-        holder.getOrCreateTag().put("gem", gem.serializeNBT());
+        holder.getOrCreateTag().put("gem", gem.serializeNBT(registries));
     }
 
     public static ItemStack detachGem(ItemStack holder) {

@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import net.minecraft.core.HolderLookup;
+
 import com.rekindled.embers.Embers;
 import com.rekindled.embers.api.tile.IExtraCapabilityInformation;
 import com.rekindled.embers.particle.GlowParticleOptions;
@@ -14,15 +16,15 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.FluidHandlerBlockEntity;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import com.rekindled.embers.compat.legacy.capabilities.Capability;
+import com.rekindled.embers.compat.legacy.capabilities.ForgeCapabilities;
+import com.rekindled.embers.compat.legacy.LazyOptional;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.FluidHandlerBlockEntity;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.recipe.IMetalFormerRecipe;
 import net.sirplop.aetherworks.recipe.MetalFormerContext;
@@ -61,24 +63,24 @@ public class MetalFormerBlockEntity extends FluidHandlerBlockEntity implements I
     };
     public LazyOptional<IItemHandler> holder = LazyOptional.of(() -> inventory);
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
-        inventory.deserializeNBT(nbt.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
+        inventory.deserializeNBT(registries, nbt.getCompound("inventory"));
         progress = nbt.getInt("progress");
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(nbt);
-        nbt.put("inventory", inventory.serializeNBT());
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
+        nbt.put("inventory", inventory.serializeNBT(registries));
         nbt.putInt("progress", progress);
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag nbt = super.getUpdateTag();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag nbt = super.getUpdateTag(registries);
         this.tank.writeToNBT(nbt);
-        nbt.put("inventory", inventory.serializeNBT());
+        nbt.put("inventory", inventory.serializeNBT(registries));
         nbt.putInt("progress", progress);
         return nbt;
     }
@@ -121,8 +123,8 @@ public class MetalFormerBlockEntity extends FluidHandlerBlockEntity implements I
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
+    public void invalidateCapabilities() {
+        super.invalidateCapabilities();
         holder.invalidate();
     }
 

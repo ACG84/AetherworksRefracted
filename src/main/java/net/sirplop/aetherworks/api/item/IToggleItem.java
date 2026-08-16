@@ -3,9 +3,9 @@ package net.sirplop.aetherworks.api.item;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sirplop.aetherworks.network.MessageToggleItem;
 import net.sirplop.aetherworks.network.PacketHandler;
 
@@ -16,7 +16,7 @@ public interface IToggleItem {
 
     default void toggleItem(ItemStack stack, Player player, byte stateFlag) {
         MessageToggleItem.toggleItem(stack, player, stateFlag);
-        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new MessageToggleItem(stateFlag));
+        PacketDistributor.sendToPlayer((ServerPlayer) player, new MessageToggleItem(stateFlag));
     }
 
     default byte getToggled(ItemStack stack) {

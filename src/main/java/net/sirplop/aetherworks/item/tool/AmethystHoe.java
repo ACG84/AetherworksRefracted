@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.lib.AWCropNode;
 import net.sirplop.aetherworks.lib.AWHarvestHelper;

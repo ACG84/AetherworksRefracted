@@ -5,12 +5,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.ModelBuilder;
-import net.minecraftforge.client.model.generators.loaders.DynamicFluidContainerModelBuilder;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelBuilder;
+import net.neoforged.neoforge.client.model.generators.loaders.DynamicFluidContainerModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.compat.curios.CuriosCompat;
@@ -99,35 +100,35 @@ public class AWItemModels extends ItemModelProvider {
         itemWithTexture(AWRegistry.AETHER_CROWN, "generated", "aether_crown", "aether_crown_overlay");
     }
 
-    public void itemWithModel(RegistryObject<? extends Item> registryObject, String model) {
+    public void itemWithModel(DeferredHolder<Item, ? extends Item> registryObject, String model) {
         ResourceLocation id = registryObject.getId();
-        ResourceLocation textureLocation = new ResourceLocation(id.getNamespace(), "item/" + id.getPath());
-        singleTexture(id.getPath(), new ResourceLocation(model), "layer0", textureLocation);
+        ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "item/" + id.getPath());
+        singleTexture(id.getPath(), ResourceLocation.parse(model), "layer0", textureLocation);
     }
 
-    public void itemWithTexture(RegistryObject<? extends Item> registryObject, String texture) {
+    public void itemWithTexture(DeferredHolder<Item, ? extends Item> registryObject, String texture) {
         itemWithTexture(registryObject, "item/generated", texture);
     }
-    public void itemWithTexture(RegistryObject<? extends Item> registryObject, String model, String... textures) {
+    public void itemWithTexture(DeferredHolder<Item, ? extends Item> registryObject, String model, String... textures) {
         ResourceLocation id = registryObject.getId();
         for (int i = 0; i < textures.length; i++) {
-            ResourceLocation textureLocation = new ResourceLocation(id.getNamespace(), "item/" + textures[i]);
-            singleTexture(id.getPath(), new ResourceLocation(model), "layer"+i, textureLocation);
+            ResourceLocation textureLocation = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "item/" + textures[i]);
+            singleTexture(id.getPath(), ResourceLocation.parse(model), "layer"+i, textureLocation);
         }
     }
-    public void toolWithTexture(RegistryObject<? extends Item> registryObject, String... textures) {
+    public void toolWithTexture(DeferredHolder<Item, ? extends Item> registryObject, String... textures) {
         itemWithTexture(registryObject, "item/handheld", textures);
     }
-    public void bucketModel(RegistryObject<? extends BucketItem> registryObject, Fluid fluid) {
-        ModelBuilder<ItemModelBuilder> builder = withExistingParent(registryObject.getId().getPath(), new ResourceLocation(Aetherworks.MODID, "item/bucket_fluid"));
+    public void bucketModel(DeferredHolder<Item, ? extends BucketItem> registryObject, Fluid fluid) {
+        ModelBuilder<ItemModelBuilder> builder = withExistingParent(registryObject.getId().getPath(), ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "item/bucket_fluid"));
         builder.customLoader(DynamicFluidContainerModelBuilder::begin).fluid(fluid).coverIsMask(false).flipGas(true).end();
     }
-    public void layeredItem(RegistryObject<? extends Item> registryObject, String model, String... textures) {
+    public void layeredItem(DeferredHolder<Item, ? extends Item> registryObject, String model, String... textures) {
         ResourceLocation id = registryObject.getId();
 
-        ModelBuilder<?> builder = withExistingParent(id.getPath(), new ResourceLocation(model));
+        ModelBuilder<?> builder = withExistingParent(id.getPath(), ResourceLocation.parse(model));
         for (int i = 0; i < textures.length; i ++) {
-            builder.texture("layer" + i, new ResourceLocation(id.getNamespace(), "item/" + textures[i]));
+            builder.texture("layer" + i, ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "item/" + textures[i]));
         }
     }
 }

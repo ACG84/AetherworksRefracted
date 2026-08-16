@@ -166,7 +166,7 @@ public abstract class AOEEmberDiggerItem extends DiggerItem implements IToggleEm
             damage++;
         }
         if (damage != 0 && !player.isCreative()) {
-            stack.hurt(damage, level.random, (ServerPlayer) player);
+            stack.hurtAndBreak(damage, (ServerLevel) player.level(), (ServerPlayer) player, item -> {});
         }
     }
     public static BoundingBox getAreaOfEffect(BlockPos blockPos, Direction direction, int radius, int depth) {

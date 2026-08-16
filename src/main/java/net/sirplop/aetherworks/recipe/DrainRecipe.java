@@ -1,5 +1,6 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.sirplop.aetherworks.AWDataComponents;
 import com.google.gson.JsonObject;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -10,8 +11,8 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.item.tool.PrismarineShovel;
@@ -64,7 +65,7 @@ public class DrainRecipe implements CraftingRecipe {
             }
         }
         if (!shovel.isEmpty()) {
-            MessageFluidSync.setFluid(new FluidHandlerItemStack(shovel, AWConfig.PRISMARINE_SHOVEL_CAPACITY.get() * 1000), FluidStack.EMPTY);
+            MessageFluidSync.setFluid(new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), shovel, AWConfig.PRISMARINE_SHOVEL_CAPACITY.get() * 1000), FluidStack.EMPTY);
             return shovel;
         }
         return ItemStack.EMPTY;

@@ -56,7 +56,7 @@ public class AetheriometerUtil {
     }
     public static int getData(Level level, ChunkPos pos) {
         if (level.hasChunk(pos.x, pos.z)) { //don't load chunks!
-            IAetheriometerCap capability = AetheriometerChunkCapability.getData(level, pos).orElseThrow(UnsupportedOperationException::new);
+            IAetheriometerCap capability = AetheriometerChunkCapability.getData(level, pos);
             return capability.getData();
         }
         return 0;

@@ -4,82 +4,56 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.level.ChunkWatchEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.ChunkWatchEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.api.capabilities.IAetheriometerCap;
-import net.sirplop.aetherworks.api.capabilities.SerializableCapabilityProvider;
 import net.sirplop.aetherworks.network.MessageSyncAetheriometer;
-import net.sirplop.aetherworks.network.PacketHandler;
 import net.sirplop.aetherworks.worldgen.MeteorPlacer;
-
-import static net.sirplop.aetherworks.capabilities.AWCapabilities.AETHERIOMETER_CAPABILITY;
 
 public final class AetheriometerChunkCapability {
 
     /**
-     * The ID of this capability.
+     * The ID of this data.
      */
-    public static final ResourceLocation ID = new ResourceLocation(Aetherworks.MODID, "aw.aether");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether");
 
     /**
      * Get the {@link IAetheriometerCap} for the {@link Level} and chunk position.
-     *
-     * @param level    The level
-     * @param chunkPos The chunk position
-     * @return A lazy optional containing the IAetheriometerCap, if any
      */
-    public static LazyOptional<IAetheriometerCap> getData(final Level level, final ChunkPos chunkPos) {
-        return getData(level.getChunk(chunkPos.x, chunkPos.z));
+    public static IAetheriometerCap getData(final Level level, final ChunkPos chunkPos) {
+        return new AetheriometerChunk(level, chunkPos);
     }
 
     /**
      * Get the {@link IAetheriometerCap} for the chunk.
-     *
-     * @param chunk The chunk
-     * @return A lazy optional containing the IAetheriometerCap, if any
      */
-    public static LazyOptional<IAetheriometerCap> getData(final LevelChunk chunk) {
-        return chunk.getCapability(AETHERIOMETER_CAPABILITY, null);
+    public static IAetheriometerCap getData(final LevelChunk chunk) {
+        return new AetheriometerChunk(chunk.getLevel(), chunk.getPos());
     }
 
-    @Mod.EventBusSubscriber(modid = Aetherworks.MODID)
+    @EventBusSubscriber(modid = Aetherworks.MODID)
     @SuppressWarnings("unused")
     private static class EventHandler {
-        @SubscribeEvent
-        public static void attachChunkCapabilities(final AttachCapabilitiesEvent<LevelChunk> event) {
-            final var chunk = event.getObject();
-
-            final var level = chunk.getLevel();
-            final var chunkPos = chunk.getPos();
-
-            int set = 0;
-            if (MeteorPlacer.map.containsKey(chunkPos)) {
-                set = MeteorPlacer.map.get(chunkPos);
-                MeteorPlacer.map.remove(chunkPos);
-            }
-
-            final var data = AetheriometerChunk.createDefault(level, chunkPos, set);
-            final var codec = AetheriometerChunk.codec(level, chunkPos);
-            event.addCapability(ID, new SerializableCapabilityProvider<>(AETHERIOMETER_CAPABILITY, null, data) { });
-        }
 
         /**
-         * Send the {@link IAetheriometerCap} to the client when a player starts watching the chunk.
-         *
-         * @param event The event
+         * Meteor generation records its readings before the chunk object exists, so the pending
+         * values are drained onto the chunk the first time a player starts watching it.
          */
         @SubscribeEvent
         public static void chunkWatch(final ChunkWatchEvent.Watch event) {
+            final var chunkPos = event.getPos();
+            final var level = event.getLevel();
 
-            final var player = event.getPlayer();
-            final int data = getData(event.getLevel(), event.getPos()).orElseThrow(UnsupportedOperationException::new).getData();
+            if (MeteorPlacer.map.containsKey(chunkPos)) {
+                int set = MeteorPlacer.map.remove(chunkPos);
+                level.getChunk(chunkPos.x, chunkPos.z).setData(AWAttachments.AETHER_AMOUNT.get(), Math.max(0, set));
+            }
 
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageSyncAetheriometer(event.getPos(), data));
+            final int data = getData(level, chunkPos).getData();
+            PacketDistributor.sendToPlayer(event.getPlayer(), new MessageSyncAetheriometer(chunkPos, data));
         }
     }
 }

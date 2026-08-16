@@ -1,7 +1,7 @@
 package net.sirplop.aetherworks.api.capabilities;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilitySerializable;
 
 public interface IHeatCapability  extends ICapabilitySerializable<CompoundTag> {
     String HEAT_CAPACITY = "aetherworks:heat_capacity";

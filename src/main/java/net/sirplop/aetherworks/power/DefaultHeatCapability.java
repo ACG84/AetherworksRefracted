@@ -2,8 +2,8 @@ package net.sirplop.aetherworks.power;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import com.rekindled.embers.compat.legacy.capabilities.Capability;
+import com.rekindled.embers.compat.legacy.LazyOptional;
 import net.sirplop.aetherworks.capabilities.AWCapabilities;
 import net.sirplop.aetherworks.api.capabilities.IHeatCapability;
 import org.jetbrains.annotations.NotNull;

@@ -13,11 +13,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.LayeredDraw;
+import net.neoforged.neoforge.client.event.ModelEvent;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.api.item.IHudFocus;
@@ -30,12 +30,14 @@ import org.joml.Random;
 @OnlyIn(Dist.CLIENT)
 public class AWClientEvents {
 
-    public static final IGuiOverlay INGAME_OVERLAY = AWClientEvents::renderIngameOverlay;
-    public static ResourceLocation SHOVEL_SELECT = new ResourceLocation(Aetherworks.MODID, "textures/gui/shovel_overlay.png");
+    //1.21 replaced Forge's IGuiOverlay with vanilla's LayeredDraw.Layer.
+    public static final LayeredDraw.Layer INGAME_OVERLAY = AWClientEvents::renderIngameOverlay;
+    public static final ResourceLocation INGAME_OVERLAY_ID = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aw_overlay");
+    public static ResourceLocation SHOVEL_SELECT = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/shovel_overlay.png");
 
-    public static ResourceLocation GAUGE = new ResourceLocation(Aetherworks.MODID, "textures/gui/aetheriometer_overlay.png");
-    public static ResourceLocation GAUGE_COLOR = new ResourceLocation(Aetherworks.MODID, "textures/gui/aetheriometer_underlay.png");
-    public static ResourceLocation GAUGE_POINTER = new ResourceLocation(Aetherworks.MODID, "textures/gui/aetheriometer_pointer.png");
+    public static ResourceLocation GAUGE = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/aetheriometer_overlay.png");
+    public static ResourceLocation GAUGE_COLOR = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/aetheriometer_underlay.png");
+    public static ResourceLocation GAUGE_POINTER = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/aetheriometer_pointer.png");
 
     public static double gaugeAngle = 0;
     public static int ticks = 0;
@@ -43,10 +45,14 @@ public class AWClientEvents {
 
     public static Random random = new Random();
 
-    public static void renderIngameOverlay(ForgeGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
-        Minecraft mc = gui.getMinecraft();
+    public static void renderIngameOverlay(GuiGraphics graphics, DeltaTracker deltaTracker) {
+        Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui)
             return;
+
+        int width = graphics.guiWidth();
+        int height = graphics.guiHeight();
+        float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 
         Player player = mc.player;
         ticks++;
@@ -71,11 +77,11 @@ public class AWClientEvents {
         }
 
         if (player.getMainHandItem().getItem() == AWRegistry.AETHERIOMETER.get() || (player.getOffhandItem().getItem() == AWRegistry.AETHERIOMETER.get() && !player.getMainHandItem().is(EmbersItemTags.GAUGE_OVERLAY))) {
-            renderAetheriometer(gui, graphics, player, partialTicks, width, height);
+            renderAetheriometer(graphics, player, partialTicks, width, height);
         }
     }
 
-    public static void renderAetheriometer(ForgeGui gui, GuiGraphics graphics, Player player, float partialTicks, int width, int height) {
+    public static void renderAetheriometer(GuiGraphics graphics, Player player, float partialTicks, int width, int height) {
         if (player == null)
             return;
 
@@ -129,25 +135,30 @@ public class AWClientEvents {
         RenderSystem.setShaderColor(r, g, b, a);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         Matrix4f matrix4f = graphics.pose().last().pose();
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferbuilder.vertex(matrix4f, (float)pX1, (float)pY1, (float)pBlitOffset).uv(pMinU, pMinV).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)pX1, (float)pY2, (float)pBlitOffset).uv(pMinU, pMaxV).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)pX2, (float)pY2, (float)pBlitOffset).uv(pMaxU, pMaxV).endVertex();
-        bufferbuilder.vertex(matrix4f, (float)pX2, (float)pY1, (float)pBlitOffset).uv(pMaxU, pMinV).endVertex();
-        BufferUploader.drawWithShader(bufferbuilder.end());
+        //1.21 flipped the buffer API around: Tesselator.begin() hands back a started BufferBuilder,
+        //and vertices are appended with addVertex/setUv rather than vertex/uv/endVertex.
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.addVertex(matrix4f, (float)pX1, (float)pY1, (float)pBlitOffset).setUv(pMinU, pMinV);
+        bufferbuilder.addVertex(matrix4f, (float)pX1, (float)pY2, (float)pBlitOffset).setUv(pMinU, pMaxV);
+        bufferbuilder.addVertex(matrix4f, (float)pX2, (float)pY2, (float)pBlitOffset).setUv(pMaxU, pMaxV);
+        bufferbuilder.addVertex(matrix4f, (float)pX2, (float)pY1, (float)pBlitOffset).setUv(pMaxU, pMinV);
+        BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
-    public static void afterModelBake(ModelEvent.BakingCompleted event) {
-        ModelBakery bakery = event.getModelManager().getModelBakery();
-        RenderLexiconReceptacle.lexicon = getModel(bakery, "lexicon_receptacle_fill");
+    /**
+     * Standalone models have to be requested up front in 1.21 so the loader bakes them for us,
+     * instead of us reaching into ModelBakery and baking them by hand after the fact.
+     */
+    public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        event.register(modelLocation("lexicon_receptacle_fill"));
     }
 
-    public static BakedModel getModel(ModelBakery bakery, String name) {
-        ResourceLocation location = new ResourceLocation(Aetherworks.MODID, "block/" + name);
+    public static void afterModelBake(ModelEvent.BakingCompleted event) {
+        RenderLexiconReceptacle.lexicon = event.getModels().get(modelLocation("lexicon_receptacle_fill"));
+    }
 
-        ModelBakery.ModelBakerImpl bakerImpl = bakery.new ModelBakerImpl((modelLoc, material) -> material.sprite(), location);
-        UnbakedModel model = bakery.getModel(location);
-        return model.bake(bakerImpl, Material::sprite, BlockModelRotation.X0_Y0, location);
+    private static ModelResourceLocation modelLocation(String name) {
+        return ModelResourceLocation.standalone(
+                ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + name));
     }
 }

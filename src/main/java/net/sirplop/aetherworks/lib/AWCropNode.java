@@ -17,8 +17,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.datagen.AWBlockTags;
 import net.sirplop.aetherworks.network.MessageSyncItemEntityTag;
@@ -97,21 +96,20 @@ public class AWCropNode extends AWHarvestNode {
                 drops.forEach(e -> {
                     if (e != null) {
                         e.addTag(Utils.SUCK_ITEM_TAG);
-                        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageSyncItemEntityTag(e, Utils.SUCK_ITEM_TAG));
+                        PacketDistributor.sendToPlayer(player, new MessageSyncItemEntityTag(e, Utils.SUCK_ITEM_TAG));
                     }
                 });
             }
         }
         else if (isCrop(block)) {
             //check sustaining in all directions - some crops are fun!
-            if (block instanceof IPlantable crop) {
-                for (Direction dir : Direction.values()) {
-                    BlockPos check = pos.relative(dir);
-                    BlockState checkState = level.getBlockState(check);
-                    replant = checkState.getBlock().canSustainPlant(checkState, level, check, dir.getOpposite(), crop);
-                    if (replant)
-                        break;
-                }
+            //IPlantable is gone in 1.21; the soil is now asked about the plant's BlockState directly.
+            for (Direction dir : Direction.values()) {
+                BlockPos check = pos.relative(dir);
+                BlockState checkState = level.getBlockState(check);
+                replant = checkState.canSustainPlant(level, check, dir.getOpposite(), state);
+                if (replant)
+                    break;
             }
             if (!replant && block instanceof CocoaBlock crop)
                 replant = crop.canSurvive(state, level, pos);
@@ -130,7 +128,7 @@ public class AWCropNode extends AWHarvestNode {
 
         if (success) {
             if (!harvester.isCreative() && level.random.nextFloat() <= damageChance)
-                harvester.getMainHandItem().hurt(1, level.random, (ServerPlayer) harvester);
+                harvester.getMainHandItem().hurtAndBreak(1, (ServerLevel) harvester.level(), (ServerPlayer) harvester, item -> {});
             if (particle != null) {
                 ((ServerLevel)level).sendParticles(particle,
                         pos.getX() + 0.5f,
@@ -159,7 +157,7 @@ public class AWCropNode extends AWHarvestNode {
                 extra.forEach(e -> {
                     if (e != null) {
                         e.addTag(Utils.SUCK_ITEM_TAG);
-                        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) harvester), new MessageSyncItemEntityTag(e, Utils.SUCK_ITEM_TAG));
+                        PacketDistributor.sendToPlayer((ServerPlayer) harvester, new MessageSyncItemEntityTag(e, Utils.SUCK_ITEM_TAG));
                     }
                 });
             }

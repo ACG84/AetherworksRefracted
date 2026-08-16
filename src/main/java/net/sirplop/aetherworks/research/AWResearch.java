@@ -12,16 +12,16 @@ import com.rekindled.embers.util.Vec2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.compat.curios.CuriosCompat;
 
 public class AWResearch {
-    public static final ResourceLocation PAGE_ICONS = new ResourceLocation(Aetherworks.MODID, "textures/gui/codex_index_icons.png");
+    public static final ResourceLocation PAGE_ICONS = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/codex_index_icons.png");
     public static final double PAGE_ICON_SIZE = 48;
 
-    public static ResearchShowImage.DisplayImage moon_harvester_image = new ResearchShowImage.DisplayImage(new ResourceLocation(Aetherworks.MODID, "textures/gui/moonlight_harvester.png"),
+    public static ResearchShowImage.DisplayImage moon_harvester_image = new ResearchShowImage.DisplayImage(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/moonlight_harvester.png"),
             -21, 48, 0, 0, 160, 128, 256, 256);
 
     public static ResearchCategory categoryAether;

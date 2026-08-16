@@ -35,7 +35,7 @@ public class ToolStationCategory implements IRecipeCategory<IToolStationRecipe> 
     private final IDrawable background;
     private final IDrawable icon;
     public static Component title = Component.translatable(Aetherworks.MODID + ".jei.recipe.tool_station");
-    public static ResourceLocation texture = new ResourceLocation(Aetherworks.MODID, "textures/gui/jei_tool_station.png");
+    public static ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/jei_tool_station.png");
 
     public ToolStationCategory(IGuiHelper helper) {
         background = helper.createDrawable(texture, 0, 0, 117, 60);

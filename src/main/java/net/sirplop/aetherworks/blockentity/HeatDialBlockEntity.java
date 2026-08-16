@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import net.minecraft.core.HolderLookup;
+
 import com.rekindled.embers.api.tile.IDialEntity;
 
 import net.minecraft.core.BlockPos;
@@ -26,7 +28,7 @@ public class HeatDialBlockEntity extends BlockEntity  implements IDialEntity {
     }
 
     @Override
-    public void load(CompoundTag nbt) {
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
         if (nbt.contains(IHeatCapability.HEAT))
             heat = nbt.getDouble(IHeatCapability.HEAT);
         if (nbt.contains(IHeatCapability.HEAT_CAPACITY))
@@ -36,8 +38,8 @@ public class HeatDialBlockEntity extends BlockEntity  implements IDialEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag nbt = super.getUpdateTag();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag nbt = super.getUpdateTag(registries);
         BlockState state = level.getBlockState(worldPosition);
         boolean display = false;
         if (state.hasProperty(BlockStateProperties.FACING)) {

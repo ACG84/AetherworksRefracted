@@ -22,7 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.datagen.AWSounds;
 import net.sirplop.aetherworks.network.MessageShieldParticle;
@@ -118,8 +118,8 @@ public class AetherShield extends ShieldItem {
         Vector3f lbb = matrix4f.transformPosition(new Vector3f(-1f, -1.5f, 0f));
         Vector3f rtf = matrix4f.transformPosition(new Vector3f(1f, 1.5f, 0.75f));
 
-        PacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(middlePos.x, middlePos.y, middlePos.z,
-                64, level.dimension())), new MessageShieldParticle(middlePos.toVector3f(), entity.getXRot(), entity.getYRot(), (byte)64, Misc.intColor(Utils.AETHERIUM_COLOR)));
+        PacketDistributor.sendToPlayersNear(level, null, middlePos.x, middlePos.y, middlePos.z, 64,
+                new MessageShieldParticle(middlePos.toVector3f(), entity.getXRot(), entity.getYRot(), (byte)64, Misc.intColor(Utils.AETHERIUM_COLOR)));
 
         AABB aabb = new AABB(lbb.x, lbb.y, lbb.z, rtf.x, rtf.y, rtf.z).inflate(1); //this is our approximation area.
 
@@ -151,11 +151,11 @@ public class AetherShield extends ShieldItem {
             projectile.setYRot(yRot);
             projectile.yRotO = yRotO;
 
-            PacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(middlePos.x, middlePos.y, middlePos.z,
-                    32, level.dimension())), new MessageSyncEntityMotion(projectile, deltaMotion.toVector3f(), yRot, yRotO));
+            PacketDistributor.sendToPlayersNear(level, null, middlePos.x, middlePos.y, middlePos.z, 32,
+                    new MessageSyncEntityMotion(projectile, deltaMotion.toVector3f(), yRot, yRotO));
         }
         if (player != null)
-            pStack.hurt(interact, level.getRandom(), (ServerPlayer)player);
+            pStack.hurtAndBreak(interact, level, (ServerPlayer) player, item -> {});
     }
 
     protected boolean consumeEmbers(Player player, double value)

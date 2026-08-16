@@ -4,7 +4,7 @@ import com.rekindled.embers.api.capabilities.EmbersCapabilities;
 import com.rekindled.embers.item.EmberStorageItem;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
+import com.rekindled.embers.compat.legacy.capabilities.Capability;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.util.MoonlightRepair;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,7 @@ import com.rekindled.embers.power.DefaultEmberItemCapability;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
 
 public class AetherEmberJarItem extends EmberStorageItem {
 

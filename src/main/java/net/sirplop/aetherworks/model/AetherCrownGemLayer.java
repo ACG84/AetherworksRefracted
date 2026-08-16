@@ -18,9 +18,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.ForgeHooksClient;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.sirplop.aetherworks.item.AetherCrownItem;
 import net.sirplop.aetherworks.item.PotionGemItem;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +55,7 @@ public class AetherCrownGemLayer<T extends LivingEntity, M extends HumanoidModel
                 float r = Math.min(1f, coeff * (float)(color >> 16 & 255) / 255.0F);
                 float g = Math.min(1f, coeff * (float)(color >> 8 & 255) / 255.0F);
                 float b = Math.min(1f, coeff * (float)(color & 255) / 255.0F);
-                ResourceLocation textureLoc = new ResourceLocation(ForgeHooksClient.getArmorTexture(livingEntity, itemstack, "bro_specify_your_armor_texture", EquipmentSlot.HEAD, "overlay"));
+                ResourceLocation textureLoc = ResourceLocation.parse(ClientHooks.getArmorTexture(livingEntity, itemstack, "bro_specify_your_armor_texture", EquipmentSlot.HEAD, "overlay"));
                 this.renderModel(poseStack, multiBufferSource, packedLight, crown, model, r, g, b, textureLoc);
             }
             //render crown
@@ -64,7 +64,7 @@ public class AetherCrownGemLayer<T extends LivingEntity, M extends HumanoidModel
             float r = 1 - ((144 * timerSine) / 255);
             float g = 1 - ((72 * timerSine) / 255);
             float b = 1 - ((13 * timerSine) / 255);
-            ResourceLocation textureLoc = new ResourceLocation(ForgeHooksClient.getArmorTexture(livingEntity, itemstack, "bro_specify_your_armor_texture", EquipmentSlot.HEAD, null));
+            ResourceLocation textureLoc = ResourceLocation.parse(ClientHooks.getArmorTexture(livingEntity, itemstack, "bro_specify_your_armor_texture", EquipmentSlot.HEAD, null));
             this.renderModel(poseStack, multiBufferSource, packedLight, crown, model,r, g, b, textureLoc);
         }
     }

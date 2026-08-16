@@ -79,7 +79,7 @@ public class EffectDamagePotion implements IProjectileEffect {
         Entity projectileEntity = projectile != null ? projectile.getEntity() : null;
         float damage = this.damage;
         if (entity.hurt(this.source.apply(projectileEntity), damage)) {
-            entity.setSecondsOnFire(this.fire);
+            entity.igniteForSeconds(this.fire);
         }
 
         if (entity instanceof LivingEntity livingTarget) {

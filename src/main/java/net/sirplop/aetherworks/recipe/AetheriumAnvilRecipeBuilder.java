@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.util.WeightedList;
 
@@ -50,16 +50,16 @@ public class AetheriumAnvilRecipeBuilder {
     }
 
     public AetheriumAnvilRecipeBuilder domain(String domain) {
-        this.id = new ResourceLocation(domain, this.id.getPath());
+        this.id = ResourceLocation.fromNamespaceAndPath(domain, this.id.getPath());
         return this;
     }
 
     public AetheriumAnvilRecipeBuilder id(String domain, String id) {
-        this.id = new ResourceLocation(domain, id);
+        this.id = ResourceLocation.fromNamespaceAndPath(domain, id);
         return this;
     }
     public AetheriumAnvilRecipeBuilder folder(String folder) {
-        this.id = new ResourceLocation(id.getNamespace(), folder + "/" + id.getPath());
+        this.id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), folder + "/" + id.getPath());
         return this;
     }
 

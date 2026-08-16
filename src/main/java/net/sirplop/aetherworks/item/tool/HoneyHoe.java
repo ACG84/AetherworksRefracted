@@ -35,7 +35,7 @@ public class HoneyHoe extends AOEEmberHoeItem {
                 if (animal.getAge() == 0 && animal.canFallInLove() && Utils.hasEnoughDurability(stack, 5)) {
                     animal.setInLove(player);
                     if (!player.isCreative())
-                        stack.hurt(5, target.level().random, (ServerPlayer) player);
+                        stack.hurtAndBreak(5, (ServerLevel) player.level(), (ServerPlayer) player, item -> {});
                     Vec3 pos = target.position();
                     level.sendParticles(particle,
                             pos.x,

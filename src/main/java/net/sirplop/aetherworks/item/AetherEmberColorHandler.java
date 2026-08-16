@@ -6,9 +6,9 @@ import com.rekindled.embers.api.power.IEmberCapability;
 import com.rekindled.embers.util.Misc;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import com.rekindled.embers.compat.legacy.LazyOptional;
 import net.sirplop.aetherworks.util.Utils;
 
 @OnlyIn(Dist.CLIENT)

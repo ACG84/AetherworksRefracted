@@ -17,8 +17,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.api.block.HorizontalWaterloggableEntityBlock;
 import net.sirplop.aetherworks.blockentity.AetheriumAnvilBlockEntity;
@@ -32,7 +32,7 @@ public class RenderAetherAnvil implements BlockEntityRenderer<AetheriumAnvilBloc
         this.itemRenderer = pContext.getItemRenderer();
     }
 
-    public static final ResourceLocation LOCATION_MARK = new ResourceLocation(Aetherworks.MODID, "textures/gui/forge_marker.png");
+    public static final ResourceLocation LOCATION_MARK = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/forge_marker.png");
     public static final float[] colorOK = new float[] { 46 / 255f, 1f, 71f / 255f, 1f };
     public static final float[] colorWait = new float[] { 1f, 245f / 255f, 46f / 255f, 1f };
     public static final float[] colorNoEmber = new float[] { 1f, 80f / 255f, 46f / 255f, 1f };

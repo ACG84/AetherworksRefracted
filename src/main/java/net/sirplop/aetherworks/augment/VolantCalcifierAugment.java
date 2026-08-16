@@ -6,8 +6,8 @@ import com.rekindled.embers.api.projectile.*;
 import com.rekindled.embers.augment.AugmentBase;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -15,7 +15,7 @@ import java.util.ListIterator;
 public class VolantCalcifierAugment extends AugmentBase {
     public VolantCalcifierAugment(ResourceLocation name) {
         super(name, 3.0);
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent

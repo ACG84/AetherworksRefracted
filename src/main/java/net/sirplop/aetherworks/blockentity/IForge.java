@@ -2,7 +2,7 @@ package net.sirplop.aetherworks.blockentity;
 
 import com.rekindled.embers.api.power.IEmberCapability;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sirplop.aetherworks.api.capabilities.IHeatCapability;
 
 import java.util.List;

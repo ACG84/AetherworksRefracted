@@ -20,7 +20,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.api.damage.EffectDamageCrossbowMagma;
 import net.sirplop.aetherworks.util.Utils;
@@ -80,7 +80,7 @@ public class AetherCrossbowMagma extends AetherCrossbow{
         ray.setColor(Utils.AETHERIUM_PROJECTILE_COLOR);
 
         EmberProjectileEvent event = new EmberProjectileEvent(shooter, stack, 1, ray);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         if (!event.isCanceled()) {
             for (IProjectilePreset projectile : event.getProjectiles()) {
                 projectile.shoot(level);

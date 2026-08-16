@@ -63,7 +63,7 @@ public class EnderAxe extends AOEEmberDiggerItem{
                     10, 0.25f, 0.25f, 0.25f, 0.1f);
 
             if (!context.getPlayer().isCreative())
-                context.getPlayer().getMainHandItem().hurt(1, context.getLevel().random, (ServerPlayer) context.getPlayer());
+                context.getPlayer().getMainHandItem().hurtAndBreak(1, (ServerLevel) context.getPlayer().level(), (ServerPlayer) context.getPlayer(), item -> {});
 
             return InteractionResult.SUCCESS;
         }
@@ -101,7 +101,7 @@ public class EnderAxe extends AOEEmberDiggerItem{
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
-        return net.minecraftforge.common.ToolActions.DEFAULT_AXE_ACTIONS.contains(toolAction);
+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility toolAction) {
+        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_AXE_ACTIONS.contains(toolAction);
     }
 }

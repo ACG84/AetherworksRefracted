@@ -15,7 +15,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.sirplop.aetherworks.api.block.HorizontalWaterloggableEntityBlock;
 import net.sirplop.aetherworks.blockentity.MetalFormerBlockEntity;
 import org.joml.Vector3f;

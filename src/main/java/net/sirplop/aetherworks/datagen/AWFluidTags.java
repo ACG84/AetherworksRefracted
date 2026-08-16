@@ -10,7 +10,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 
@@ -23,9 +23,9 @@ public class AWFluidTags extends FluidTagsProvider {
         super(output, lookupProvider, Aetherworks.MODID, existingFileHelper);
     }
 
-    public static final TagKey<Fluid> AETHERIUM = FluidTags.create(new ResourceLocation(Aetherworks.MODID, "aetherium"));
-    public static final TagKey<Fluid> FORGE_HEATER_BELOW = FluidTags.create(new ResourceLocation(Aetherworks.MODID, "forge_heater_below"));
-    public static final TagKey<Fluid> FORGE_COOLER_BELOW = FluidTags.create(new ResourceLocation(Aetherworks.MODID, "forge_cooler_below"));
+    public static final TagKey<Fluid> AETHERIUM = FluidTags.create(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aetherium"));
+    public static final TagKey<Fluid> FORGE_HEATER_BELOW = FluidTags.create(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "forge_heater_below"));
+    public static final TagKey<Fluid> FORGE_COOLER_BELOW = FluidTags.create(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "forge_cooler_below"));
 
     @Override
     public void addTags(HolderLookup.Provider provider) {

@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.sirplop.aetherworks.Aetherworks;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +21,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class AetherCrownModel extends HumanoidModel<LivingEntity> {
-    public static final ModelLayerLocation CROWN_HEAD = new ModelLayerLocation(new ResourceLocation(Aetherworks.MODID, "aether_crown"), "head");
+    public static final ModelLayerLocation CROWN_HEAD = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether_crown"), "head");
 
     public static final Map<EquipmentSlot, AetherCrownModel> ARMOR_MODELS = new EnumMap<>(EquipmentSlot.class);
     public static final IClientItemExtensions ARMOR_MODEL_GETTER = new IClientItemExtensions() {

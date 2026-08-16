@@ -1,5 +1,6 @@
 package net.sirplop.aetherworks.lib;
 
+import net.sirplop.aetherworks.AWDataComponents;
 import com.rekindled.embers.particle.GlowParticleOptions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,9 +15,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sirplop.aetherworks.network.MessageFluidSync;
 import net.sirplop.aetherworks.network.PacketHandler;
 import net.sirplop.aetherworks.util.Utils;
@@ -36,7 +37,7 @@ public class AWFluidNode extends AWHarvestNode {
                        @Nullable GlowParticleOptions particle, double damageChance, boolean pickup) {
         super(harvester, level, beginning, range * 1000, canHarvest, particle, damageChance);
         this.drain = pickup;
-        this.fluidHandler = new FluidHandlerItemStack(usedItem, this.range);
+        this.fluidHandler = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), usedItem, this.range);
         if (drain)
             this.targetfluid = level.getFluidState(beginning).getType();
         else
@@ -149,7 +150,7 @@ public class AWFluidNode extends AWHarvestNode {
             if (val) {
                 change += 1000;
                 if (!harvester.isCreative() && level.random.nextFloat() <= damageChance)
-                    harvester.getMainHandItem().hurt(1, level.random, (ServerPlayer) harvester);
+                    harvester.getMainHandItem().hurtAndBreak(1, (ServerLevel) harvester.level(), (ServerPlayer) harvester, item -> {});
                 if (particle != null) {
                     ((ServerLevel)level).sendParticles(particle,
                             pos.getX() + 0.5f,
@@ -167,14 +168,12 @@ public class AWFluidNode extends AWHarvestNode {
             if (drain) {
                 int amount = Math.min(fluidHandler.getTankCapacity(1), fluidHandler.getFluidInTank(1).getAmount() + change);
                 MessageFluidSync.setFluid(fluidHandler, new FluidStack(targetfluid, amount));
-                PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) harvester),
-                        new MessageFluidSync(usedItem, new FluidStack(targetfluid, amount), range));
+                PacketDistributor.sendToPlayer((ServerPlayer) harvester, new MessageFluidSync(usedItem, new FluidStack(targetfluid, amount), range));
             }
             else {
                 int amount = Math.max(0, fluidHandler.getFluidInTank(1).getAmount() - change);
                 MessageFluidSync.setFluid(fluidHandler, new FluidStack(targetfluid, amount));
-                PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) harvester),
-                        new MessageFluidSync(usedItem, new FluidStack(targetfluid, amount), range));
+                PacketDistributor.sendToPlayer((ServerPlayer) harvester, new MessageFluidSync(usedItem, new FluidStack(targetfluid, amount), range));
             }
         }
 

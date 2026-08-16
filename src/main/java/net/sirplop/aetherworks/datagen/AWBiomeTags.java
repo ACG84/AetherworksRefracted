@@ -8,8 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.sirplop.aetherworks.Aetherworks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,12 +21,12 @@ public class AWBiomeTags extends BiomeTagsProvider {
         super(output, lookupProvider, Aetherworks.MODID, existingFileHelper);
     }
 
-    public static TagKey<Biome> TC_END_GEODES = TagKey.create(Registries.BIOME, new ResourceLocation(Aetherworks.MODID, "tc_end_geodes"));
-    public static TagKey<Biome> TC_NETHER_GEODES = TagKey.create(Registries.BIOME, new ResourceLocation(Aetherworks.MODID, "tc_nether_geodes"));
-    public static TagKey<Biome> TC_OCEAN_GEODES = TagKey.create(Registries.BIOME, new ResourceLocation(Aetherworks.MODID, "tc_ocean_geodes"));
-    public static TagKey<Biome> TC_HOT_GEODES = TagKey.create(Registries.BIOME, new ResourceLocation(Aetherworks.MODID, "tc_hot_geodes"));
-    public static TagKey<Biome> TC_COLD_GEODES = TagKey.create(Registries.BIOME, new ResourceLocation(Aetherworks.MODID, "tc_cold_geodes"));
-    public static TagKey<Biome> TC_MAGIC_GEODES = TagKey.create(Registries.BIOME, new ResourceLocation(Aetherworks.MODID, "tc_magic_geodes"));
+    public static TagKey<Biome> TC_END_GEODES = TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "tc_end_geodes"));
+    public static TagKey<Biome> TC_NETHER_GEODES = TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "tc_nether_geodes"));
+    public static TagKey<Biome> TC_OCEAN_GEODES = TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "tc_ocean_geodes"));
+    public static TagKey<Biome> TC_HOT_GEODES = TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "tc_hot_geodes"));
+    public static TagKey<Biome> TC_COLD_GEODES = TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "tc_cold_geodes"));
+    public static TagKey<Biome> TC_MAGIC_GEODES = TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "tc_magic_geodes"));
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider)

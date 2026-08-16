@@ -16,9 +16,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 import javax.annotation.Nullable;
 
@@ -141,7 +141,7 @@ public class MetalFormerRecipe implements IMetalFormerRecipe{
             JsonObject outputJson = GsonHelper.getAsJsonObject(json, "output");
             boolean matchExactly = json.get("match_exactly").getAsBoolean();
             if (outputJson.has("tag")) {
-                TagAmount output = new TagAmount(ItemTags.create(new ResourceLocation(GsonHelper.getAsString(outputJson, "tag"))), GsonHelper.getAsInt(outputJson, "count", 1));
+                TagAmount output = new TagAmount(ItemTags.create(ResourceLocation.parse(GsonHelper.getAsString(outputJson, "tag"))), GsonHelper.getAsInt(outputJson, "count", 1));
                 return new MetalFormerRecipe(recipeId, input, fluid, temperature, craftTime, output, matchExactly);
             } else {
                 ItemStack output = ShapedRecipe.itemStackFromJson(outputJson);

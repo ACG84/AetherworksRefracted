@@ -1,7 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class AetheriumAnvilContext extends RecipeWrapper {
 

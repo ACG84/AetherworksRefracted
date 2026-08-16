@@ -43,7 +43,7 @@ public class AWTillNode extends AWHarvestNode {
         }
 
         UseOnContext ctx = new UseOnContext(harvester, InteractionHand.MAIN_HAND, new BlockHitResult(this.beginning.getCenter(), Direction.UP, this.beginning, false));
-        BlockState toolModifiedState = level.getBlockState(this.beginning).getToolModifiedState(ctx, net.minecraftforge.common.ToolActions.HOE_TILL, true);
+        BlockState toolModifiedState = level.getBlockState(this.beginning).getToolModifiedState(ctx, net.neoforged.neoforge.common.ItemAbilities.HOE_TILL, true);
         if (toolModifiedState == null) {
             this.invalid = true;
             return; //ignore tiles that don't till.
@@ -94,14 +94,14 @@ public class AWTillNode extends AWHarvestNode {
 
     protected void till(BlockPos pos) {
         UseOnContext ctx = new UseOnContext(harvester, InteractionHand.MAIN_HAND, new BlockHitResult(pos.getCenter(), Direction.UP, pos, false));
-        BlockState toolModifiedState = level.getBlockState(pos).getToolModifiedState(ctx, net.minecraftforge.common.ToolActions.HOE_TILL, false);
+        BlockState toolModifiedState = level.getBlockState(pos).getToolModifiedState(ctx, net.neoforged.neoforge.common.ItemAbilities.HOE_TILL, false);
         Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = toolModifiedState == null ? null : Pair.of(context -> true, HoeItem.changeIntoState(toolModifiedState));
         if (pair == null || !pair.getFirst().test(ctx))
             return;
         level.playSound(harvester, pos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
         pair.getSecond().accept(ctx);
         if (!harvester.isCreative())
-            harvester.getMainHandItem().hurt(1, level.random, (ServerPlayer) harvester);
+            harvester.getMainHandItem().hurtAndBreak(1, (ServerLevel) harvester.level(), (ServerPlayer) harvester, item -> {});
         if (particle != null) {
             ((ServerLevel)level).sendParticles(particle,
                     pos.getX() + 0.5f,

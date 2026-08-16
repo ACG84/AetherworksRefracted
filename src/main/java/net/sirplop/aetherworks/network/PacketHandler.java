@@ -1,31 +1,29 @@
 package net.sirplop.aetherworks.network;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.sirplop.aetherworks.Aetherworks;
 
+/**
+ * 1.20.5 replaced SimpleChannel with typed CustomPacketPayloads registered against a versioned
+ * registrar, so each message now carries its own Type and StreamCodec instead of being assigned
+ * a numeric id here.
+ */
 public class PacketHandler {
 
     private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(Aetherworks.MODID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
 
-    static int id = 0;
+    public static void registerPayloads(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(Aetherworks.MODID).versioned(PROTOCOL_VERSION);
 
-    public static void init() {
-        INSTANCE.registerMessage(id++, MessageHarvestNode.class, MessageHarvestNode::encode, MessageHarvestNode::decode, MessageHarvestNode::handle);
-        INSTANCE.registerMessage(id++, MessageToggleItem.class, MessageToggleItem::encode, MessageToggleItem::decode, MessageToggleItem::handle);
-        INSTANCE.registerMessage(id++, MessageSyncItemEntityTag.class, MessageSyncItemEntityTag::encode, MessageSyncItemEntityTag::decode, MessageSyncItemEntityTag::handle);
-        INSTANCE.registerMessage(id++, MessageFocusedStack.class, MessageFocusedStack::encode, MessageFocusedStack::decode, MessageFocusedStack::handle);
-        INSTANCE.registerMessage(id++, MessageSurroundWIthParticles.class, MessageSurroundWIthParticles::encode, MessageSurroundWIthParticles::decode, MessageSurroundWIthParticles::handle);
-        INSTANCE.registerMessage(id++, MessageFluidSync.class, MessageFluidSync::encode, MessageFluidSync::decode, MessageFluidSync::handle);
-        INSTANCE.registerMessage(id++, MessageSyncAetheriometer.class, MessageSyncAetheriometer::encode, MessageSyncAetheriometer::decode, MessageSyncAetheriometer::handle);
-        INSTANCE.registerMessage(id++, MessageShieldParticle.class, MessageShieldParticle::encode, MessageShieldParticle::decode, MessageShieldParticle::handle);
-        INSTANCE.registerMessage(id++, MessageSyncEntityMotion.class, MessageSyncEntityMotion::encode, MessageSyncEntityMotion::decode, MessageSyncEntityMotion::handle);
+        registrar.playToClient(MessageHarvestNode.TYPE, MessageHarvestNode.STREAM_CODEC, MessageHarvestNode::handle);
+        registrar.playBidirectional(MessageToggleItem.TYPE, MessageToggleItem.STREAM_CODEC, MessageToggleItem::handle);
+        registrar.playToClient(MessageSyncItemEntityTag.TYPE, MessageSyncItemEntityTag.STREAM_CODEC, MessageSyncItemEntityTag::handle);
+        registrar.playToClient(MessageFocusedStack.TYPE, MessageFocusedStack.STREAM_CODEC, MessageFocusedStack::handle);
+        registrar.playToClient(MessageSurroundWIthParticles.TYPE, MessageSurroundWIthParticles.STREAM_CODEC, MessageSurroundWIthParticles::handle);
+        registrar.playToClient(MessageFluidSync.TYPE, MessageFluidSync.STREAM_CODEC, MessageFluidSync::handle);
+        registrar.playToClient(MessageSyncAetheriometer.TYPE, MessageSyncAetheriometer.STREAM_CODEC, MessageSyncAetheriometer::handle);
+        registrar.playToClient(MessageShieldParticle.TYPE, MessageShieldParticle.STREAM_CODEC, MessageShieldParticle::handle);
+        registrar.playToClient(MessageSyncEntityMotion.TYPE, MessageSyncEntityMotion.STREAM_CODEC, MessageSyncEntityMotion::handle);
     }
 }

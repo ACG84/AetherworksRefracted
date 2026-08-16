@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import net.minecraft.core.HolderLookup;
+
 import com.rekindled.embers.RegistryManager;
 import com.rekindled.embers.blockentity.FluidVesselBlockEntity;
 import com.rekindled.embers.particle.GlowParticleOptions;
@@ -16,11 +18,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.block.MoonlightAmplifierBlock;
 import net.sirplop.aetherworks.util.Utils;
@@ -261,7 +263,7 @@ public class PrismBlockEntity extends BlockEntity {
         return true;
     }
     @Override
-    public CompoundTag getUpdateTag() {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("work", canWork());
         tag.putBoolean("valid", isStructureValid());
@@ -276,7 +278,7 @@ public class PrismBlockEntity extends BlockEntity {
 
     @Override
     public void load(@NotNull CompoundTag pTag) {
-        super.load(pTag);
+        super.loadAdditional(pTag, registries);
         if (pTag.contains("work"))
             canWork = pTag.getBoolean("work");
         if (pTag.contains("valid"))

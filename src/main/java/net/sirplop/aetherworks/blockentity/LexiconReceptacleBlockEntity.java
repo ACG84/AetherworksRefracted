@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import net.minecraft.core.HolderLookup;
+
 import com.rekindled.embers.Embers;
 import com.rekindled.embers.api.tile.IExtraCapabilityInformation;
 import com.rekindled.embers.particle.GlowParticleOptions;
@@ -16,14 +18,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import com.rekindled.embers.compat.legacy.capabilities.Capability;
+import com.rekindled.embers.compat.legacy.capabilities.ForgeCapabilities;
+import com.rekindled.embers.compat.legacy.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.item.Lexicon;
@@ -68,20 +70,20 @@ public class LexiconReceptacleBlockEntity extends BlockEntity implements IExtraC
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
-        lexiconInventory.deserializeNBT(nbt.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
+        lexiconInventory.deserializeNBT(registries, nbt.getCompound("inventory"));
     }
     @Override
-    public void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(nbt);
-        nbt.put("inventory", lexiconInventory.serializeNBT());
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
+        nbt.put("inventory", lexiconInventory.serializeNBT(registries));
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag() {
-        CompoundTag nbt = super.getUpdateTag();
-        nbt.put("inventory", lexiconInventory.serializeNBT());
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag nbt = super.getUpdateTag(registries);
+        nbt.put("inventory", lexiconInventory.serializeNBT(registries));
         return nbt;
     }
 
@@ -125,8 +127,8 @@ public class LexiconReceptacleBlockEntity extends BlockEntity implements IExtraC
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
+    public void invalidateCapabilities() {
+        super.invalidateCapabilities();
         lazyLexicon.invalidate();
         lazyStorage.invalidate();
     }

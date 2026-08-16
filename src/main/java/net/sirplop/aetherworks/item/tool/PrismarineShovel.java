@@ -1,5 +1,6 @@
 package net.sirplop.aetherworks.item.tool;
 
+import net.sirplop.aetherworks.AWDataComponents;
 import com.rekindled.embers.particle.GlowParticleOptions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,10 +20,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.Lazy;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.api.item.IHudFocus;
 import net.sirplop.aetherworks.lib.AWFluidNode;
@@ -49,7 +50,7 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
 
     @Override
     public ItemStack getFocus(ItemStack stack) {
-        FluidHandlerItemStack fStack = new FluidHandlerItemStack(stack, capacity.get());
+        FluidHandlerItemStack fStack = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), stack, capacity.get());
         if (fStack.getFluid().isEmpty())
             return null;
         else {
@@ -63,7 +64,7 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
     @Override
     public ICapabilityProvider initCapabilities(@NotNull ItemStack stack, @Nullable CompoundTag nbt)
     {
-        return new FluidHandlerItemStack(stack, capacity.get());
+        return new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), stack, capacity.get());
     }
 
     @Override
@@ -71,14 +72,14 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
         ItemStack stack = Utils.getPlayerInteractionHandItem(player, handIn);
         if (!(level instanceof ServerLevel))
             return InteractionResultHolder.pass(stack);;
-        HitResult pick = player.pick(player.getBlockReach(), 0.0F, true);
+        HitResult pick = player.pick(player.blockInteractionRange(), 0.0F, true);
 
         BlockHitResult blockHitResult = (BlockHitResult) pick;
         if (!level.getBlockState(blockHitResult.getBlockPos()).isAir()) {
             if (level.isClientSide())
                 return InteractionResultHolder.pass(stack);
 
-            FluidHandlerItemStack fStack = new FluidHandlerItemStack(stack, capacity.get());
+            FluidHandlerItemStack fStack = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), stack, capacity.get());
 
             BlockPos pos = blockHitResult.getBlockPos();
             BlockPos posRel = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());
@@ -99,7 +100,7 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
 
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-        HitResult pick = context.getPlayer().pick(context.getPlayer().getBlockReach(), 0.0F, true);
+        HitResult pick = context.getPlayer().pick(context.getPlayer().blockInteractionRange(), 0.0F, true);
 
         BlockHitResult blockHitResult = (BlockHitResult) pick;
         if (!context.getLevel().getBlockState(blockHitResult.getBlockPos()).isAir()) {
@@ -150,7 +151,7 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
-        return net.minecraftforge.common.ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction);
+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility toolAction) {
+        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SHOVEL_ACTIONS.contains(toolAction);
     }
 }

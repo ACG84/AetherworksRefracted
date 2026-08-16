@@ -14,7 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.api.item.IHudFocus;
 import net.sirplop.aetherworks.datagen.AWBlockTags;
@@ -34,7 +34,7 @@ public class SlimeShovel extends AOEEmberDiggerItem implements IHudFocus {
 
     public void setFocus(ItemStack held, ItemStack focus, Player player) {
         MessageFocusedStack.setFocus(held, focus);
-        PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new MessageFocusedStack(held, focus));
+        PacketDistributor.sendToPlayer((ServerPlayer) player, new MessageFocusedStack(held, focus));
     }
 
     public ItemStack getFocus(ItemStack held) {
@@ -48,7 +48,7 @@ public class SlimeShovel extends AOEEmberDiggerItem implements IHudFocus {
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level worldIn, Player playerIn, @NotNull InteractionHand handIn) {
-        HitResult pick = playerIn.pick(playerIn.getBlockReach(), 0.0F, false);
+        HitResult pick = playerIn.pick(playerIn.blockInteractionRange(), 0.0F, false);
         // Hit something that wasn't a block.
         if (pick instanceof BlockHitResult blockHitResult && !worldIn.getBlockState(blockHitResult.getBlockPos()).isAir()) {
             return InteractionResultHolder.pass(Utils.getPlayerInteractionHandItem(playerIn, handIn));
@@ -58,7 +58,7 @@ public class SlimeShovel extends AOEEmberDiggerItem implements IHudFocus {
 
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-        HitResult pick = context.getPlayer().pick(context.getPlayer().getBlockReach(), 0.0F, false);
+        HitResult pick = context.getPlayer().pick(context.getPlayer().blockInteractionRange(), 0.0F, false);
         // Hit something that wasn't a block.
         if (pick instanceof BlockHitResult blockHitResult && !context.getLevel().getBlockState(blockHitResult.getBlockPos()).isAir()) {
             return InteractionResult.PASS;
@@ -117,7 +117,7 @@ public class SlimeShovel extends AOEEmberDiggerItem implements IHudFocus {
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
-        return net.minecraftforge.common.ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction);
+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility toolAction) {
+        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SHOVEL_ACTIONS.contains(toolAction);
     }
 }

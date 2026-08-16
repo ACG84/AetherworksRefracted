@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import net.minecraft.core.HolderLookup;
+
 import com.rekindled.embers.api.capabilities.EmbersCapabilities;
 import com.rekindled.embers.api.event.DialInformationEvent;
 import com.rekindled.embers.api.power.IEmberCapability;
@@ -27,12 +29,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import com.rekindled.embers.compat.legacy.capabilities.Capability;
+import com.rekindled.embers.compat.legacy.capabilities.ForgeCapabilities;
+import com.rekindled.embers.compat.legacy.LazyOptional;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.api.capabilities.IHeatCapability;
 import net.sirplop.aetherworks.capabilities.AWCapabilities;
@@ -301,8 +303,8 @@ public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtr
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag() {
-        CompoundTag nbt = super.getUpdateTag();
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag nbt = super.getUpdateTag(registries);
         emberCapability.writeToNBT(nbt);
         heatCapability.writeToNBT(nbt);
         return nbt;
@@ -314,10 +316,10 @@ public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtr
     }
 
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
-        emberCapability.deserializeNBT(nbt);
-        heatCapability.deserializeNBT(nbt);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
+        emberCapability.deserializeNBT(registries, nbt);
+        heatCapability.deserializeNBT(registries, nbt);
         if (nbt.contains("storedheat"))
             storedHeat = nbt.getDouble("storedheat");
         if (nbt.contains("danger"))
@@ -325,8 +327,8 @@ public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtr
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
         emberCapability.writeToNBT(nbt);
         heatCapability.writeToNBT(nbt);
         nbt.putDouble("storedheat", storedHeat);
@@ -347,8 +349,8 @@ public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtr
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
+    public void invalidateCapabilities() {
+        super.invalidateCapabilities();
         emberCapability.invalidate();
         heatCapability.invalidate();
     }

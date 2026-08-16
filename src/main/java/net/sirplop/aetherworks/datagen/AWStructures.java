@@ -17,14 +17,14 @@ import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
 import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.worldgen.MeteorStructure;
 
 import java.util.Map;
 
 public class AWStructures {
-    public static final ResourceKey<Structure> METEOR = ResourceKey.create(Registries.STRUCTURE, new ResourceLocation(Aetherworks.MODID, "meteor"));
+    public static final ResourceKey<Structure> METEOR = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "meteor"));
 
     public static void generateStructures(BootstapContext<Structure> bootstrap) {
         HolderGetter<Biome> biome = bootstrap.lookup(ForgeRegistries.Keys.BIOMES);
@@ -35,7 +35,7 @@ public class AWStructures {
     }
 
 
-    public static final ResourceKey<StructureSet> METEOR_SET = ResourceKey.create(Registries.STRUCTURE_SET, new ResourceLocation(Aetherworks.MODID, "meteor"));
+    public static final ResourceKey<StructureSet> METEOR_SET = ResourceKey.create(Registries.STRUCTURE_SET, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "meteor"));
 
     public static void generateSets(BootstapContext<StructureSet> bootstrap) {
         HolderGetter<Structure> structure = bootstrap.lookup(Registries.STRUCTURE);

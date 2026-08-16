@@ -23,7 +23,7 @@ public class AetherOreBlock extends DropExperienceBlock {
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         super.onPlace(state, level, pos, oldState, movedByPiston);
-        IAetheriometerCap capability = AetheriometerChunkCapability.getData(level.getChunkAt(pos)).orElseThrow(UnsupportedOperationException::new);
+        IAetheriometerCap capability = AetheriometerChunkCapability.getData(level.getChunkAt(pos));
 
         capability.adjustData(1);
     }
@@ -31,7 +31,7 @@ public class AetherOreBlock extends DropExperienceBlock {
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         super.onRemove(state, level, pos, newState, movedByPiston);
-        IAetheriometerCap capability = AetheriometerChunkCapability.getData(level.getChunkAt(pos)).orElseThrow(UnsupportedOperationException::new);
+        IAetheriometerCap capability = AetheriometerChunkCapability.getData(level.getChunkAt(pos));
         capability.adjustData(-1);
     }
 

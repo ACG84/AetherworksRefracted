@@ -1,49 +1,39 @@
 package net.sirplop.aetherworks.network;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.sirplop.aetherworks.AWDataComponents;
 import net.sirplop.aetherworks.Aetherworks;
 
-import java.util.function.Supplier;
+public record MessageFocusedStack(ItemStack held, ItemStack focus) implements CustomPacketPayload {
 
-public class MessageFocusedStack {
-    public static final String FOCUS_TAG = "aw.focus";
+    public static final CustomPacketPayload.Type<MessageFocusedStack> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "focused_stack"));
 
-    public ItemStack held;
-    public ItemStack focus;
-    public MessageFocusedStack(ItemStack held, ItemStack focus)
-    {
-        this.held = held;
-        this.focus = focus;
+    public static final StreamCodec<RegistryFriendlyByteBuf, MessageFocusedStack> STREAM_CODEC = StreamCodec.composite(
+            ItemStack.OPTIONAL_STREAM_CODEC, MessageFocusedStack::held,
+            ItemStack.OPTIONAL_STREAM_CODEC, MessageFocusedStack::focus,
+            MessageFocusedStack::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static void encode(MessageFocusedStack msg, FriendlyByteBuf buf)
-    {
-        buf.writeItem(msg.held);
-        buf.writeItem(msg.focus);
-    }
-
-    public static MessageFocusedStack decode(FriendlyByteBuf buf) {
-
-        return new MessageFocusedStack(buf.readItem(), buf.readItem());
-    }
-
-    public static void handle(MessageFocusedStack msg, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> {
-                setFocus(msg.held, msg.focus);
-            });
-        }
-        ctx.get().setPacketHandled(true);
+    public static void handle(MessageFocusedStack msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> setFocus(msg.held(), msg.focus()));
     }
 
     public static void setFocus(ItemStack held, ItemStack focus) {
         if(!held.isEmpty()) {
             if (focus.isEmpty())
-                held.getOrCreateTag().remove(FOCUS_TAG);
+                held.remove(AWDataComponents.FOCUS.get());
             else
-                held.getOrCreateTag().put(FOCUS_TAG, focus.serializeNBT());
+                held.set(AWDataComponents.FOCUS.get(), focus.copy());
         }
     }
 }

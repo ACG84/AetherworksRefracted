@@ -100,7 +100,7 @@ public class EffectDamageCrossbowQuartz extends EffectDamagePotion{
         }
         boolean hurt = entity.hurt(this.source.apply(projectileEntity), damage);
         if (hurt) {
-            entity.setSecondsOnFire(this.fire);
+            entity.igniteForSeconds(this.fire);
         }
 
         if (hurt && entity instanceof LivingEntity livingTarget) {

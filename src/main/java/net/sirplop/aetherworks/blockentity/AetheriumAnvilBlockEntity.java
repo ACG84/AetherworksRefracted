@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import net.minecraft.core.HolderLookup;
+
 import com.rekindled.embers.Embers;
 import com.rekindled.embers.api.tile.IExtraCapabilityInformation;
 import com.rekindled.embers.particle.GlowParticleOptions;
@@ -20,11 +22,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import com.rekindled.embers.compat.legacy.capabilities.Capability;
+import com.rekindled.embers.compat.legacy.capabilities.ForgeCapabilities;
+import com.rekindled.embers.compat.legacy.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.api.tile.ITopHammerable;
 import net.sirplop.aetherworks.recipe.AetheriumAnvilContext;
@@ -62,9 +64,9 @@ public class AetheriumAnvilBlockEntity extends BlockEntity implements IForgePart
     };
     public LazyOptional<IItemHandler> holder = LazyOptional.of(() -> inventory);
     @Override
-    public void load(CompoundTag nbt) {
-        super.load(nbt);
-        inventory.deserializeNBT(nbt.getCompound("inventory"));
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.loadAdditional(nbt, registries);
+        inventory.deserializeNBT(registries, nbt.getCompound("inventory"));
         progress = nbt.getInt("progress");
         hitTimeout = nbt.getInt(("hitTimeout"));
         heatFluctuationsMemory = nbt.getFloat("heatFluctuation");
@@ -72,9 +74,9 @@ public class AetheriumAnvilBlockEntity extends BlockEntity implements IForgePart
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(nbt);
-        nbt.put("inventory", inventory.serializeNBT());
+    public void saveAdditional(CompoundTag nbt, HolderLookup.Provider registries) {
+        super.saveAdditional(nbt, registries);
+        nbt.put("inventory", inventory.serializeNBT(registries));
         nbt.putInt("progress", progress);
         nbt.putInt("hitTimeout", hitTimeout);
         nbt.putFloat("heatFluctuation", heatFluctuationsMemory);
@@ -82,9 +84,9 @@ public class AetheriumAnvilBlockEntity extends BlockEntity implements IForgePart
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag nbt = super.getUpdateTag();
-        nbt.put("inventory", inventory.serializeNBT());
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag nbt = super.getUpdateTag(registries);
+        nbt.put("inventory", inventory.serializeNBT(registries));
         nbt.putInt("progress", progress);
         nbt.putInt("hitTimeout", hitTimeout);
         nbt.putFloat("heatFluctuation", heatFluctuationsMemory);
@@ -116,8 +118,8 @@ public class AetheriumAnvilBlockEntity extends BlockEntity implements IForgePart
     }
 
     @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
+    public void invalidateCapabilities() {
+        super.invalidateCapabilities();
         holder.invalidate();
     }
 

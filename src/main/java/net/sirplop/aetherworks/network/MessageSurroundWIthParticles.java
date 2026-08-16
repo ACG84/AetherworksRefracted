@@ -4,70 +4,60 @@ import com.rekindled.embers.particle.GlowParticleOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.sirplop.aetherworks.Aetherworks;
 import org.joml.Vector3f;
 
-import java.util.function.Supplier;
+public record MessageSurroundWIthParticles(BlockPos pos, int numberOfParticles, Vector3f color) implements CustomPacketPayload {
 
-public class MessageSurroundWIthParticles {
-    private final int numberOfParticles;
-    private final BlockPos pos;
-    private final Vector3f color;
+    public static final CustomPacketPayload.Type<MessageSurroundWIthParticles> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "surround_with_particles"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, MessageSurroundWIthParticles> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, MessageSurroundWIthParticles::pos,
+            ByteBufCodecs.INT, MessageSurroundWIthParticles::numberOfParticles,
+            ByteBufCodecs.VECTOR3F, MessageSurroundWIthParticles::color,
+            MessageSurroundWIthParticles::new);
+
+    public MessageSurroundWIthParticles(BlockPos pos, int numberOfParticles, float r, float g, float b) {
+        this(pos, numberOfParticles, new Vector3f(r, g, b));
+    }
 
     public BlockPos getPos() {
         return pos;
     }
+
     public int getNumberOfParticles() {
         return numberOfParticles;
     }
 
-    public MessageSurroundWIthParticles(BlockPos pos, int numberOfParticles, Vector3f color)
-    {
-        this.numberOfParticles = numberOfParticles;
-        this.pos = pos;
-        this.color = color;
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public MessageSurroundWIthParticles(BlockPos pos, int numberOfParticles, float r, float g, float b)
-    {
-        this.numberOfParticles = numberOfParticles;
-        this.pos = pos;
-        this.color = new Vector3f(r, g, b);
-    }
-
-    public static void encode(MessageSurroundWIthParticles msg, FriendlyByteBuf buf) {
-        buf.writeBlockPos(msg.pos);
-        buf.writeInt(msg.numberOfParticles);
-        buf.writeVector3f(msg.color);
-    }
-
-    public static MessageSurroundWIthParticles decode(FriendlyByteBuf buf) {
-        return new MessageSurroundWIthParticles(buf.readBlockPos(), buf.readInt(), buf.readVector3f());
-    }
-    public static void handle(MessageSurroundWIthParticles msg, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> spawnParticles(msg));
-        }
-        ctx.get().setPacketHandled(true);
+    public static void handle(MessageSurroundWIthParticles msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> spawnParticles(msg));
     }
 
     @OnlyIn(Dist.CLIENT)
     public static void spawnParticles(MessageSurroundWIthParticles msg) {
         Level level = Minecraft.getInstance().level;
         assert level != null;
-        BlockPos pos = msg.pos;
-        GlowParticleOptions particle = new GlowParticleOptions(msg.color, 1.0F, 50);
+        BlockPos pos = msg.pos();
+        GlowParticleOptions particle = new GlowParticleOptions(msg.color(), 1.0F, 50);
         for(Direction direction : Direction.values()) {
             BlockPos blockpos = pos.relative(direction);
             if (!level.getBlockState(blockpos).isSolidRender(level, blockpos)) {
-                for (int i = 0; i < msg.numberOfParticles; i++) {
+                for (int i = 0; i < msg.numberOfParticles(); i++) {
                     Direction.Axis direction$axis = direction.getAxis();
                     double d1 = direction$axis == Direction.Axis.X ? 0.5D + 0.5625D * (double) direction.getStepX() : level.random.nextFloat();
                     double d2 = direction$axis == Direction.Axis.Y ? 0.5D + 0.5625D * (double) direction.getStepY() : level.random.nextFloat();

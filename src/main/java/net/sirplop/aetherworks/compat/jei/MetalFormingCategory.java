@@ -28,7 +28,7 @@ public class MetalFormingCategory implements IRecipeCategory<IMetalFormerRecipe>
     private final IDrawable background;
     private final IDrawable icon;
     public static Component title = Component.translatable(Aetherworks.MODID + ".jei.recipe.metal_forming");
-    public static ResourceLocation texture = new ResourceLocation(Aetherworks.MODID, "textures/gui/jei_metal_former.png");
+    public static ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/jei_metal_former.png");
 
     public MetalFormingCategory(IGuiHelper helper) {
         background = helper.createDrawable(texture, 0, 0, 87, 75);

@@ -3,10 +3,11 @@ package net.sirplop.aetherworks.datagen;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.SoundDefinition;
-import net.minecraftforge.common.data.SoundDefinitionsProvider;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.SoundDefinition;
+import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 
@@ -19,13 +20,13 @@ public class AWSounds extends SoundDefinitionsProvider {
     public static void init() {}
 
     //Sounds
-    public static final RegistryObject<SoundEvent> FORGE_GROAN = registerSoundEvent("block.forge_groan");
-    public static final RegistryObject<SoundEvent> AETHER_SHIELD_RAISE_1 = registerSoundEvent("item.aethershield.raise1");
-    public static final RegistryObject<SoundEvent> AETHER_SHIELD_RAISE_2 = registerSoundEvent("item.aethershield.raise2");
-    public static final RegistryObject<SoundEvent> AETHER_SHIELD_LOWER = registerSoundEvent("item.aethershield.lower");
+    public static final DeferredHolder<SoundEvent, SoundEvent> FORGE_GROAN = registerSoundEvent("block.forge_groan");
+    public static final DeferredHolder<SoundEvent, SoundEvent> AETHER_SHIELD_RAISE_1 = registerSoundEvent("item.aethershield.raise1");
+    public static final DeferredHolder<SoundEvent, SoundEvent> AETHER_SHIELD_RAISE_2 = registerSoundEvent("item.aethershield.raise2");
+    public static final DeferredHolder<SoundEvent, SoundEvent> AETHER_SHIELD_LOWER = registerSoundEvent("item.aethershield.lower");
 
-    public static RegistryObject<SoundEvent> registerSoundEvent(String name) {
-        return AWRegistry.SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Aetherworks.MODID, name)));
+    public static DeferredHolder<SoundEvent, SoundEvent> registerSoundEvent(String name) {
+        return AWRegistry.SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, name)));
     }
     @Override
     public void registerSounds() {
@@ -40,13 +41,13 @@ public class AWSounds extends SoundDefinitionsProvider {
     }
 
 
-    public void withSubtitle(RegistryObject<SoundEvent> soundEvent, SoundDefinition definition) {
+    public void withSubtitle(DeferredHolder<SoundEvent, SoundEvent> soundEvent, SoundDefinition definition) {
         add(soundEvent, definition.subtitle("subtitles." + Aetherworks.MODID + "." + soundEvent.getId().getPath()));
     }
-    public void withSubtitle(RegistryObject<SoundEvent> soundEvent, SoundDefinition definition, String overridePath) {
+    public void withSubtitle(DeferredHolder<SoundEvent, SoundEvent> soundEvent, SoundDefinition definition, String overridePath) {
         add(soundEvent, definition.subtitle("subtitles." + Aetherworks.MODID + "." + overridePath));
     }
     public ResourceLocation resource(String path) {
-        return new ResourceLocation(Aetherworks.MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, path);
     }
 }

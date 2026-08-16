@@ -6,17 +6,18 @@ import com.rekindled.embers.research.ResearchManager;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.item.AetherEmberBulbItem;
 import net.sirplop.aetherworks.research.AWResearch;
 
 public class CuriosCompat {
 
-    public static final RegistryObject<Item> AETHER_EMBER_BULB = AWRegistry.ITEMS.register("aether_ember_bulb", () -> new AetherEmberBulbItem(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<Item> AETHER_EMBER_BULB = AWRegistry.ITEMS.register("aether_ember_bulb", () -> new AetherEmberBulbItem(new Item.Properties().stacksTo(1)));
 
     public static void init() {}
 

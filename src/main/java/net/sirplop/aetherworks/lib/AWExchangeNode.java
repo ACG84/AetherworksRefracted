@@ -13,8 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.network.MessageSurroundWIthParticles;
 import net.sirplop.aetherworks.network.MessageToggleItem;
@@ -80,13 +80,13 @@ public class AWExchangeNode extends AWHarvestNode
             }
         }
         if (particle != null) {
-            PacketHandler.INSTANCE.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(),
-                    16, level.dimension())), new MessageSurroundWIthParticles(pos, 24, particle.getColor()));
+            PacketDistributor.sendToPlayersNear((ServerLevel) level, null, pos.getX(), pos.getY(), pos.getZ(), 16,
+                    new MessageSurroundWIthParticles(pos, 24, particle.getColor()));
         }
 
         is.shrink(1);
         if (!harvester.isCreative())
-            this.harvester.getMainHandItem().hurt(1, RandomSource.create(), (ServerPlayer) harvester);
+            this.harvester.getMainHandItem().hurtAndBreak(1, (ServerLevel) level, (ServerPlayer) harvester, item -> {});
 
         if (empty)
         {

@@ -5,47 +5,40 @@ import com.mojang.math.Axis;
 import com.rekindled.embers.particle.GlowParticleOptions;
 import com.rekindled.embers.util.Misc;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.sirplop.aetherworks.Aetherworks;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.util.function.Supplier;
+public record MessageShieldParticle(Vector3f point, float rotX, float rotY, byte numberOfParticles,
+                                    int packedColor) implements CustomPacketPayload {
 
-public class MessageShieldParticle {
-    private final Vector3f point;
-    private final float rotX;
-    private final float rotY;
-    private final byte numberOfParticles;
-    private final int packedColor;
+    public static final CustomPacketPayload.Type<MessageShieldParticle> TYPE =
+            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "shield_particle"));
 
-    public MessageShieldParticle(Vector3f point, float rotX, float rotY, byte numberOfParticles, int packedColor) {
-        this.numberOfParticles = numberOfParticles;
-        this.packedColor = packedColor;
-        this.point = point;
-        this.rotX = rotX;
-        this.rotY = rotY;
+    public static final StreamCodec<RegistryFriendlyByteBuf, MessageShieldParticle> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VECTOR3F, MessageShieldParticle::point,
+            ByteBufCodecs.FLOAT, MessageShieldParticle::rotX,
+            ByteBufCodecs.FLOAT, MessageShieldParticle::rotY,
+            ByteBufCodecs.BYTE, MessageShieldParticle::numberOfParticles,
+            ByteBufCodecs.INT, MessageShieldParticle::packedColor,
+            MessageShieldParticle::new);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public static void encode(MessageShieldParticle msg, FriendlyByteBuf buf) {
-        buf.writeVector3f(msg.point);
-        buf.writeFloat(msg.rotX);
-        buf.writeFloat(msg.rotY);
-        buf.writeByte(msg.numberOfParticles);
-        buf.writeInt(msg.packedColor);
-    }
-
-    public static MessageShieldParticle decode(FriendlyByteBuf buf) {
-        return new MessageShieldParticle(buf.readVector3f(), buf.readFloat(), buf.readFloat(), buf.readByte(), buf.readInt());
-    }
-    public static void handle(MessageShieldParticle msg, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> spawnParticles(msg));
-        }
-        ctx.get().setPacketHandled(true);
+    public static void handle(MessageShieldParticle msg, IPayloadContext ctx) {
+        ctx.enqueueWork(() -> spawnParticles(msg));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -55,18 +48,18 @@ public class MessageShieldParticle {
 
 
         PoseStack poseStack = new PoseStack();
-        poseStack.translate(msg.point.x, msg.point.y, msg.point.z);
+        poseStack.translate(msg.point().x, msg.point().y, msg.point().z);
         poseStack.mulPose(Axis.ZP.rotationDegrees(0));
-        poseStack.mulPose(Axis.YP.rotation((float)-Math.toRadians(msg.rotY)));
-        poseStack.mulPose(Axis.XP.rotation((float)Math.toRadians(msg.rotX)));
+        poseStack.mulPose(Axis.YP.rotation((float)-Math.toRadians(msg.rotY())));
+        poseStack.mulPose(Axis.XP.rotation((float)Math.toRadians(msg.rotX())));
         Matrix4f matrix4f = poseStack.last().pose();
 
-        Vector3f color = Misc.colorFromInt(msg.packedColor);
+        Vector3f color = Misc.colorFromInt(msg.packedColor());
         GlowParticleOptions glow = new GlowParticleOptions(color, 1.25f, 10);
-        double rotInc = (Math.PI * 2) / (double)msg.numberOfParticles;
+        double rotInc = (Math.PI * 2) / (double)msg.numberOfParticles();
         double randStart = level.random.nextFloat() * (0.087);
 
-        for (int i = 0; i < msg.numberOfParticles; i++) {
+        for (int i = 0; i < msg.numberOfParticles(); i++) {
             float x = (float)Math.cos((rotInc * i) + randStart);
             float y = (float)Math.sin((rotInc * i) + randStart);
 

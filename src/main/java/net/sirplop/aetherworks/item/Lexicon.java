@@ -28,7 +28,7 @@ public class Lexicon extends Item {
         return 0;
     }
     public static void setStoredItem(ItemStack lexicon, ItemStack toSet, int count) {
-        lexicon.getOrCreateTag().put(LEXICON_ITEM, toSet.serializeNBT());
+        lexicon.getOrCreateTag().put(LEXICON_ITEM, toSet.serializeNBT(registries));
         lexicon.getOrCreateTag().putInt(LEXICON_AMOUNT, count);
     }
     public static int setStoredAmount(ItemStack lexicon, int count) {

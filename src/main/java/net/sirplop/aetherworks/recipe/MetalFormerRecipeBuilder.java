@@ -12,8 +12,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.sirplop.aetherworks.AWRegistry;
 
 import java.util.function.Consumer;
@@ -53,17 +53,17 @@ public class MetalFormerRecipeBuilder {
     }
 
     public MetalFormerRecipeBuilder domain(String domain) {
-        this.id = new ResourceLocation(domain, this.id.getPath());
+        this.id = ResourceLocation.fromNamespaceAndPath(domain, this.id.getPath());
         return this;
     }
 
     public MetalFormerRecipeBuilder id(String domain, String id) {
-        this.id = new ResourceLocation(domain, id);
+        this.id = ResourceLocation.fromNamespaceAndPath(domain, id);
         return this;
     }
 
     public MetalFormerRecipeBuilder folder(String folder) {
-        this.id = new ResourceLocation(id.getNamespace(), folder + "/" + id.getPath());
+        this.id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), folder + "/" + id.getPath());
         return this;
     }
 

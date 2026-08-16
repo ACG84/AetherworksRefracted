@@ -127,7 +127,7 @@ public class AWHarvestNode {
                 Direction.getRandom(level.random), (state) -> state.getBlock().equals(baseState.getBlock()) || (allowSimilarBlocks && AWConfig.getSameBlocks(baseState.getBlock()).contains(state.getBlock())), false, true).isEmpty();
         if (val) {
             if (!harvester.isCreative() && level.random.nextFloat() <= damageChance)
-                harvester.getMainHandItem().hurt(1, level.random, (ServerPlayer) harvester);
+                harvester.getMainHandItem().hurtAndBreak(1, (ServerLevel) harvester.level(), (ServerPlayer) harvester, item -> {});
             if (particle != null) {
                 ((ServerLevel)level).sendParticles(particle,
                         pos.getX() + 0.5f,

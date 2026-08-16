@@ -18,9 +18,9 @@ import java.util.Random;
 
 public class RenderPrism implements BlockEntityRenderer<PrismBlockEntity>
 {
-    public static final ResourceLocation LOCATION_PRISM_OVERLAY = new ResourceLocation(Aetherworks.MODID, "textures/block/prism_active_overlay.png");
-    public static final ResourceLocation LOCATION_RUNES = new ResourceLocation(Aetherworks.MODID, "textures/block/prism_runes.png");
-    public static final ResourceLocation LOCATION_RUNE_BACKS = new ResourceLocation(Aetherworks.MODID, "textures/block/prism_runes_backs.png");
+    public static final ResourceLocation LOCATION_PRISM_OVERLAY = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/block/prism_active_overlay.png");
+    public static final ResourceLocation LOCATION_RUNES = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/block/prism_runes.png");
+    public static final ResourceLocation LOCATION_RUNE_BACKS = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/block/prism_runes_backs.png");
 
     public static final Random RANDOM = new Random();
     public static final float[] COLOR = {1, 1, 1, 1};

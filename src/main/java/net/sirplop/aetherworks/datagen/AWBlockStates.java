@@ -8,11 +8,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraftforge.client.model.generators.*;
-import net.minecraftforge.client.model.generators.ModelFile.ExistingModelFile;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.client.model.generators.*;
+import net.neoforged.neoforge.client.model.generators.ModelFile.ExistingModelFile;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.lib.OctFacingHorizontalProperty;
@@ -97,8 +98,8 @@ public class AWBlockStates extends BlockStateProvider {
         itemWithAdjustment(forgeVent, ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, new Vector3f(0, -90, 25), new Vector3f( -1.13f, 3.2f, 1.13f), 0.55f);
         itemWithAdjustment(forgeVent, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, ZERO, new Vector3f(TRANS_TPR.x, TRANS_TPR.y, TRANS_TPR.z + 4), SCALE_TPR + 0.1f);
 
-        ExistingModelFile forgeBottom = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, "aether_forge_center"));
-        ExistingModelFile forgeTop = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, "aether_forge_top"));
+        ExistingModelFile forgeBottom = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether_forge_center"));
+        ExistingModelFile forgeTop = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether_forge_top"));
 
         getVariantBuilder(AWRegistry.AETHER_FORGE.get()).forAllStates(state -> {
             DoubleBlockHalf half = state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF);
@@ -107,11 +108,11 @@ public class AWBlockStates extends BlockStateProvider {
                     .modelFile(half == DoubleBlockHalf.LOWER ? forgeBottom : forgeTop)
                     .build();
         });
-        simpleBlockItem(AWRegistry.AETHER_FORGE.get(), models().cubeAll("crate_aether_forge", new ResourceLocation(Aetherworks.MODID, "block/crate_aether_forge")));
+        simpleBlockItem(AWRegistry.AETHER_FORGE.get(), models().cubeAll("crate_aether_forge", ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/crate_aether_forge")));
 
-        ExistingModelFile forgeEdgeModel = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, "aether_forge_side"));
-        ExistingModelFile forgeCornerModel = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, "aether_forge_corner"));
-        ExistingModelFile forgeConnectorModel = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, "aether_forge_connector"));
+        ExistingModelFile forgeEdgeModel = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether_forge_side"));
+        ExistingModelFile forgeCornerModel = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether_forge_corner"));
+        ExistingModelFile forgeConnectorModel = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether_forge_connector"));
 
         getMultipartBuilder(AWRegistry.AETHER_FORGE_EDGE.get())
                 .part().modelFile(forgeEdgeModel).rotationY(0).addModel()
@@ -142,22 +143,22 @@ public class AWBlockStates extends BlockStateProvider {
 
         dial(AWRegistry.HEAT_DIAL, "heat_dial");
     }
-    public void blockWithItem(RegistryObject<? extends Block> registryObject) {
+    public void blockWithItem(DeferredHolder<Block, ? extends Block> registryObject) {
         //block model
         simpleBlock(registryObject.get());
         //itemblock model
         simpleBlockItem(registryObject.get(), cubeAll(registryObject.get()));
     }
-    public void blockWithItem(RegistryObject<? extends Block> registryObject, String model) {
-        ModelFile.ExistingModelFile modelFile = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, model));
+    public void blockWithItem(DeferredHolder<Block, ? extends Block> registryObject, String model) {
+        ModelFile.ExistingModelFile modelFile = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, model));
         //block model
         simpleBlock(registryObject.get(), modelFile);
         //itemblock model
         simpleBlockItem(registryObject.get(), modelFile);
     }
-    public void blockWithRenderType(RegistryObject<? extends Block> registryObject, String texture, String renderType) {
+    public void blockWithRenderType(DeferredHolder<Block, ? extends Block> registryObject, String texture, String renderType) {
         ModelFile modelFile = models().cubeAll(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(registryObject.get())).getPath(),
-                new ResourceLocation(Aetherworks.MODID, "block/" + texture))
+                ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + texture))
                 .renderType(renderType);
         //block model
         simpleBlock(registryObject.get(), modelFile);
@@ -165,16 +166,16 @@ public class AWBlockStates extends BlockStateProvider {
         simpleBlockItem(registryObject.get(), modelFile);
     }
 
-    public void blockWithItemTexture(RegistryObject<? extends Block> registryObject, String texture) {
+    public void blockWithItemTexture(DeferredHolder<Block, ? extends Block> registryObject, String texture) {
         ModelFile modelFile = models().cubeAll(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(registryObject.get())).getPath(),
-                new ResourceLocation(Aetherworks.MODID, "block/" + texture));
+                ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + texture));
         //block model
         simpleBlock(registryObject.get(), modelFile);
         //itemblock model
         simpleBlockItem(registryObject.get(), modelFile);
     }
-    public void horizontalblockWithItem(RegistryObject<? extends Block> registryObject, String model) {
-        ModelFile.ExistingModelFile modelFile = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, model));
+    public void horizontalblockWithItem(DeferredHolder<Block, ? extends Block> registryObject, String model) {
+        ModelFile.ExistingModelFile modelFile = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, model));
         //block model
         horizontalBlock(registryObject.get(), modelFile);
         //itemblock model
@@ -197,27 +198,27 @@ public class AWBlockStates extends BlockStateProvider {
         }
     }
 
-    public void dial(RegistryObject<? extends Block> registryObject, String texture) {
+    public void dial(DeferredHolder<Block, ? extends Block> registryObject, String texture) {
         //block model
         ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(registryObject.get());
-        ModelFile model = models().withExistingParent(loc.toString(), new ResourceLocation(Aetherworks.MODID, "dial"))
-                .texture("dial", new ResourceLocation(Aetherworks.MODID, "block/" + texture))
-                .texture("particle", new ResourceLocation(Aetherworks.MODID, "block/" + texture));
+        ModelFile model = models().withExistingParent(loc.toString(), ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "dial"))
+                .texture("dial", ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + texture))
+                .texture("particle", ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + texture));
         directionalBlock(registryObject.get(), model);
 
         //item model
         flatItem(registryObject, texture);
     }
 
-    public void flatItem(RegistryObject<? extends Block> registryObject, String texture) {
+    public void flatItem(DeferredHolder<Block, ? extends Block> registryObject, String texture) {
         ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(registryObject.get());
         itemModels().getBuilder(loc.toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", new ResourceLocation(loc.getNamespace(), "item/" + texture));
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(loc.getNamespace(), "item/" + texture));
     }
 
-    public void fluid(RegistryObject<? extends Block> fluid, String name) {
-        simpleBlock(fluid.get(), models().cubeAll(name, new ResourceLocation(Aetherworks.MODID, ModelProvider.BLOCK_FOLDER + "/fluid/" + name + "_still")));
+    public void fluid(DeferredHolder<Block, ? extends Block> fluid, String name) {
+        simpleBlock(fluid.get(), models().cubeAll(name, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, ModelProvider.BLOCK_FOLDER + "/fluid/" + name + "_still")));
     }
 
     public static void itemWithAdjustment(ItemModelBuilder builder, ItemDisplayContext ctx,
@@ -228,14 +229,14 @@ public class AWBlockStates extends BlockStateProvider {
                 .scale(scale)
                 .end().end();
     }
-    public ItemModelBuilder simpleBlockAndItemAdjust(RegistryObject<? extends Block> registryObject, String model) {
-        ExistingModelFile file = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, model));
+    public ItemModelBuilder simpleBlockAndItemAdjust(DeferredHolder<Block, ? extends Block> registryObject, String model) {
+        ExistingModelFile file = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, model));
         simpleBlock(registryObject.get(), file);
         return itemModels().getBuilder(ForgeRegistries.BLOCKS.getKey(registryObject.get())
                 .getPath()).parent(file);
     }
-    public ItemModelBuilder horzBlockAndItemAdjust(RegistryObject<? extends Block> registryObject, String model) {
-        ExistingModelFile file = models().getExistingFile(new ResourceLocation(Aetherworks.MODID, model));
+    public ItemModelBuilder horzBlockAndItemAdjust(DeferredHolder<Block, ? extends Block> registryObject, String model) {
+        ExistingModelFile file = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, model));
         horizontalBlock(registryObject.get(), file);
         return itemModels().getBuilder(ForgeRegistries.BLOCKS.getKey(registryObject.get())
                 .getPath()).parent(file);

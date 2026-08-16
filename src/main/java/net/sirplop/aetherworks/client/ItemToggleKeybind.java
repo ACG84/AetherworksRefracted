@@ -1,7 +1,7 @@
 package net.sirplop.aetherworks.client;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.network.MessageToggleItem;
 

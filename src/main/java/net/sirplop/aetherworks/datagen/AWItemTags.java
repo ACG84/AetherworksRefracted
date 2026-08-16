@@ -10,8 +10,8 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.compat.curios.CuriosCompat;
@@ -24,12 +24,12 @@ public class AWItemTags extends ItemTagsProvider {
     public AWItemTags(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider, CompletableFuture<TagLookup<Block>> pBlockTags, @Nullable ExistingFileHelper existingFileHelper) {
         super(pOutput, pLookupProvider, pBlockTags, Aetherworks.MODID, existingFileHelper);
     }
-    public static final TagKey<Item> RAW_AETHERIUM = ItemTags.create(new ResourceLocation("forge", "raw_materials/aetherium"));
-    public static final TagKey<Item> BLOCK_AETHERIUM = ItemTags.create(new ResourceLocation("forge", "storage_blocks/aetherium"));
-    public static final TagKey<Item> BLOCK_SHARDS = ItemTags.create(new ResourceLocation("forge", "storage_blocks/raw_aetherium"));
-    public static final TagKey<Item> AETHERIUM_INGOT = ItemTags.create(new ResourceLocation("forge", "ingots/aetherium"));
-    public static final TagKey<Item> AETHERIUM_PLATE = ItemTags.create(new ResourceLocation("forge", "plates/aetherium"));
-    public static final TagKey<Item> AETHERIUM_ASPECTUS = ItemTags.create(new ResourceLocation(Embers.MODID, "aspectus/aetherium"));
+    public static final TagKey<Item> RAW_AETHERIUM = ItemTags.create(ResourceLocation.fromNamespaceAndPath("forge", "raw_materials/aetherium"));
+    public static final TagKey<Item> BLOCK_AETHERIUM = ItemTags.create(ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/aetherium"));
+    public static final TagKey<Item> BLOCK_SHARDS = ItemTags.create(ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/raw_aetherium"));
+    public static final TagKey<Item> AETHERIUM_INGOT = ItemTags.create(ResourceLocation.fromNamespaceAndPath("forge", "ingots/aetherium"));
+    public static final TagKey<Item> AETHERIUM_PLATE = ItemTags.create(ResourceLocation.fromNamespaceAndPath("forge", "plates/aetherium"));
+    public static final TagKey<Item> AETHERIUM_ASPECTUS = ItemTags.create(ResourceLocation.fromNamespaceAndPath(Embers.MODID, "aspectus/aetherium"));
 
 
     @Override

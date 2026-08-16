@@ -12,10 +12,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.datagen.AWBiomeTags;
@@ -28,7 +28,7 @@ import java.util.List;
 public class TuningCylinderAugment extends AugmentBase {
     public TuningCylinderAugment(ResourceLocation name) {
         super(name, 5.0);
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent

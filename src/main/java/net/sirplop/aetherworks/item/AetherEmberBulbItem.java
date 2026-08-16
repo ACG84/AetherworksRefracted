@@ -6,7 +6,7 @@ import com.rekindled.embers.item.EmberStorageItem;
 import com.rekindled.embers.item.IEmbersCurioItem;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import com.rekindled.embers.compat.legacy.capabilities.ForgeCapabilities;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.util.MoonlightRepair;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 

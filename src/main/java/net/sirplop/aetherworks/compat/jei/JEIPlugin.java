@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.recipe.IAetheriumAnvilRecipe;
@@ -31,7 +31,7 @@ import java.util.List;
 @JeiPlugin
 public class JEIPlugin  implements IModPlugin {
 
-    public static ResourceLocation pluginID = new ResourceLocation(Aetherworks.MODID, "jei_plugin");
+    public static ResourceLocation pluginID = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "jei_plugin");
 
     public static final RecipeType<IMetalFormerRecipe> METAL_FORMING = RecipeType.create(Aetherworks.MODID, "metal_forming", IMetalFormerRecipe.class);
     public static final RecipeType<IAetheriumAnvilRecipe> AETHERIUM_ANVIL = RecipeType.create(Aetherworks.MODID, "aetherium_anvil", IAetheriumAnvilRecipe.class);

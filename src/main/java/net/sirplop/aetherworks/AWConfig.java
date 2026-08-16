@@ -13,15 +13,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ForgeBiomeTagsProvider;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryManager;
-import net.minecraftforge.registries.tags.ITag;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.ForgeBiomeTagsProvider;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.registries.RegistryManager;
+import net.neoforged.neoforge.registries.tags.ITag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -63,7 +63,7 @@ public class AWConfig {
         if (MOONLIT_DIMENSIONS_SET == null) {
             MOONLIT_DIMENSIONS_SET = new HashSet<>();
             for (String key : AWConfig.MOONLIT_DIMENSIONS.get()) {
-                ResourceLocation location = new ResourceLocation(key);
+                ResourceLocation location = ResourceLocation.parse(key);
                 ResourceKey<DimensionType>  dim = ResourceKey.create(Registries.DIMENSION_TYPE, location);
                 MOONLIT_DIMENSIONS_SET.add(dim);
             }
@@ -74,7 +74,7 @@ public class AWConfig {
         if (DEEP_GEODE_DIMENSIONS_SET == null) {
             DEEP_GEODE_DIMENSIONS_SET = new HashSet<>();
             for (String key : AWConfig.AUGMENT_TUNING_CYLINDER_BIOME_DEEP_DIMENSIONS.get()) {
-                ResourceLocation location = new ResourceLocation(key);
+                ResourceLocation location = ResourceLocation.parse(key);
                 ResourceKey<DimensionType>  dim = ResourceKey.create(Registries.DIMENSION_TYPE, location);
                 DEEP_GEODE_DIMENSIONS_SET.add(dim);
             }
@@ -87,7 +87,7 @@ public class AWConfig {
 
         for (String val : list.get()) {
             if (val.charAt(0) == '#') { //it's a tag, get it!
-                ResourceLocation location = new ResourceLocation(val.substring(1));
+                ResourceLocation location = ResourceLocation.parse(val.substring(1));
                 ITag<Block> tag = getBlockTagFrom(location);
                 if (tag != null) {
                     for (Block block : tag) {
@@ -95,7 +95,7 @@ public class AWConfig {
                     }
                 }
             } else {
-                ResourceLocation location = new ResourceLocation(val);
+                ResourceLocation location = ResourceLocation.parse(val);
                 if (ForgeRegistries.BLOCKS.containsKey(location)) {
                     ret.add(ForgeRegistries.BLOCKS.getValue(location));
                 }
@@ -108,8 +108,8 @@ public class AWConfig {
         Map<MobEffect, MobEffect> ret = new HashMap<>();
         for (String val : POTION_GEM_BANNED.get()) {
             String[] split = val.split("\\|");
-            ResourceLocation left = new ResourceLocation(split[0]);
-            ResourceLocation right = new ResourceLocation(split[1]);
+            ResourceLocation left = ResourceLocation.parse(split[0]);
+            ResourceLocation right = ResourceLocation.parse(split[1]);
             if (ForgeRegistries.MOB_EFFECTS.containsKey(left)) {
                 if (ForgeRegistries.MOB_EFFECTS.containsKey(right)) {
                     ret.put(ForgeRegistries.MOB_EFFECTS.getValue(left), ForgeRegistries.MOB_EFFECTS.getValue(right));
@@ -137,7 +137,7 @@ public class AWConfig {
                 String[] split = val.split("\\|");
                 Set<Block> blocks = new HashSet<>();
                 for (String b : split) {
-                    ResourceLocation loc = new ResourceLocation(b);
+                    ResourceLocation loc = ResourceLocation.parse(b);
                     if (ForgeRegistries.BLOCKS.containsKey(loc))
                         blocks.add(ForgeRegistries.BLOCKS.getValue(loc));
                 }
@@ -157,14 +157,14 @@ public class AWConfig {
         return Objects.requireNonNullElseGet(set, HashSet::new);
     }
 
-    public static void register() {
+    public static void register(ModContainer modContainer) {
         //registerClientConfigs();
-        registerCommonConfigs();
+        registerCommonConfigs(modContainer);
         //registerServerConfigs();
     }
 
-    private static void registerCommonConfigs() {
-        ForgeConfigSpec.Builder COMMON = new ForgeConfigSpec.Builder();
+    private static void registerCommonConfigs(ModContainer modContainer) {
+        ModConfigSpec.Builder COMMON = new ModConfigSpec.Builder();
 
         COMMON.comment("Settings for tool parameters").push("tool");
 
@@ -232,15 +232,16 @@ public class AWConfig {
 
         COMMON.pop();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, COMMON.build());
+        //1.21 registers configs against the mod's own container instead of the global loading context.
+        modContainer.registerConfig(ModConfig.Type.COMMON, COMMON.build());
     }
 
     private static boolean validatePotions(final Object obj)
     {
         if (obj instanceof final String potions) {
             String[] split = potions.split("\\|");
-            ResourceLocation left = new ResourceLocation(split[0]);
-            ResourceLocation right = new ResourceLocation(split[1]);
+            ResourceLocation left = ResourceLocation.parse(split[0]);
+            ResourceLocation right = ResourceLocation.parse(split[1]);
             return ForgeRegistries.MOB_EFFECTS.containsKey(left) && ForgeRegistries.MOB_EFFECTS.containsKey(right);
         }
         return false;

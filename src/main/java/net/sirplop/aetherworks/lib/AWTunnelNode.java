@@ -162,7 +162,7 @@ public class AWTunnelNode extends AWHarvestNode {
                 Direction.getRandom(level.random), (state) -> true, false, true).isEmpty();
         if (val) {
             if (!harvester.isCreative())
-                harvester.getMainHandItem().hurt(1, level.random, (ServerPlayer) harvester);
+                harvester.getMainHandItem().hurtAndBreak(1, (ServerLevel) harvester.level(), (ServerPlayer) harvester, item -> {});
             if (particle != null) {
                 ((ServerLevel)level).sendParticles(particle,
                         pos.getX() + 0.5f,

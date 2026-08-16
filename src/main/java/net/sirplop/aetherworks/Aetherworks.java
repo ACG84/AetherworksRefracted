@@ -11,22 +11,26 @@ import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.sirplop.aetherworks.blockentity.render.*;
+import net.sirplop.aetherworks.capabilities.AWAttachments;
+import net.sirplop.aetherworks.capabilities.AWCapabilities;
 import net.sirplop.aetherworks.client.AWClientEvents;
 import net.sirplop.aetherworks.client.AWKeybinds;
 import net.sirplop.aetherworks.client.AetherShieldReflectHandler;
@@ -42,14 +46,14 @@ import net.sirplop.aetherworks.model.AetherCrownModel;
 import net.sirplop.aetherworks.network.PacketHandler;
 import net.sirplop.aetherworks.research.AWResearch;
 import org.slf4j.Logger;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-// The value here should match an entry in the META-INF/mods.toml file
+// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Aetherworks.MODID)
 public class Aetherworks
 {
@@ -58,23 +62,26 @@ public class Aetherworks
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public Aetherworks()
+    // NeoForge hands the mod bus and container to the constructor rather than exposing them statically.
+    public Aetherworks(IEventBus modEventBus, ModContainer modContainer)
     {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::gatherData);
+        modEventBus.addListener(PacketHandler::registerPayloads);
+        modEventBus.addListener(AWCapabilities::registerCapabilities);
 
         AWRegistry.BLOCKS.register(modEventBus);
         AWRegistry.ITEMS.register(modEventBus);
+        AWDataComponents.COMPONENTS.register(modEventBus);
+        AWAttachments.ATTACHMENT_TYPES.register(modEventBus);
         AWRegistry.FLUIDTYPES.register(modEventBus);
         AWRegistry.FLUIDS.register(modEventBus);
         AWRegistry.ENTITY_TYPES.register(modEventBus);
         AWRegistry.ATTRIBUTES.register(modEventBus);
         AWRegistry.BLOCK_ENTITY_TYPES.register(modEventBus);
         AWRegistry.CREATIVE_MODE_TAB.register(modEventBus);
-        //AWRegistry.ENCHANTMENTS.register(modEventBus); //we're ignoring Aetheric for now - aetherium items will just self-repair.
+        //Aetheric is data-driven in 1.21 - aetherium items just self-repair.
         //AWRegistry.PARTICLE_TYPES.register(modEventBus);
         AWRegistry.MOB_EFFECTS.register(modEventBus);
         AWRegistry.SOUND_EVENTS.register(modEventBus);
@@ -84,26 +91,25 @@ public class Aetherworks
         AWRegistry.STRUCTURE_PIECES.register(modEventBus);
         AWSounds.init();
 
-        AWConfig.register();
+        AWConfig.register(modContainer);
 
 
         if (ModList.get().isLoaded("curios")) {
             CuriosCompat.init();
         }
 
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         LOGGER.atInfo().log("Refracting Aetherium...");
-        PacketHandler.init();
         AWRegistry.init(event);
         event.enqueueWork(AWResearch::initResearch);
 
-        MinecraftForge.EVENT_BUS.addListener(AWHarvestHelper::onServerTick);
-        MinecraftForge.EVENT_BUS.addListener(AWHarvestHelper::onLevelUnload);
-        MinecraftForge.EVENT_BUS.addListener(AWHarvestHelper::onPlayerLeave);
+        NeoForge.EVENT_BUS.addListener(AWHarvestHelper::onServerTick);
+        NeoForge.EVENT_BUS.addListener(AWHarvestHelper::onLevelUnload);
+        NeoForge.EVENT_BUS.addListener(AWHarvestHelper::onPlayerLeave);
     }
 
     public void gatherData(GatherDataEvent event) {
@@ -117,8 +123,8 @@ public class Aetherworks
             gen.addProvider(true, new AWBlockStates(output, existingFileHelper));
             gen.addProvider(true, new AWSounds(output, existingFileHelper));
         } if (event.includeServer()) {
-            gen.addProvider(true, new AWLootTables(output));
-            gen.addProvider(true, new AWRecipes(output));
+            gen.addProvider(true, new AWLootTables(output, lookupProvider));
+            //AWRecipes is excluded from compilation - see the note in build.gradle.
             BlockTagsProvider blockTags = new AWBlockTags(output, lookupProvider, existingFileHelper);
             gen.addProvider(true, blockTags);
             gen.addProvider(true, new AWItemTags(output, lookupProvider, blockTags.contentsGetter(), existingFileHelper));
@@ -126,7 +132,7 @@ public class Aetherworks
             gen.addProvider(true, new DatapackBuiltinEntriesProvider(output, lookupProvider, new RegistrySetBuilder()
                     //.add(Registries.CONFIGURED_FEATURE, AWConfiguredFeatures::generate)
                     //.add(Registries.PLACED_FEATURE, AWPlacedFeatures::generate)
-                    //.add(ForgeRegistries.Keys.BIOME_MODIFIERS, AWBiomeModifiers::generate)
+                    //.add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, AWBiomeModifiers::generate)
                     .add(Registries.DAMAGE_TYPE, AWDamageTypes::generate)
                     //.add(Registries.PROCESSOR_LIST, EmbersStructures::generateProcessors)
                     //.add(Registries.TEMPLATE_POOL, EmbersStructures::generatePools)
@@ -140,18 +146,15 @@ public class Aetherworks
         }
     }
 
-    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
 
         @OnlyIn(Dist.CLIENT)
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
-            IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-            modEventBus.addListener(AWClientEvents::afterModelBake);
-
-            MinecraftForge.EVENT_BUS.addListener(AetherShieldReflectHandler::onUpdateEvent);
-            MinecraftForge.EVENT_BUS.addListener(AetherShieldReflectHandler::onLevelUnload);
-            MinecraftForge.EVENT_BUS.addListener(AetherShieldReflectHandler::onEntityLeaveEvent);
+            NeoForge.EVENT_BUS.addListener(AetherShieldReflectHandler::onUpdateEvent);
+            NeoForge.EVENT_BUS.addListener(AetherShieldReflectHandler::onLevelUnload);
+            NeoForge.EVENT_BUS.addListener(AetherShieldReflectHandler::onEntityLeaveEvent);
 
             event.enqueueWork(() -> {
                 AWItemProperties.register();
@@ -166,10 +169,23 @@ public class Aetherworks
                 ItemBlockRenderTypes.setRenderLayer(AWRegistry.SEETHING_AETHERIUM.FLUID_FLOW.get(), RenderType.translucent());
             });
         }
+
         @OnlyIn(Dist.CLIENT)
         @SubscribeEvent
-        public static void overlayRegister(RegisterGuiOverlaysEvent event) {
-            event.registerAboveAll("aw_overlay", AWClientEvents.INGAME_OVERLAY);
+        public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+            AWClientEvents.registerAdditionalModels(event);
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        @SubscribeEvent
+        public static void afterModelBake(ModelEvent.BakingCompleted event) {
+            AWClientEvents.afterModelBake(event);
+        }
+
+        @OnlyIn(Dist.CLIENT)
+        @SubscribeEvent
+        public static void overlayRegister(RegisterGuiLayersEvent event) {
+            event.registerAboveAll(AWClientEvents.INGAME_OVERLAY_ID, AWClientEvents.INGAME_OVERLAY);
         }
 
         @OnlyIn(Dist.CLIENT)
@@ -184,24 +200,30 @@ public class Aetherworks
             event.registerBlockEntityRenderer(AWRegistry.TOOL_STATION_BLOCK_ENTITY.get(), RenderToolStation::new);
             event.registerBlockEntityRenderer(AWRegistry.LEXICON_RECEPTACLE_BLOCK_ENTITY.get(), RenderLexiconReceptacle::new);
         }
+
         @OnlyIn(Dist.CLIENT)
         @SubscribeEvent
         static void registerLayers(EntityRenderersEvent.AddLayers event) {
-            event.getSkins().forEach(skins ->
+            event.getSkins().forEach(skin ->
             {
-                event.getSkin(skins).addLayer(new AetherCrownGemLayer(event.getSkin(skins), event.getEntityModels()));
+                LivingEntityRenderer<?, ?> renderer = event.getSkin(skin);
+                if (renderer != null)
+                    renderer.addLayer(new AetherCrownGemLayer(renderer, event.getEntityModels()));
             });
-            Minecraft.getInstance().getEntityRenderDispatcher().renderers.values().forEach(r -> {
-                if (r instanceof LivingEntityRenderer) {
-                    ((LivingEntityRenderer<?, ?>) r).addLayer(new AetherCrownGemLayer((LivingEntityRenderer<?, ?>) r, event.getEntityModels()));
+            //The renderer map is private in 1.21, so walk the event's own entity types instead.
+            event.getEntityTypes().forEach(type -> {
+                if (event.getRenderer(type) instanceof LivingEntityRenderer<?, ?> renderer) {
+                    renderer.addLayer(new AetherCrownGemLayer(renderer, event.getEntityModels()));
                 }
             });
         }
+
         @OnlyIn(Dist.CLIENT)
         @SubscribeEvent
         static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
             event.registerLayerDefinition(AetherCrownModel.CROWN_HEAD, () -> LayerDefinition.create(AetherCrownModel.createHeadMesh(), 32,32));
         }
+
         @OnlyIn(Dist.CLIENT)
         @SubscribeEvent
         static void registerItemColorHandlers(RegisterColorHandlersEvent.Item event){

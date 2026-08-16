@@ -20,11 +20,11 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.CompoundIngredient;
-import net.minecraftforge.common.crafting.conditions.*;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.conditions.*;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.registries.RegistryObject;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
@@ -242,11 +242,11 @@ public class AWRecipes extends RecipeProvider implements IConditionBuilder {
         MeltingRecipeBuilder.create(AWRegistry.AETHERIUM_SHARD_BLOCK.get().asItem()).domain(Aetherworks.MODID).folder(EmbersRecipes.meltingFolder).output(new FluidStack(AWRegistry.AETHERIUM_GAS_IMPURE.FLUID.get(), EmbersRecipes.INGOT_AMOUNT)).save(ConsumerWrapperBuilder.wrap().build(consumer));
 
         //special recipes
-        GenericRecipeBuilder.create(new PotionGemSocketRecipe(new ResourceLocation(Aetherworks.MODID, "crown_socket"))).save(consumer);
-        GenericRecipeBuilder.create(new PotionGemUnsocketRecipe(new ResourceLocation(Aetherworks.MODID, "crown_unsocket"))).save(consumer);
-        GenericRecipeBuilder.create(new PotionGemImbueRecipe(new ResourceLocation(Aetherworks.MODID, "potion_gem_imbue"))).save(consumer);
-        GenericRecipeBuilder.create(new DrainRecipe(new ResourceLocation(Aetherworks.MODID, "drain_prismarine_shovel"))).save(consumer);
-        GenericRecipeBuilder.create(new LexiconRecipe(new ResourceLocation(Aetherworks.MODID, "fill_aetherium_lexicon"))).save(consumer);
+        GenericRecipeBuilder.create(new PotionGemSocketRecipe(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "crown_socket"))).save(consumer);
+        GenericRecipeBuilder.create(new PotionGemUnsocketRecipe(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "crown_unsocket"))).save(consumer);
+        GenericRecipeBuilder.create(new PotionGemImbueRecipe(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "potion_gem_imbue"))).save(consumer);
+        GenericRecipeBuilder.create(new DrainRecipe(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "drain_prismarine_shovel"))).save(consumer);
+        GenericRecipeBuilder.create(new LexiconRecipe(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "fill_aetherium_lexicon"))).save(consumer);
 
         //alchemy
         AlchemyRecipeBuilder.create(AWRegistry.AETHER_AMALGAM.get()).tablet(RegistryManager.EMBER_CRYSTAL_CLUSTER.get()).folder(EmbersRecipes.alchemyFolder)
@@ -616,11 +616,11 @@ public class AWRecipes extends RecipeProvider implements IConditionBuilder {
     }
 
     public TagKey<Item> itemTag(String modId, String name) {
-        return TagKey.create(Registries.ITEM, new ResourceLocation(modId, name));
+        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(modId, name));
     }
 
     public TagKey<Fluid> fluidTag(String modId, String name) {
-        return TagKey.create(Registries.FLUID, new ResourceLocation(modId, name));
+        return TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(modId, name));
     }
 
     public ICondition tagReal(TagKey<?> tag) {
@@ -628,7 +628,7 @@ public class AWRecipes extends RecipeProvider implements IConditionBuilder {
     }
 
     public static ResourceLocation getResource(String name) {
-        return new ResourceLocation(Aetherworks.MODID, name);
+        return ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, name);
     }
 
     public final void decoRecipes(AWRegistry.StoneDecoBlocks deco, Consumer<FinishedRecipe> consumer) {

@@ -197,7 +197,7 @@ public class SculkAxe extends AOEEmberDiggerItem{
                     placePos.getZ() + 0.5,
                     50, 0.5, 0.2, 0.5, 1f);
             if (!player.isCreative())
-                player.getMainHandItem().hurt(2, level.random, (ServerPlayer) player);
+                player.getMainHandItem().hurtAndBreak(2, (ServerLevel) player.level(), (ServerPlayer) player, item -> {});
         }
     }
     private List<BlockPos> tryTwoByTwoSapling(SaplingBlock sapling, Level level, BlockPos pos, int pXOffset, int pZOffset) {
@@ -242,7 +242,7 @@ public class SculkAxe extends AOEEmberDiggerItem{
             return result;
         }
 
-        HitResult pick = playerIn.pick(playerIn.getBlockReach(), 0.0F, false);
+        HitResult pick = playerIn.pick(playerIn.blockInteractionRange(), 0.0F, false);
         // Hit something that wasn't a block.
         if (pick instanceof BlockHitResult blockHitResult && !worldIn.getBlockState(blockHitResult.getBlockPos()).isAir()) {
             return result;
@@ -252,7 +252,7 @@ public class SculkAxe extends AOEEmberDiggerItem{
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
-        return net.minecraftforge.common.ToolActions.DEFAULT_AXE_ACTIONS.contains(toolAction);
+    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility toolAction) {
+        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_AXE_ACTIONS.contains(toolAction);
     }
 }

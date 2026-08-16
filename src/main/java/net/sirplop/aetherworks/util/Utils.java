@@ -25,9 +25,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.sirplop.aetherworks.network.MessageSyncItemEntityTag;
 import net.sirplop.aetherworks.network.PacketHandler;
 import org.joml.Vector3f;
@@ -120,7 +120,7 @@ public class Utils {
                         for (ItemEntity ent : entities) {
                             if (makeSuck && ent != null) {
                                 ent.addTag(SUCK_ITEM_TAG);
-                                PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageSyncItemEntityTag(ent, SUCK_ITEM_TAG));
+                                PacketDistributor.sendToPlayer(player, new MessageSyncItemEntityTag(ent, SUCK_ITEM_TAG));
                             }
                         }
                     });
@@ -129,7 +129,7 @@ public class Utils {
                         ItemEntity ent = popResourceFromFace(level, pos, dropDirection, e);
                         if (makeSuck && ent != null) {
                             ent.addTag(SUCK_ITEM_TAG);
-                            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageSyncItemEntityTag(ent, SUCK_ITEM_TAG));
+                            PacketDistributor.sendToPlayer(player, new MessageSyncItemEntityTag(ent, SUCK_ITEM_TAG));
                         }
                     });
                 }

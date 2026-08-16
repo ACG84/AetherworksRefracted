@@ -16,7 +16,7 @@ import net.sirplop.aetherworks.util.FaceRendererUtil;
 public class RenderAetherForge implements BlockEntityRenderer<AetherForgeBlockEntity> {
     public RenderAetherForge(BlockEntityRendererProvider.Context context)  { }
 
-    public static final ResourceLocation LOCATION_FORGE_OVERLAY = new ResourceLocation(Aetherworks.MODID, "textures/block/forge/forge_overlay.png");
+    public static final ResourceLocation LOCATION_FORGE_OVERLAY = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/block/forge/forge_overlay.png");
     //public static final float[] COLOR = {1, 1, 1, 1};
     public static final int[] LIGHTMAP = {240, 240};
 

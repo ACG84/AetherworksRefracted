@@ -31,7 +31,7 @@ public class AetheriumAnvilCategory implements IRecipeCategory<IAetheriumAnvilRe
     private final IDrawable background;
     private final IDrawable icon;
     public static Component title = Component.translatable(Aetherworks.MODID + ".jei.recipe.aetherium_anvil");
-    public static ResourceLocation texture = new ResourceLocation(Aetherworks.MODID, "textures/gui/jei_anvil.png");
+    public static ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "textures/gui/jei_anvil.png");
 
     public AetheriumAnvilCategory(IGuiHelper helper) {
         background = helper.createDrawable(texture, 0, 0, 111, 99);
