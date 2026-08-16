@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.model;
 
+import net.sirplop.aetherworks.Aetherworks;
+
+import net.minecraft.world.item.ArmorMaterial;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.rekindled.embers.EmbersClientEvents;
@@ -27,6 +31,13 @@ import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class AetherCrownGemLayer<T extends LivingEntity, M extends HumanoidModel<T>> extends RenderLayer<T, M> {
+
+    //Armour textures are selected by ArmorMaterial.Layer in 1.21; the dyeable layer stands in
+    //for what used to be the "overlay" texture type.
+    private static final ArmorMaterial.Layer BASE_LAYER =
+            new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether_crown"));
+    private static final ArmorMaterial.Layer OVERLAY_LAYER =
+            new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aether_crown"), "", true);
     public final AetherCrownModel model;
 
     public AetherCrownGemLayer(RenderLayerParent<T, M> pRenderer, EntityModelSet pModelSet) {
@@ -55,7 +66,7 @@ public class AetherCrownGemLayer<T extends LivingEntity, M extends HumanoidModel
                 float r = Math.min(1f, coeff * (float)(color >> 16 & 255) / 255.0F);
                 float g = Math.min(1f, coeff * (float)(color >> 8 & 255) / 255.0F);
                 float b = Math.min(1f, coeff * (float)(color & 255) / 255.0F);
-                ResourceLocation textureLoc = ResourceLocation.parse(ClientHooks.getArmorTexture(livingEntity, itemstack, "bro_specify_your_armor_texture", EquipmentSlot.HEAD, "overlay"));
+                ResourceLocation textureLoc = itemstack.getItem() instanceof AetherCrownItem overlayCrown ? overlayCrown.getArmorTexture(itemstack, livingEntity, EquipmentSlot.HEAD, OVERLAY_LAYER, false) : null;
                 this.renderModel(poseStack, multiBufferSource, packedLight, crown, model, r, g, b, textureLoc);
             }
             //render crown
@@ -64,13 +75,15 @@ public class AetherCrownGemLayer<T extends LivingEntity, M extends HumanoidModel
             float r = 1 - ((144 * timerSine) / 255);
             float g = 1 - ((72 * timerSine) / 255);
             float b = 1 - ((13 * timerSine) / 255);
-            ResourceLocation textureLoc = ResourceLocation.parse(ClientHooks.getArmorTexture(livingEntity, itemstack, "bro_specify_your_armor_texture", EquipmentSlot.HEAD, null));
+            ResourceLocation textureLoc = itemstack.getItem() instanceof AetherCrownItem baseCrown ? baseCrown.getArmorTexture(itemstack, livingEntity, EquipmentSlot.HEAD, BASE_LAYER, false) : null;
             this.renderModel(poseStack, multiBufferSource, packedLight, crown, model,r, g, b, textureLoc);
         }
     }
     //amazing copy+paste, m'lord!
     private void renderModel(PoseStack p_289664_, MultiBufferSource p_289689_, int p_289681_, ArmorItem p_289650_, Model p_289658_, float p_289678_, float p_289674_, float p_289693_, ResourceLocation armorResource) {
         VertexConsumer vertexconsumer = p_289689_.getBuffer(RenderType.armorCutoutNoCull(armorResource));
-        p_289658_.renderToBuffer(p_289664_, vertexconsumer, p_289681_, OverlayTexture.NO_OVERLAY, p_289678_, p_289674_, p_289693_, 1.0F);
+        //renderToBuffer takes a packed ARGB int in 1.21 rather than four floats.
+        p_289658_.renderToBuffer(p_289664_, vertexconsumer, p_289681_, OverlayTexture.NO_OVERLAY,
+                net.minecraft.util.FastColor.ARGB32.colorFromFloat(1.0F, p_289678_, p_289674_, p_289693_));
     }
 }

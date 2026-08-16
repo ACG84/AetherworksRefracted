@@ -10,13 +10,13 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.recipe.IAetheriumAnvilRecipe;
@@ -50,9 +50,10 @@ public class JEIPlugin  implements IModPlugin {
         registry.addRecipeCategories(new AetheriumAnvilCategory(guiHelper));
         registry.addRecipeCategories(new ToolStationCategory(guiHelper));
     }
+    //getAllRecipesFor returns RecipeHolders now, so unwrap before handing them to JEI.
     @SuppressWarnings("unchecked")
-    public static <C extends Container, T extends Recipe<C>> void addRecipes(IRecipeRegistration register, RecipeManager manager, RecipeType<T> jeiType, net.minecraft.world.item.crafting.RecipeType<T> type) {
-        List<T> recipes = manager.getAllRecipesFor(type);
+    public static <C extends RecipeInput, T extends Recipe<C>> void addRecipes(IRecipeRegistration register, RecipeManager manager, RecipeType<T> jeiType, net.minecraft.world.item.crafting.RecipeType<T> type) {
+        List<T> recipes = manager.getAllRecipesFor(type).stream().map(RecipeHolder::value).toList();
         List<T> visualRecipes = new ArrayList<T>();
         for (T recipe : recipes) {
             if (recipe instanceof IVisuallySplitRecipe) {

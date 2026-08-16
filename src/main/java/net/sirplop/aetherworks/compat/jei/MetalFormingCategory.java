@@ -3,7 +3,7 @@ package net.sirplop.aetherworks.compat.jei;
 import com.rekindled.embers.compat.jei.IngotTooltipCallback;
 import com.rekindled.embers.util.Misc;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -64,7 +64,7 @@ public class MetalFormingCategory implements IRecipeCategory<IMetalFormerRecipe>
         builder.addSlot(RecipeIngredientRole.INPUT, 5, 39)
                 .addTooltipCallback(IngotTooltipCallback.INSTANCE)
                 .setFluidRenderer(1000, false, 16, 34)
-                .addIngredients(ForgeTypes.FLUID_STACK, recipe.getDisplayInputFluid().getFluids());
+                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getDisplayInputFluid().getFluids());
     }
 
     @SuppressWarnings("resource")

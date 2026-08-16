@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.core.HolderLookup;
 
 import com.google.gson.JsonObject;

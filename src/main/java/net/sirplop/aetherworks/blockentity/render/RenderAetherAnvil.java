@@ -83,10 +83,10 @@ public class RenderAetherAnvil implements BlockEntityRenderer<AetheriumAnvilBloc
             RenderSystem.enableDepthTest();
 
             Matrix4f matrix4f = poseStack.last().pose();
-            overlayBuffer.vertex(matrix4f, -0.5f, -0.5f, 0).color(c[0], c[1], c[2], c[3]).uv(0, 0).uv2(LIGHTMAP[0], LIGHTMAP[1]).endVertex();
-            overlayBuffer.vertex(matrix4f, -0.5f, 0.5f, 0).color(c[0], c[1], c[2], c[3]).uv(0, 1).uv2(LIGHTMAP[0], LIGHTMAP[1]).endVertex();
-            overlayBuffer.vertex(matrix4f,  0.5f, 0.5f, 0).color(c[0], c[1], c[2], c[3]).uv(1, 1).uv2(LIGHTMAP[0], LIGHTMAP[1]).endVertex();
-            overlayBuffer.vertex(matrix4f, 0.5f, -0.5f, 0).color(c[0], c[1], c[2], c[3]).uv(1, 0).uv2(LIGHTMAP[0], LIGHTMAP[1]).endVertex();
+            overlayBuffer.addVertex(matrix4f, -0.5f, -0.5f, 0).setColor(c[0], c[1], c[2], c[3]).setUv(0, 0).setUv2(LIGHTMAP[0], LIGHTMAP[1]);
+            overlayBuffer.addVertex(matrix4f, -0.5f, 0.5f, 0).setColor(c[0], c[1], c[2], c[3]).setUv(0, 1).setUv2(LIGHTMAP[0], LIGHTMAP[1]);
+            overlayBuffer.addVertex(matrix4f,  0.5f, 0.5f, 0).setColor(c[0], c[1], c[2], c[3]).setUv(1, 1).setUv2(LIGHTMAP[0], LIGHTMAP[1]);
+            overlayBuffer.addVertex(matrix4f, 0.5f, -0.5f, 0).setColor(c[0], c[1], c[2], c[3]).setUv(1, 0).setUv2(LIGHTMAP[0], LIGHTMAP[1]);
             poseStack.popPose();
         }
     }

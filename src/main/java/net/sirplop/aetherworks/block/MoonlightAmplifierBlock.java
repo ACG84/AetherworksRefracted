@@ -1,6 +1,5 @@
 package net.sirplop.aetherworks.block;
 
-import net.minecraft.world.level.block.BaseEntityBlock;
 
 import com.mojang.serialization.MapCodec;
 
@@ -35,7 +34,7 @@ public class MoonlightAmplifierBlock extends HorizontalDirectionalBlock implemen
     public static final MapCodec<MoonlightAmplifierBlock> CODEC = simpleCodec(MoonlightAmplifierBlock::new);
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
         return CODEC;
     }
     public MoonlightAmplifierBlock(Properties pProperties) {

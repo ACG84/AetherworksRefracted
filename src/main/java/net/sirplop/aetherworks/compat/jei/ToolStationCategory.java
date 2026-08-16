@@ -5,7 +5,7 @@ import com.rekindled.embers.compat.jei.IngotTooltipCallback;
 import com.rekindled.embers.gui.GuiCodex;
 import com.rekindled.embers.util.Misc;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;

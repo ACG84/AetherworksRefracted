@@ -262,8 +262,11 @@ public abstract class AOEEmberDiggerItem extends DiggerItem implements IToggleEm
     }
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        if (oldStack.hasTag() && newStack.hasTag()) {
-            return slotChanged || oldStack.getTag().getBoolean("poweredOn") != newStack.getTag().getBoolean("poweredOn") || newStack.getItem() != oldStack.getItem();
+        //The old "poweredOn" tag is the toggle-mode component now.
+        Byte oldMode = oldStack.get(AWDataComponents.TOGGLE_MODE.get());
+        Byte newMode = newStack.get(AWDataComponents.TOGGLE_MODE.get());
+        if (oldMode != null && newMode != null) {
+            return slotChanged || !oldMode.equals(newMode) || newStack.getItem() != oldStack.getItem();
         }
         return slotChanged || newStack.getItem() != oldStack.getItem();
     }
