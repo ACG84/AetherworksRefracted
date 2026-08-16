@@ -10,6 +10,9 @@
     "#minecraft:base_stone_overworld",
     "#minecraft:base_stone_nether",
     "#minecraft:nylium",
-    "#forge:sandstone"
+    {
+      "id": "#c:sandstone_blocks",
+      "required": false
+    }
   ]
 }

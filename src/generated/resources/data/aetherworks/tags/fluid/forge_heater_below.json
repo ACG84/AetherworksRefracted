@@ -3,67 +3,67 @@
     "#minecraft:lava",
     "aetherworks:alchemic_precursor",
     {
-      "id": "#forge:molten_aluminum",
+      "id": "#c:molten_aluminum",
       "required": false
     },
     {
-      "id": "#forge:molten_brass",
+      "id": "#c:molten_brass",
       "required": false
     },
     {
-      "id": "#forge:molten_bronze",
+      "id": "#c:molten_bronze",
       "required": false
     },
     {
-      "id": "#forge:molten_copper",
+      "id": "#c:molten_copper",
       "required": false
     },
     {
-      "id": "#forge:molten_dawnstone",
+      "id": "#c:molten_dawnstone",
       "required": false
     },
     {
-      "id": "#forge:molten_constantan",
+      "id": "#c:molten_constantan",
       "required": false
     },
     {
-      "id": "#forge:molten_electrum",
+      "id": "#c:molten_electrum",
       "required": false
     },
     {
-      "id": "#forge:molten_gold",
+      "id": "#c:molten_gold",
       "required": false
     },
     {
-      "id": "#forge:molten_invar",
+      "id": "#c:molten_invar",
       "required": false
     },
     {
-      "id": "#forge:molten_iron",
+      "id": "#c:molten_iron",
       "required": false
     },
     {
-      "id": "#forge:molten_lead",
+      "id": "#c:molten_lead",
       "required": false
     },
     {
-      "id": "#forge:molten_nickel",
+      "id": "#c:molten_nickel",
       "required": false
     },
     {
-      "id": "#forge:molten_platinum",
+      "id": "#c:molten_platinum",
       "required": false
     },
     {
-      "id": "#forge:molten_tin",
+      "id": "#c:molten_tin",
       "required": false
     },
     {
-      "id": "#forge:molten_uranium",
+      "id": "#c:molten_uranium",
       "required": false
     },
     {
-      "id": "#forge:molten_zinc",
+      "id": "#c:molten_zinc",
       "required": false
     }
   ]

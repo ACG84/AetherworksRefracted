@@ -102,7 +102,9 @@ public class Aetherworks
             CuriosCompat.init();
         }
 
-        NeoForge.EVENT_BUS.register(this);
+        //Nothing on this class is annotated with @SubscribeEvent - the game-bus listeners are
+        //added explicitly in commonSetup - and NeoForge now rejects registering an object with
+        //no handlers, so this no longer self-registers.
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)

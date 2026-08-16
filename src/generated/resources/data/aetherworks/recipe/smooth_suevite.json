@@ -6,5 +6,7 @@
   "ingredient": {
     "item": "aetherworks:suevite_cobble"
   },
-  "result": "aetherworks:suevite"
+  "result": {
+    "id": "aetherworks:suevite"
+  }
 }

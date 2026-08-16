@@ -1,11 +1,5 @@
 {
   "type": "aetherworks:tool_station",
-  "conditions": [
-    {
-      "type": "c:mod_loaded",
-      "modid": "curios"
-    }
-  ],
   "inputs": [
     {
       "item": "aetherworks:aether_shard"
@@ -27,5 +21,11 @@
     "id": "aetherworks:aether_ember_bulb"
   },
   "temperature": 2500,
-  "temperature_rate": 15.0
+  "temperature_rate": 15.0,
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "curios"
+    }
+  ]
 }

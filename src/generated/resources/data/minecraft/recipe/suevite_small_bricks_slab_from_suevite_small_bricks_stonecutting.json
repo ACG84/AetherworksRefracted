@@ -1,8 +1,10 @@
 {
   "type": "minecraft:stonecutting",
-  "count": 2,
   "ingredient": {
     "item": "aetherworks:suevite_small_bricks"
   },
-  "result": "aetherworks:suevite_small_bricks_slab"
+  "result": {
+    "id": "aetherworks:suevite_small_bricks_slab",
+    "count": 2
+  }
 }

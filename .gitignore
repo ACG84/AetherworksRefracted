@@ -24,3 +24,7 @@ run
 # Files from Forge MDK
 forge*changelog.txt
 run-data
+
+# ModDevGradle / dev run output
+run/
+build/
