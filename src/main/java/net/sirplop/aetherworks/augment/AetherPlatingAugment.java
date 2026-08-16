@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.augment;
 
+import net.sirplop.aetherworks.Aetherworks;
+
 import com.rekindled.embers.api.augment.AugmentUtil;
 import com.rekindled.embers.augment.AugmentBase;
 import net.minecraft.resources.ResourceLocation;
@@ -16,8 +18,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import java.util.UUID;
 
 public class AetherPlatingAugment extends AugmentBase {
-    private static final UUID ARMOR = UUID.fromString("93f9a3fb-111d-4c63-86a7-cb12516cb562");
-    private static final UUID TOUGHNESS = UUID.fromString("91a581fe-8254-42f1-98f1-3a43344b5ee6");
+    //Attribute modifiers are identified by ResourceLocation rather than UUID in 1.21.
+    private static final ResourceLocation ARMOR = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aetherplate.armor");
+    private static final ResourceLocation TOUGHNESS = ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "aetherplate.toughness");
 
     public AetherPlatingAugment(ResourceLocation name) {
         super(name, 0.0);
@@ -44,12 +47,12 @@ public class AetherPlatingAugment extends AugmentBase {
         AttributeInstance armor = ent.getAttribute(Attributes.ARMOR);
         if (armor != null) {
             armor.removeModifier(ARMOR);
-            armor.addPermanentModifier(new AttributeModifier(ARMOR, "aetherplate.armor", currentTotal * 0.1, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            armor.addPermanentModifier(new AttributeModifier(ARMOR, currentTotal * 0.1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }
         AttributeInstance toughness = ent.getAttribute(Attributes.ARMOR_TOUGHNESS);
         if (toughness != null) {
             toughness.removeModifier(TOUGHNESS);
-            toughness.addPermanentModifier(new AttributeModifier(TOUGHNESS, "aetherplate.toughness", currentTotal * 0.1, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            toughness.addPermanentModifier(new AttributeModifier(TOUGHNESS, currentTotal * 0.1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }
     }
 }

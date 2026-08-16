@@ -279,7 +279,7 @@ public abstract class AOEEmberDiggerItem extends DiggerItem implements IToggleEm
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         boolean hurt = super.hurtEnemy(stack, target, attacker);;
         if (moongazeOnStrike && hurt && target.isAffectedByPotions()) {
-            MobEffectInstance mobeffect = new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE.get(), 100, 1, false, true, true);
+            MobEffectInstance mobeffect = new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE, 100, 1, false, true, true);
             target.addEffect(mobeffect, attacker);
         }
         return hurt;

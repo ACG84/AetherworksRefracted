@@ -10,7 +10,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,7 +31,7 @@ public class AetherShieldReflectHandler {
 
     private static final GlowParticleOptions GLOW = new GlowParticleOptions(Misc.colorFromInt(Utils.AETHERIUM_PROJECTILE_COLOR.getRGB()), 4f, 5);
     @SubscribeEvent
-    public static void onUpdateEvent(TickEvent.ClientTickEvent event) {
+    public static void onUpdateEvent(ClientTickEvent.Post event) {
         ClientLevel level = Minecraft.getInstance().level;
         assert level != null;
         for (Projectile e : affectedProjectiles) {

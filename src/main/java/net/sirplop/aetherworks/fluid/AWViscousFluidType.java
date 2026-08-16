@@ -62,7 +62,7 @@ public class AWViscousFluidType extends ViscousFluidType {
 
         if (entity.isAffectedByPotions()) {
             if (!entity.hasEffect(AWRegistry.EFFECT_MOONFIRE.get())) {
-                entity.addEffect(new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE.get(), 80, 1, true, false));
+                entity.addEffect(new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE, 80, 1, true, false));
             }
         }
 

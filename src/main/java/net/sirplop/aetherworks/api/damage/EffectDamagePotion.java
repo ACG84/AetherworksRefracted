@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.api.damage;
 
+import net.minecraft.core.Holder;
+
 import com.rekindled.embers.api.projectile.IProjectileEffect;
 import com.rekindled.embers.api.projectile.IProjectilePreset;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
@@ -101,7 +103,7 @@ public class EffectDamagePotion implements IProjectileEffect {
 
             if (livingTarget.isAffectedByPotions()) {
                 for(MobEffectInstance mobeffectinstance : effectInstances) {
-                    MobEffect mobeffect = mobeffectinstance.getEffect();
+                    Holder<MobEffect> mobeffect = mobeffectinstance.getEffect();
                     if (mobeffect.isInstantenous()) {
                         mobeffect.applyInstantenousEffect(projectileEntity, shooter, livingTarget, mobeffectinstance.getAmplifier(), 1);
                     } else {

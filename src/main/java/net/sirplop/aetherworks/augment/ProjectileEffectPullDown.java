@@ -20,7 +20,7 @@ public class ProjectileEffectPullDown implements IProjectileEffect {
     public void onEntityImpact(Entity entity, IProjectilePreset projectile) {
         if (entity instanceof LivingEntity livingTarget) {
             if (livingTarget.isAffectedByPotions()) {
-                MobEffectInstance mobeffectinstance = new MobEffectInstance(AWRegistry.EFFECT_PULLDOWN.get(), ticks, amplifier, false, true);
+                MobEffectInstance mobeffectinstance = new MobEffectInstance(AWRegistry.EFFECT_PULLDOWN, ticks, amplifier, false, true);
                 livingTarget.addEffect(mobeffectinstance, entity);
             }
         }

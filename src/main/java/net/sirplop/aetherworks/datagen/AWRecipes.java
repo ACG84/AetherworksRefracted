@@ -65,7 +65,7 @@ public class AWRecipes extends RecipeProvider implements IConditionBuilder {
         MetalFormerRecipeBuilder.create(AWRegistry.PLATE_AETHER.get()).domain(Aetherworks.MODID).folder(metalFormerFolder).temperature(2400).craftTime(250).fluid(new FluidStack(AWRegistry.AETHERIUM_GAS.FLUID.get(), EmbersRecipes.INGOT_AMOUNT * 2)).input(Ingredient.of(EmbersItemTags.DAWNSTONE_PLATE)).save(consumer);
 
         ItemStack moonfireGemStack = new ItemStack(AWRegistry.POTION_GEM.get());
-        PotionGemItem.setEffectsForRecipe(List.of(new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE.get(), 200, 0, true, true)), moonfireGemStack, Utils.AETHERIUM_PROJECTILE_COLOR.getRGB());
+        PotionGemItem.setEffectsForRecipe(List.of(new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE, 200, 0, true, true)), moonfireGemStack, Utils.AETHERIUM_PROJECTILE_COLOR.getRGB());
         MetalFormerRecipeBuilder.create(moonfireGemStack).id(Aetherworks.MODID, "moongaze_gem").folder(metalFormerFolder).temperature(2400).craftTime(600).fluid(new FluidStack(AWRegistry.AETHERIUM_GAS.FLUID.get(), EmbersRecipes.BLOCK_AMOUNT)).input(Ingredient.of(AWRegistry.POTION_GEM.get())).mustMatchExactly().save(consumer);
 
         MetalFormerRecipeBuilder.create(AWRegistry.GLASS_AETHERIUM.get().asItem()).domain(Aetherworks.MODID).folder(metalFormerFolder).temperature(2550).craftTime(30).fluid(new FluidStack(AWRegistry.AETHERIUM_GAS.FLUID.get(), EmbersRecipes.NUGGET_AMOUNT)).input(Ingredient.of(Blocks.GLASS)).save(consumer);

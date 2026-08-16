@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.api.damage;
 
+import net.minecraft.core.Holder;
+
 import com.rekindled.embers.api.projectile.IProjectilePreset;
 import com.rekindled.embers.entity.EmberProjectileEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -123,7 +125,7 @@ public class EffectDamageCrossbowQuartz extends EffectDamagePotion{
             }
             if (livingTarget.isAffectedByPotions()) {
                 for(MobEffectInstance mobeffectinstance : effectInstances) {
-                    MobEffect mobeffect = mobeffectinstance.getEffect();
+                    Holder<MobEffect> mobeffect = mobeffectinstance.getEffect();
                     if (mobeffect.isInstantenous()) {
                         mobeffect.applyInstantenousEffect(projectileEntity, shooter, livingTarget, mobeffectinstance.getAmplifier(), 1);
                     } else {

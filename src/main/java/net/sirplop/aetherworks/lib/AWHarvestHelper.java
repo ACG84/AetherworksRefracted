@@ -3,7 +3,7 @@ package net.sirplop.aetherworks.lib;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.sirplop.aetherworks.Aetherworks;
@@ -14,11 +14,10 @@ public class AWHarvestHelper {
 
     private static final Map<UUID, AWHarvestNode> nodes = new HashMap<UUID, AWHarvestNode>();
 
-    public static void onServerTick(TickEvent.LevelTickEvent event)
+    public static void onServerTick(LevelTickEvent.Post event)
     {
-        if (event.side.isClient())
+        if (event.getLevel().isClientSide())
             return;
-        if (event.phase != TickEvent.Phase.END)
         {
             return;
         }

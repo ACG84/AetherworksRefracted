@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.api.damage;
 
+import net.minecraft.core.Holder;
+
 import com.rekindled.embers.api.projectile.IProjectilePreset;
 import com.rekindled.embers.api.projectile.ProjectileRay;
 import net.minecraft.world.damagesource.DamageSource;
@@ -64,7 +66,7 @@ public class EffectDamageCrossbowMagma extends EffectDamagePotion{
             }
             if (livingTarget.isAffectedByPotions()) {
                 for(MobEffectInstance mobeffectinstance : effectInstances) {
-                    MobEffect mobeffect = mobeffectinstance.getEffect();
+                    Holder<MobEffect> mobeffect = mobeffectinstance.getEffect();
                     if (mobeffect.isInstantenous()) {
                         mobeffect.applyInstantenousEffect(projectileEntity, shooter, livingTarget, mobeffectinstance.getAmplifier(), 1);
                     } else {
