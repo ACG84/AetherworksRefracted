@@ -19,10 +19,10 @@ public class FaceRendererUtil
         pose.scale(scalex, scaley, scalez);
         Matrix4f matrix4f = pose.last().pose();
 
-        buffer.vertex(matrix4f, -0.5f, -0.5f, 0).color(color[0], color[1], color[2], color[3]).uv(maxUVx, maxUVy).uv2(lightmap[0], lightmap[1]).endVertex();
-        buffer.vertex(matrix4f, -0.5f, 0.5f, 0).color(color[0], color[1], color[2], color[3]).uv(maxUVx, minUVy).uv2(lightmap[0], lightmap[1]).endVertex();
-        buffer.vertex(matrix4f,  0.5f, 0.5f, 0).color(color[0], color[1], color[2], color[3]).uv(minUVx, minUVy).uv2(lightmap[0], lightmap[1]).endVertex();
-        buffer.vertex(matrix4f, 0.5f, -0.5f, 0).color(color[0], color[1], color[2], color[3]).uv(minUVx, maxUVy).uv2(lightmap[0], lightmap[1]).endVertex();
+        buffer.addVertex(matrix4f, -0.5f, -0.5f, 0).setColor(color[0], color[1], color[2], color[3]).setUv(maxUVx, maxUVy).setUv2(lightmap[0], lightmap[1]);
+        buffer.addVertex(matrix4f, -0.5f, 0.5f, 0).setColor(color[0], color[1], color[2], color[3]).setUv(maxUVx, minUVy).setUv2(lightmap[0], lightmap[1]);
+        buffer.addVertex(matrix4f, 0.5f, 0.5f, 0).setColor(color[0], color[1], color[2], color[3]).setUv(minUVx, minUVy).setUv2(lightmap[0], lightmap[1]);
+        buffer.addVertex(matrix4f, 0.5f, -0.5f, 0).setColor(color[0], color[1], color[2], color[3]).setUv(minUVx, maxUVy).setUv2(lightmap[0], lightmap[1]);
 
         pose.scale(1 / scalex, 1 / scaley,1 / scalez);
         pose.translate(0, 0, 0.001f);
@@ -35,10 +35,10 @@ public class FaceRendererUtil
         pose.scale(scalex, scaley, scalez);
         Matrix4f matrix4f = pose.last().pose();
 
-        buffer.vertex(matrix4f, 0, -0.5f, -0.5f).color(color[0], color[1], color[2], color[3]).uv(minUVx, maxUVy).uv2(lightmap[0], lightmap[1]).endVertex();
-        buffer.vertex(matrix4f, 0, -0.5f, 0.5f).color(color[0], color[1], color[2], color[3]).uv(maxUVx, maxUVy).uv2(lightmap[0], lightmap[1]).endVertex();
-        buffer.vertex(matrix4f, 0, 0.5f, 0.5f).color(color[0], color[1], color[2], color[3]).uv(maxUVx, minUVy).uv2(lightmap[0], lightmap[1]).endVertex();
-        buffer.vertex(matrix4f, 0, 0.5f, -0.5f).color(color[0], color[1], color[2], color[3]).uv(minUVx, minUVy).uv2(lightmap[0], lightmap[1]).endVertex();
+        buffer.addVertex(matrix4f, 0, -0.5f, -0.5f).setColor(color[0], color[1], color[2], color[3]).setUv(minUVx, maxUVy).setUv2(lightmap[0], lightmap[1]);
+        buffer.addVertex(matrix4f, 0, -0.5f, 0.5f).setColor(color[0], color[1], color[2], color[3]).setUv(maxUVx, maxUVy).setUv2(lightmap[0], lightmap[1]);
+        buffer.addVertex(matrix4f, 0, 0.5f, 0.5f).setColor(color[0], color[1], color[2], color[3]).setUv(maxUVx, minUVy).setUv2(lightmap[0], lightmap[1]);
+        buffer.addVertex(matrix4f, 0, 0.5f, -0.5f).setColor(color[0], color[1], color[2], color[3]).setUv(minUVx, minUVy).setUv2(lightmap[0], lightmap[1]);
 
         pose.scale(1 / scalex, 1 / scaley,1 / scalez);
         pose.translate(0.001f, 0, 0);

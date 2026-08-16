@@ -57,18 +57,22 @@ public abstract class AOEEmberDiggerItem extends DiggerItem implements IToggleEm
     public TagKey<Block> blocks;
     public boolean moongazeOnStrike = true;
 
+    //Attack damage and speed are attribute modifiers on the Properties in 1.21 rather than
+    //constructor arguments.
     public AOEEmberDiggerItem(float pAttackDamageModifier, float pAttackSpeedModifier, Tier pTier, TagKey<Block> pBlocks, Properties pProperties) {
-        super(pAttackDamageModifier, pAttackSpeedModifier, pTier, pBlocks, pProperties);
+        super(pTier, pBlocks, pProperties.attributes(
+                DiggerItem.createAttributes(pTier, pAttackDamageModifier, pAttackSpeedModifier)));
         blocks = pBlocks;
     }
 
+    //NeoForge dropped onBlockStartBreak in 1.21; mineBlock is the surviving per-break hook.
     @Override
-    public boolean onBlockStartBreak(ItemStack stack, BlockPos pos, Player player) {
-        boolean check = super.onBlockStartBreak(stack, pos, player);
-        if (!check && !player.level().isClientSide() && getToggled(stack) == 1) {
-            causeAoe((ServerLevel) player.level(), pos, player.level().getBlockState(pos), stack, player);
+    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity entity) {
+        boolean result = super.mineBlock(stack, level, state, pos, entity);
+        if (!level.isClientSide() && entity instanceof Player player && getToggled(stack) == 1) {
+            causeAoe((ServerLevel) level, pos, state, stack, player);
         }
-        return check;
+        return result;
     }
 
     @Override
@@ -253,19 +257,8 @@ public abstract class AOEEmberDiggerItem extends DiggerItem implements IToggleEm
         if (!newStack.isDamageableItem() || !oldStack.isDamageableItem())
             return !ItemStack.isSameItemSameComponents(newStack, oldStack);
 
-        CompoundTag newTag = newStack.getTag();
-        CompoundTag oldTag = oldStack.getTag();
-
-        if (newTag == null || oldTag == null)
-            return !(newTag == null && oldTag == null);
-
-        Set<String> newKeys = new HashSet<>(newTag.getAllKeys());
-        Set<String> oldKeys = new HashSet<>(oldTag.getAllKeys());
-
-        newKeys.remove(ItemStack.TAG_DAMAGE);
-        oldKeys.remove(ItemStack.TAG_DAMAGE);
-
-        return !newKeys.equals(oldKeys); //something that's not damage changed.
+        //Stack data is components now, so the old key-by-key NBT comparison collapses to this.
+        return !ItemStack.isSameItemSameComponents(newStack, oldStack);
     }
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
