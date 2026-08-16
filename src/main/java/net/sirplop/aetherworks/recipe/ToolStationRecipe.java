@@ -2,8 +2,12 @@ package net.sirplop.aetherworks.recipe;
 
 import net.minecraft.core.HolderLookup;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -25,16 +29,13 @@ import java.util.List;
 public class ToolStationRecipe implements IToolStationRecipe{
     public static final Serializer SERIALIZER = new Serializer();
 
-    public final ResourceLocation id;
-
     public final List<Ingredient> inputs;
     public final int temperature;
     public final double temperatureRate;
 
     public final ItemStack output;
 
-    public ToolStationRecipe(ResourceLocation id, List<Ingredient> inputs,  int temperature, double temperatureRate, ItemStack output) {
-        this.id = id;
+    public ToolStationRecipe(List<Ingredient> inputs,  int temperature, double temperatureRate, ItemStack output) {
         this.inputs = inputs;
         this.temperature = temperature;
         this.temperatureRate = temperatureRate;
@@ -57,18 +58,17 @@ public class ToolStationRecipe implements IToolStationRecipe{
 
     @Override
     public ItemStack assemble(RecipeWrapper context, HolderLookup.Provider registry) {
-        for (int i = 0; i < inputs.size(); i++) {
-            if (inputs.get(i).test(context.getItem(i))) {
-                context.removeItemNoUpdate(i);
+        //RecipeWrapper is a plain RecipeInput in 1.21, so consume through the item handler.
+        if (context instanceof ToolStationContext station) {
+            for (int i = 0; i < inputs.size(); i++) {
+                if (inputs.get(i).test(context.getItem(i))) {
+                    station.items.setStackInSlot(i, ItemStack.EMPTY);
+                }
             }
         }
         return this.getOutput(context);
     }
 
-    @Override
-    public ResourceLocation getId() {
-        return id;
-    }
     @Override
     public RecipeSerializer<?> getSerializer() {
         return SERIALIZER;
@@ -94,45 +94,28 @@ public class ToolStationRecipe implements IToolStationRecipe{
 
     public static class Serializer implements RecipeSerializer<ToolStationRecipe> {
 
+        private static final MapCodec<ToolStationRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Ingredient.CODEC.listOf().optionalFieldOf("inputs", List.of()).forGetter(r -> r.inputs),
+                Codec.INT.fieldOf("temperature").forGetter(r -> r.temperature),
+                Codec.DOUBLE.fieldOf("temperature_rate").forGetter(r -> r.temperatureRate),
+                ItemStack.CODEC.fieldOf("output").forGetter(r -> r.output)
+        ).apply(instance, ToolStationRecipe::new));
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, ToolStationRecipe> STREAM_CODEC = StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), r -> r.inputs,
+                ByteBufCodecs.VAR_INT, r -> r.temperature,
+                ByteBufCodecs.DOUBLE, r -> r.temperatureRate,
+                ItemStack.STREAM_CODEC, r -> r.output,
+                ToolStationRecipe::new);
+
         @Override
-        public ToolStationRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            List<Ingredient> inputs = new ArrayList<>();
-            if (json.has("inputs")) {
-                JsonArray arr = json.getAsJsonArray("inputs");
-                for (int i = 0; i < arr.size(); i++) {
-                    inputs.add(Ingredient.fromJson(arr.get(i)));
-                }
-            }
-
-            int temperature = json.get("temperature").getAsInt();
-            double temperatureRate = json.get("temperature_rate").getAsInt();
-
-            JsonObject outputJson = GsonHelper.getAsJsonObject(json, "output");
-            ItemStack output = ShapedRecipe.itemStackFromJson(outputJson);
-            return new ToolStationRecipe(recipeId, inputs, temperature, temperatureRate, output);
+        public MapCodec<ToolStationRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable ToolStationRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            int size = buffer.readInt();
-            List<Ingredient> inputs = new ArrayList<>(size);
-            for (int i = 0; i < size; i++)
-                inputs.add(Ingredient.fromNetwork(buffer));
-            int temperature = buffer.readInt();
-            double temperatureRate = buffer.readDouble();
-
-            ItemStack output = buffer.readItem();
-            return new ToolStationRecipe(recipeId, inputs, temperature, temperatureRate, output);
-        }
-
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, ToolStationRecipe recipe) {
-            buffer.writeInt(recipe.inputs.size());
-            for (int i = 0; i < recipe.inputs.size(); i++)
-                recipe.inputs.get(i).toNetwork(buffer);
-            buffer.writeInt(recipe.temperature);
-            buffer.writeDouble(recipe.temperatureRate);
-            buffer.writeItemStack(recipe.output, false);
+        public StreamCodec<RegistryFriendlyByteBuf, ToolStationRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

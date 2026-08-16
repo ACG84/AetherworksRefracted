@@ -2,7 +2,13 @@ package net.sirplop.aetherworks.recipe;
 
 import net.minecraft.core.HolderLookup;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import com.mojang.datafixers.util.Either;
 import com.rekindled.embers.recipe.FluidIngredient;
 import com.rekindled.embers.util.Misc;
@@ -27,8 +33,6 @@ import javax.annotation.Nullable;
 public class MetalFormerRecipe implements IMetalFormerRecipe{
     public static final Serializer SERIALIZER = new Serializer();
 
-    public final ResourceLocation id;
-
     public final Ingredient input;
     public final FluidIngredient fluid;
     public final int temperature;
@@ -37,14 +41,13 @@ public class MetalFormerRecipe implements IMetalFormerRecipe{
 
     public final Either<ItemStack, TagAmount> output;
 
-    public MetalFormerRecipe(ResourceLocation id, Ingredient input, FluidIngredient fluid, int temperature, int craftTime, TagAmount output,  boolean matchExactly) {
-        this(id, input, fluid, temperature, craftTime, Either.right(output), matchExactly);
+    public MetalFormerRecipe(Ingredient input, FluidIngredient fluid, int temperature, int craftTime, TagAmount output,  boolean matchExactly) {
+        this(input, fluid, temperature, craftTime, Either.right(output), matchExactly);
     }
-    public MetalFormerRecipe(ResourceLocation id, Ingredient input, FluidIngredient fluid, int temperature, int craftTime, ItemStack output, boolean matchExactly) {
-        this(id, input, fluid, temperature, craftTime, Either.left(output), matchExactly);
+    public MetalFormerRecipe(Ingredient input, FluidIngredient fluid, int temperature, int craftTime, ItemStack output, boolean matchExactly) {
+        this(input, fluid, temperature, craftTime, Either.left(output), matchExactly);
     }
-    public MetalFormerRecipe(ResourceLocation id, Ingredient input, FluidIngredient fluid, int temperature, int craftTime, Either<ItemStack, TagAmount> output,  boolean matchExactly) {
-        this.id = id;
+    public MetalFormerRecipe(Ingredient input, FluidIngredient fluid, int temperature, int craftTime, Either<ItemStack, TagAmount> output,  boolean matchExactly) {
         this.input = input;
         this.fluid = fluid;
         this.temperature = temperature;
@@ -56,7 +59,7 @@ public class MetalFormerRecipe implements IMetalFormerRecipe{
     @Override
     public boolean matches(MetalFormerContext context, Level pLevel) {
         if (context.temperature >= this.temperature && input.test(context.getItem(0))
-                && (!matchExactly || input.getItems()[0].getOrCreateTag().equals(context.getItem(0).getOrCreateTag()))) {
+                && (!matchExactly || ItemStack.isSameItemSameComponents(input.getItems()[0], context.getItem(0)))) {
             return fluid.test(context.fluids.getFluidInTank(0));
         }
         return false;
@@ -69,9 +72,9 @@ public class MetalFormerRecipe implements IMetalFormerRecipe{
 
     @Override
     public ItemStack assemble(MetalFormerContext context, HolderLookup.Provider registry) {
-        for (int i = 0; i < context.getContainerSize(); i++) {
+        for (int i = 0; i < context.size(); i++) {
             if (input.test(context.getItem(i))) {
-                context.removeItem(i, 1);
+                context.items.extractItem(i, 1, false);
                 break;
             }
         }
@@ -84,10 +87,6 @@ public class MetalFormerRecipe implements IMetalFormerRecipe{
         return this.getOutput(context);
     }
 
-    @Override
-    public ResourceLocation getId() {
-        return id;
-    }
     @Override
     public RecipeSerializer<?> getSerializer() {
         return SERIALIZER;
@@ -128,60 +127,46 @@ public class MetalFormerRecipe implements IMetalFormerRecipe{
     }
     public static class Serializer implements RecipeSerializer<MetalFormerRecipe> {
 
+        //TagAmount is written as {"tag": ..., "count": ...}, matching the old hand-rolled JSON.
+        private static final Codec<TagAmount> TAG_AMOUNT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(t -> t.tag),
+                Codec.INT.optionalFieldOf("count", 1).forGetter(t -> t.amount)
+        ).apply(instance, TagAmount::new));
+
+        private static final Codec<Either<ItemStack, TagAmount>> OUTPUT_CODEC =
+                Codec.either(ItemStack.CODEC, TAG_AMOUNT_CODEC);
+
+        private static final MapCodec<MetalFormerRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Ingredient.CODEC.optionalFieldOf("input", Ingredient.EMPTY).forGetter(r -> r.input),
+                AWRecipeCodecs.FLUID_INGREDIENT.optionalFieldOf("fluid", FluidIngredient.EMPTY).forGetter(r -> r.fluid),
+                Codec.INT.fieldOf("temperature").forGetter(r -> r.temperature),
+                Codec.INT.fieldOf("craft_time").forGetter(r -> r.craftTime),
+                OUTPUT_CODEC.fieldOf("output").forGetter(r -> r.output),
+                Codec.BOOL.fieldOf("match_exactly").forGetter(r -> r.matchExactly)
+        ).apply(instance, MetalFormerRecipe::new));
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, TagAmount> TAG_AMOUNT_STREAM = StreamCodec.composite(
+                ResourceLocation.STREAM_CODEC.map(loc -> TagKey.create(Registries.ITEM, loc), TagKey::location), t -> t.tag,
+                ByteBufCodecs.VAR_INT, t -> t.amount,
+                TagAmount::new);
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, MetalFormerRecipe> STREAM_CODEC = StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC, r -> r.input,
+                AWRecipeCodecs.FLUID_INGREDIENT_STREAM, r -> r.fluid,
+                ByteBufCodecs.VAR_INT, r -> r.temperature,
+                ByteBufCodecs.VAR_INT, r -> r.craftTime,
+                ByteBufCodecs.either(ItemStack.STREAM_CODEC, TAG_AMOUNT_STREAM), r -> r.output,
+                ByteBufCodecs.BOOL, r -> r.matchExactly,
+                MetalFormerRecipe::new);
+
         @Override
-        public MetalFormerRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input = Ingredient.EMPTY;
-            FluidIngredient fluid = FluidIngredient.EMPTY;
-            if (json.has("input"))
-                input = Ingredient.fromJson(json.get("input"));
-            if (json.has("fluid"))
-                fluid = FluidIngredient.deserialize(json, "fluid");
-
-            int temperature = json.get("temperature").getAsInt();
-            int craftTime = json.get("craft_time").getAsInt();
-
-            JsonObject outputJson = GsonHelper.getAsJsonObject(json, "output");
-            boolean matchExactly = json.get("match_exactly").getAsBoolean();
-            if (outputJson.has("tag")) {
-                TagAmount output = new TagAmount(ItemTags.create(ResourceLocation.parse(GsonHelper.getAsString(outputJson, "tag"))), GsonHelper.getAsInt(outputJson, "count", 1));
-                return new MetalFormerRecipe(recipeId, input, fluid, temperature, craftTime, output, matchExactly);
-            } else {
-                ItemStack output = ShapedRecipe.itemStackFromJson(outputJson);
-                return new MetalFormerRecipe(recipeId, input, fluid, temperature, craftTime, output, matchExactly);
-            }
+        public MapCodec<MetalFormerRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable MetalFormerRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            boolean matchExactly = buffer.readBoolean();
-            Ingredient input = Ingredient.fromNetwork(buffer);
-            FluidIngredient fluid = FluidIngredient.read(buffer);
-            int temperature = buffer.readInt();
-            int craftTime = buffer.readInt();
-            if (buffer.readBoolean()) {
-                TagAmount output = new TagAmount(ItemTags.create(buffer.readResourceLocation()), buffer.readInt());
-                return new MetalFormerRecipe(recipeId, input, fluid, temperature, craftTime, output, matchExactly);
-            }
-            ItemStack output = buffer.readItem();
-
-            return new MetalFormerRecipe(recipeId, input, fluid,temperature, craftTime, output, matchExactly);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, MetalFormerRecipe recipe) {
-            buffer.writeBoolean(recipe.matchExactly);
-            recipe.input.toNetwork(buffer);
-            recipe.fluid.write(buffer);
-            buffer.writeInt(recipe.temperature);
-            buffer.writeInt(recipe.craftTime);
-            if (recipe.output.right().isPresent()) {
-                buffer.writeBoolean(true);
-                buffer.writeResourceLocation(recipe.output.right().get().tag.location());
-                buffer.writeInt(recipe.output.right().get().amount);
-            } else {
-                buffer.writeBoolean(false);
-                buffer.writeItemStack(recipe.output.left().get(), false);
-            }
+        public StreamCodec<RegistryFriendlyByteBuf, MetalFormerRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

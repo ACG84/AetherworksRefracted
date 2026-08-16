@@ -2,9 +2,13 @@ package net.sirplop.aetherworks.recipe;
 
 import net.minecraft.core.HolderLookup;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.rekindled.embers.util.Misc;
@@ -30,8 +34,6 @@ import java.util.List;
 public class AetheriumAnvilRecipe implements IAetheriumAnvilRecipe {
     public static final Serializer SERIALIZER = new Serializer();
 
-    public final ResourceLocation id;
-
     public final Ingredient input;
     public final int temperatureMin;
     public final int temperatureMax;
@@ -41,9 +43,8 @@ public class AetheriumAnvilRecipe implements IAetheriumAnvilRecipe {
 
     public final WeightedList<Either<ItemStack, TagKey<Item>>> output;
 
-    public AetheriumAnvilRecipe(ResourceLocation id, Ingredient input, int temperatureMin, int temperatureMax,
+    public AetheriumAnvilRecipe(Ingredient input, int temperatureMin, int temperatureMax,
                                 int difficulty, int emberPerHit, int numberOfHits, WeightedList<Either<ItemStack, TagKey<Item>>> list) {
-        this.id = id;
         this.input = input;
         this.output = list;
 
@@ -112,7 +113,7 @@ public class AetheriumAnvilRecipe implements IAetheriumAnvilRecipe {
 
     @Override
     public boolean matches(AetheriumAnvilContext context, Level level) {
-        for (int i = 0; i < context.getContainerSize(); i++) {
+        for (int i = 0; i < context.size(); i++) {
             if (input.test(context.getItem(i))) {
                 if (context.temperature >= this.temperatureMin &&
                     context.temperature <= this.temperatureMax) {
@@ -125,19 +126,15 @@ public class AetheriumAnvilRecipe implements IAetheriumAnvilRecipe {
 
     @Override
     public ItemStack assemble(AetheriumAnvilContext context, HolderLookup.Provider registryAccess) {
-        for (int i = 0; i < context.getContainerSize(); i++) {
+        for (int i = 0; i < context.size(); i++) {
             if (input.test(context.getItem(i))) {
-                context.removeItem(i, 1);
+                context.items.extractItem(i, 1, false);
                 break;
             }
         }
         return this.getOutput(context);
     }
 
-    @Override
-    public ResourceLocation getId() {
-        return id;
-    }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -145,79 +142,80 @@ public class AetheriumAnvilRecipe implements IAetheriumAnvilRecipe {
     }
     public static class Serializer implements RecipeSerializer<AetheriumAnvilRecipe> {
 
+        //Each output entry is either a concrete stack or a tag, with its weight alongside.
+        private static final Codec<Pair<Either<ItemStack, TagKey<Item>>, Double>> ENTRY_CODEC =
+                RecordCodecBuilder.create(instance -> instance.group(
+                        Codec.mapEither(ItemStack.CODEC.fieldOf("result"),
+                                TagKey.codec(Registries.ITEM).fieldOf("tag")).forGetter(Pair::getFirst),
+                        Codec.DOUBLE.fieldOf("chance").forGetter(Pair::getSecond)
+                ).apply(instance, Pair::of));
+
+        private static final Codec<WeightedList<Either<ItemStack, TagKey<Item>>>> OUTPUT_CODEC =
+                ENTRY_CODEC.listOf().xmap(AetheriumAnvilRecipe::toWeightedList, list -> list.internalList);
+
+        private static final MapCodec<AetheriumAnvilRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Ingredient.CODEC.optionalFieldOf("input", Ingredient.EMPTY).forGetter(r -> r.input),
+                Codec.INT.fieldOf("temperatureMin").forGetter(r -> r.temperatureMin),
+                Codec.INT.fieldOf("temperatureMax").forGetter(r -> r.temperatureMax),
+                Codec.INT.fieldOf("difficulty").forGetter(r -> r.difficulty),
+                Codec.INT.fieldOf("emberPerHit").forGetter(r -> r.emberPerHit),
+                Codec.INT.fieldOf("numberOfHits").forGetter(r -> r.numberOfHits),
+                OUTPUT_CODEC.fieldOf("result").forGetter(r -> r.output)
+        ).apply(instance, AetheriumAnvilRecipe::new));
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, Pair<Either<ItemStack, TagKey<Item>>, Double>> ENTRY_STREAM =
+                StreamCodec.composite(
+                        ByteBufCodecs.either(ItemStack.STREAM_CODEC,
+                                ResourceLocation.STREAM_CODEC.map(loc -> TagKey.create(Registries.ITEM, loc), TagKey::location)), Pair::getFirst,
+                        ByteBufCodecs.DOUBLE, Pair::getSecond,
+                        Pair::of);
+
+        //StreamCodec.composite tops out at six components and this recipe has seven,
+        //so the buffer is read and written by hand.
+        private static final StreamCodec<RegistryFriendlyByteBuf, AetheriumAnvilRecipe> STREAM_CODEC =
+                StreamCodec.of((buf, recipe) -> {
+                    Ingredient.CONTENTS_STREAM_CODEC.encode(buf, recipe.input);
+                    buf.writeVarInt(recipe.temperatureMin);
+                    buf.writeVarInt(recipe.temperatureMax);
+                    buf.writeVarInt(recipe.difficulty);
+                    buf.writeVarInt(recipe.emberPerHit);
+                    buf.writeVarInt(recipe.numberOfHits);
+                    buf.writeVarInt(recipe.output.internalList.size());
+                    for (Pair<Either<ItemStack, TagKey<Item>>, Double> entry : recipe.output.internalList) {
+                        ENTRY_STREAM.encode(buf, entry);
+                    }
+                }, buf -> {
+                    Ingredient input = Ingredient.CONTENTS_STREAM_CODEC.decode(buf);
+                    int temperatureMin = buf.readVarInt();
+                    int temperatureMax = buf.readVarInt();
+                    int difficulty = buf.readVarInt();
+                    int emberPerHit = buf.readVarInt();
+                    int numberOfHits = buf.readVarInt();
+                    int size = buf.readVarInt();
+                    List<Pair<Either<ItemStack, TagKey<Item>>, Double>> entries = new ArrayList<>(size);
+                    for (int i = 0; i < size; i++) {
+                        entries.add(ENTRY_STREAM.decode(buf));
+                    }
+                    return new AetheriumAnvilRecipe(input, temperatureMin, temperatureMax, difficulty,
+                            emberPerHit, numberOfHits, toWeightedList(entries));
+                });
+
         @Override
-        public AetheriumAnvilRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input = Ingredient.EMPTY;
-            if (json.has("input"))
-                input = Ingredient.fromJson(json.get("input"));
-
-            int temperatureMin = json.get("temperatureMin").getAsInt();
-            int temperatureMax = json.get("temperatureMax").getAsInt();
-            int difficulty = json.get("difficulty").getAsInt();
-            int emberPerHit = json.get("emberPerHit").getAsInt();
-            int numberOfHits =  json.get("numberOfHits").getAsInt();
-
-            WeightedList<Either<ItemStack, TagKey<Item>>> result = new WeightedList<>();
-            JsonArray outputJson = GsonHelper.getAsJsonArray(json, "result");
-            for (JsonElement element : outputJson) {
-                JsonObject stackObj = element.getAsJsonObject();
-                if (stackObj.has("tag")) {
-                    TagKey<Item> output = ItemTags.create(ResourceLocation.parse(GsonHelper.getAsString(stackObj, "tag")));
-                    double chance = stackObj.getAsJsonPrimitive("chance").getAsDouble();
-                    result.add(Either.right(output), chance);
-                } else {
-                    ItemStack output = ShapedRecipe.itemStackFromJson(stackObj.getAsJsonObject());
-                    double chance = stackObj.getAsJsonPrimitive("chance").getAsDouble();
-                    result.add(Either.left(output), chance);
-                }
-            }
-            return new AetheriumAnvilRecipe(recipeId, input, temperatureMin, temperatureMax, difficulty, emberPerHit, numberOfHits, result);
+        public MapCodec<AetheriumAnvilRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable AetheriumAnvilRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            Ingredient input = Ingredient.fromNetwork(buffer);
-            int temperatureMin = buffer.readInt();
-            int temperatureMax = buffer.readInt();
-            int difficulty = buffer.readInt();
-            int emberPerHit = buffer.readInt();
-            int numberOfHits = buffer.readInt();
-
-            int size = buffer.readInt();
-            WeightedList<Either<ItemStack, TagKey<Item>>> result = new WeightedList<>();
-            for (int i = 0; i < size; i++) {
-                if (buffer.readBoolean()) {
-                    TagKey<Item> output = ItemTags.create(buffer.readResourceLocation());
-                    result.add(Either.right(output), buffer.readDouble());
-                } else {
-                    ItemStack output = buffer.readItem();
-                    result.add(Either.left(output), buffer.readDouble());
-                }
-            }
-            return new AetheriumAnvilRecipe(recipeId, input, temperatureMin, temperatureMax, difficulty, emberPerHit, numberOfHits, result);
+        public StreamCodec<RegistryFriendlyByteBuf, AetheriumAnvilRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
+    }
 
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, AetheriumAnvilRecipe recipe) {
-            recipe.input.toNetwork(buffer);
-            buffer.writeInt(recipe.temperatureMin);
-            buffer.writeInt(recipe.temperatureMax);
-            buffer.writeInt(recipe.difficulty);
-            buffer.writeInt(recipe.emberPerHit);
-            buffer.writeInt(recipe.numberOfHits);
-            buffer.writeInt(recipe.output.internalList.size());
-
-            for (Pair<Either<ItemStack, TagKey<Item>>, Double> stack : recipe.output.internalList) {
-                if (stack.getFirst().right().isPresent()) {
-                    buffer.writeBoolean(true);
-                    buffer.writeResourceLocation(stack.getFirst().right().get().location());
-                    buffer.writeDouble(stack.getSecond());
-                } else {
-                    buffer.writeBoolean(false);
-                    buffer.writeItemStack(stack.getFirst().left().get(), false);
-                    buffer.writeDouble(stack.getSecond());
-                }
-            }
+    private static WeightedList<Either<ItemStack, TagKey<Item>>> toWeightedList(List<Pair<Either<ItemStack, TagKey<Item>>, Double>> entries) {
+        WeightedList<Either<ItemStack, TagKey<Item>>> list = new WeightedList<>();
+        for (Pair<Either<ItemStack, TagKey<Item>>, Double> entry : entries) {
+            list.add(entry.getFirst(), entry.getSecond());
         }
+        return list;
     }
 }

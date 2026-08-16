@@ -28,6 +28,7 @@ import com.rekindled.embers.compat.legacy.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import net.sirplop.aetherworks.recipe.ToolStationContext;
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.recipe.IToolStationRecipe;
@@ -67,7 +68,7 @@ public class ToolStationBlockEntity extends BlockEntity implements IForgePart, I
     public ItemStackHandler inventory = new ItemStackHandler(6) {
         @Override
         protected void onContentsChanged(int slot) {
-            RecipeWrapper context = new RecipeWrapper(inventory);
+            ToolStationContext context = new ToolStationContext(inventory);
             cachedRecipe = Misc.getRecipe(cachedRecipe, AWRegistry.TOOL_STATION_RECIPE.get(), context, level);
             progress = 0;
             ToolStationBlockEntity.this.setChanged();
@@ -189,7 +190,7 @@ public class ToolStationBlockEntity extends BlockEntity implements IForgePart, I
     }
 
     public boolean onHit() {
-        RecipeWrapper context = new RecipeWrapper(inventory);
+        ToolStationContext context = new ToolStationContext(inventory);
         cachedRecipe = Misc.getRecipe(cachedRecipe, AWRegistry.TOOL_STATION_RECIPE.get(), context, level);
         if (level.isClientSide())
             return false;
