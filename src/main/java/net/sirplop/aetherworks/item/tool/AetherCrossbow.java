@@ -13,6 +13,13 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ChargedProjectiles;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -23,6 +30,33 @@ import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.util.MoonlightRepair;
 
 public class AetherCrossbow extends CrossbowItem implements IProjectileWeapon {
+
+    /**
+     * 1.21 replaced the boolean "Charged" tag with the CHARGED_PROJECTILES component, and
+     * {@link CrossbowItem#isCharged} just asks whether that component is non-empty. These
+     * crossbows fire ember rather than an item, so a single arrow stands in as the marker.
+     */
+    protected static void setCharged(ItemStack stack, boolean charged) {
+        stack.set(DataComponents.CHARGED_PROJECTILES,
+                charged ? ChargedProjectiles.of(new ItemStack(Items.ARROW)) : ChargedProjectiles.EMPTY);
+    }
+
+    /** Highest level of an enchantment across the entity's equipment. */
+    public static int enchantLevelOn(LivingEntity entity, ResourceKey<Enchantment> enchantment) {
+        return entity.level().registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+                .getHolder(enchantment)
+                .map(holder -> EnchantmentHelper.getEnchantmentLevel(holder, entity))
+                .orElse(0);
+    }
+
+    /** Enchantment levels are read through Holders in 1.21, so resolve the key against the level. */
+    protected static int enchantLevel(Level level, ResourceKey<Enchantment> enchantment, ItemStack stack) {
+        return level.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+                .getHolder(enchantment)
+                .map(holder -> EnchantmentHelper.getItemEnchantmentLevel(holder, stack))
+                .orElse(0);
+    }
+
     public AetherCrossbow(Properties pProperties) {
         super(pProperties);
     }
@@ -57,8 +91,8 @@ public class AetherCrossbow extends CrossbowItem implements IProjectileWeapon {
     }
     @Override
     public void releaseUsing(ItemStack pStack, Level pLevel, LivingEntity pEntityLiving, int pTimeLeft) {
-        int i = this.getUseDuration(pStack) - pTimeLeft;
-        float f = getPowerForTime(i, pStack);
+        int i = this.getUseDuration(pStack, pEntityLiving) - pTimeLeft;
+        float f = getPowerForTime(i, pStack, pEntityLiving);
         if (f >= 1.0F && !isCharged(pStack) && tryLoadProjectiles(pEntityLiving, pStack)) {
             setCharged(pStack, true);
             SoundSource soundsource = pEntityLiving instanceof Player ? SoundSource.PLAYERS : SoundSource.HOSTILE;
@@ -68,7 +102,7 @@ public class AetherCrossbow extends CrossbowItem implements IProjectileWeapon {
     }
 
     protected boolean tryLoadProjectiles(LivingEntity pShooter, ItemStack pCrossbowStack) {
-        int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MULTISHOT, pCrossbowStack);
+        int i = enchantLevel(pShooter.level(), Enchantments.MULTISHOT, pCrossbowStack);
         int j = i == 0 ? 1 : 3;
         boolean playerFlag = pShooter instanceof Player;
         boolean creativeFlag = pShooter instanceof Player && ((Player)pShooter).getAbilities().instabuild;
@@ -90,8 +124,8 @@ public class AetherCrossbow extends CrossbowItem implements IProjectileWeapon {
         return true;
     }
 
-    private static float getPowerForTime(int pUseTime, ItemStack pCrossbowStack) {
-        float f = (float)pUseTime / (float)getChargeDuration(pCrossbowStack);
+    private static float getPowerForTime(int pUseTime, ItemStack pCrossbowStack, LivingEntity pShooter) {
+        float f = (float)pUseTime / (float)getChargeDuration(pCrossbowStack, pShooter);
         if (f > 1.0F) {
             f = 1.0F;
         }
@@ -101,10 +135,10 @@ public class AetherCrossbow extends CrossbowItem implements IProjectileWeapon {
     @Override
     public void onUseTick(Level level, LivingEntity livingEntity, ItemStack stack, int count) {
         if (!level.isClientSide) {
-            int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.QUICK_CHARGE, stack);
-            SoundEvent soundevent = this.getStartSound(i);
-            SoundEvent soundevent1 = i == 0 ? SoundEvents.CROSSBOW_LOADING_MIDDLE : null;
-            float f = (float)(stack.getUseDuration() - count) / (float)getChargeDuration(stack);
+            int i = enchantLevel(level, Enchantments.QUICK_CHARGE, stack);
+            Holder<SoundEvent> soundevent = this.getStartSound(i);
+            Holder<SoundEvent> soundevent1 = i == 0 ? SoundEvents.CROSSBOW_LOADING_MIDDLE : null;
+            float f = (float)(stack.getUseDuration(livingEntity) - count) / (float)getChargeDuration(stack, livingEntity);
             if (f < 0.2F) {
                 this.startSoundPlayed = false;
                 this.midLoadSoundPlayed = false;
@@ -121,7 +155,7 @@ public class AetherCrossbow extends CrossbowItem implements IProjectileWeapon {
             }
         }
     }
-    private SoundEvent getStartSound(int pEnchantmentLevel) {
+    private Holder<SoundEvent> getStartSound(int pEnchantmentLevel) {
         return switch (pEnchantmentLevel) {
             case 1 -> SoundEvents.CROSSBOW_QUICK_CHARGE_1;
             case 2 -> SoundEvents.CROSSBOW_QUICK_CHARGE_2;
@@ -136,7 +170,7 @@ public class AetherCrossbow extends CrossbowItem implements IProjectileWeapon {
     }
 
     public static void performShooting(Level pLevel, LivingEntity pShooter, ItemStack pCrossbowStack, InteractionHand hand) {
-        int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MULTISHOT, pCrossbowStack);
+        int i = enchantLevel(pLevel, Enchantments.MULTISHOT, pCrossbowStack);
         ((AetherCrossbow)pCrossbowStack.getItem()).shootProjectile(pLevel, pShooter, pCrossbowStack, hand,0.0F, 0);
         if (i > 0) {
             ((AetherCrossbow)pCrossbowStack.getItem()).shootProjectile(pLevel, pShooter, pCrossbowStack, hand,0.0F, -10);
@@ -160,22 +194,27 @@ public class AetherCrossbow extends CrossbowItem implements IProjectileWeapon {
     }
 
     //Piercing does not work with ember projectiles, so disable the enchantment.
+    //canApplyAtEnchantingTable became supportsEnchantment, keyed on a Holder.
     @Override
-    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        if (enchantment.equals(Enchantments.FLAMING_ARROWS)
-                || enchantment.equals(Enchantments.POWER_ARROWS)
-                || enchantment.equals(Enchantments.PUNCH_ARROWS)
-                || enchantment.equals(Enchantments.MULTISHOT))
+    public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+        if (enchantment.is(Enchantments.FLAME)
+                || enchantment.is(Enchantments.POWER)
+                || enchantment.is(Enchantments.PUNCH)
+                || enchantment.is(Enchantments.MULTISHOT))
             return true;
-        if (enchantment.equals(Enchantments.PIERCING))
+        if (enchantment.is(Enchantments.PIERCING))
             return false;
-        return super.canApplyAtEnchantingTable(stack, enchantment);
+        return super.supportsEnchantment(stack, enchantment);
     }
 
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-        if (book.getEnchantmentLevel(Enchantments.PIERCING) > 0)
-            return false;
+        //Book enchantments live in the STORED_ENCHANTMENTS component and are keyed by Holder.
+        ItemEnchantments stored = book.getOrDefault(DataComponents.STORED_ENCHANTMENTS, ItemEnchantments.EMPTY);
+        for (Holder<Enchantment> enchantment : stored.keySet()) {
+            if (enchantment.is(Enchantments.PIERCING))
+                return false;
+        }
         return super.isBookEnchantable(stack, book);
     }
 

@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.item.tool;
 
+import net.minecraft.world.entity.EquipmentSlot;
+
 import com.rekindled.embers.ConfigManager;
 import com.rekindled.embers.api.event.EmberProjectileEvent;
 import com.rekindled.embers.api.projectile.IProjectilePreset;
@@ -56,9 +58,9 @@ public class AetherCrossbowMagma extends AetherCrossbow{
         double targY = entity.getY() + 2 + direction.y * ConfigManager.BLAZING_RAY_MAX_DISTANCE.get();
         double targZ = entity.getZ() + direction.z * ConfigManager.BLAZING_RAY_MAX_DISTANCE.get();
 
-        int powerLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER_ARROWS, entity);
-        int knockback = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH_ARROWS, entity);
-        int fire = EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAMING_ARROWS, entity) > 0 ? 100 : 0;
+        int powerLevel = AetherCrossbow.enchantLevelOn(entity, Enchantments.POWER);
+        int knockback = AetherCrossbow.enchantLevelOn(entity, Enchantments.PUNCH);
+        int fire = AetherCrossbow.enchantLevelOn(entity, Enchantments.FLAME) > 0 ? 100 : 0;
 
         float damage = ConfigManager.BLAZING_RAY_DAMAGE.get().floatValue() + (powerLevel * 0.5f);
 
@@ -70,9 +72,7 @@ public class AetherCrossbowMagma extends AetherCrossbow{
         }
         if (entity instanceof Player player && player.getAbilities().instabuild)
             return;
-        stack.hurtAndBreak(1, entity, (ent) -> {
-            ent.broadcastBreakEvent(hand);
-        });
+        stack.hurtAndBreak(1, entity, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
     }
 
     public void createRay(Level level, EffectDamageCrossbowMagma effect, LivingEntity shooter, Vec3 start, Vec3 targetPos, ItemStack stack, boolean hitBefore) {
@@ -93,7 +93,7 @@ public class AetherCrossbowMagma extends AetherCrossbow{
     public void createRay(Level level, float damage, float knockback, int fire, LivingEntity shooter, Vec3 start, Vec3 targetPos, ItemStack stack, int id) {
         DamageSource dam = new DamageEmber(level.registryAccess().registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(EmbersDamageTypes.EMBER_KEY), shooter, true);
         EffectDamageCrossbowMagma effect = new EffectDamageCrossbowMagma(damage, knockback, e -> dam, fire, 1.0f,
-                List.of(new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE.get(), 200, 1, false, true, true)),
+                List.of(new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE, 200, 1, false, true, true)),
                 this, id, stack);
         createRay(level, effect, shooter, start, targetPos, stack, false);
     }

@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.item.tool;
 
+import net.minecraft.world.entity.EquipmentSlot;
+
 import com.rekindled.embers.api.event.EmberProjectileEvent;
 import com.rekindled.embers.api.projectile.EffectArea;
 import com.rekindled.embers.api.projectile.IProjectilePreset;
@@ -86,9 +88,9 @@ public class AetherCrossbowQuartz extends AetherCrossbow {
             spawnDistance = (float) Math.min(spawnDistance, traceResult.getLocation().distanceTo(eyesPos));
 
         Vec3 launchPos = eyesPos.add(entity.getLookAngle().scale(spawnDistance));
-        int powerLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER_ARROWS, entity);
-        int knockback = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH_ARROWS, entity);
-        int fire = EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAMING_ARROWS, entity) > 0 ? 100 : 0;
+        int powerLevel = AetherCrossbow.enchantLevelOn(entity, Enchantments.POWER);
+        int knockback = AetherCrossbow.enchantLevelOn(entity, Enchantments.PUNCH);
+        int fire = AetherCrossbow.enchantLevelOn(entity, Enchantments.FLAME) > 0 ? 100 : 0;
         float damage = 9f + (powerLevel * 0.5f);
         float size = 6f;
         float aoeSize = 1f;
@@ -104,7 +106,7 @@ public class AetherCrossbowQuartz extends AetherCrossbow {
 
         Function<Entity, DamageSource> damageSource = e ->  new DamageEmber(level.registryAccess().registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(EmbersDamageTypes.EMBER_KEY), e, true);
         EffectDamageCrossbowQuartz dam = new EffectDamageCrossbowQuartz(damage, knockback, damageSource, fire, 1.0,
-                List.of(new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE.get(), 200, 1, false, true, true)), stack);
+                List.of(new MobEffectInstance(AWRegistry.EFFECT_MOONFIRE, 200, 1, false, true, true)), stack);
         EffectArea effect = new EffectArea(dam, aoeSize, false);
         ProjectileFireball fireball = new ProjectileFireball(entity, launchPos, direction, size, lifetime, effect);
         fireball.setColor(Utils.AETHERIUM_PROJECTILE_COLOR);
@@ -123,8 +125,6 @@ public class AetherCrossbowQuartz extends AetherCrossbow {
         }
         if (entity instanceof Player player && player.getAbilities().instabuild)
             return;
-        stack.hurtAndBreak(1, entity, (ent) -> {
-            ent.broadcastBreakEvent(hand);
-        });
+        stack.hurtAndBreak(1, entity, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
     }
 }
