@@ -77,7 +77,7 @@ public class SculkAxe extends AOEEmberDiggerItem{
     }
 
     @Override
-    public int getUseDuration(@NotNull ItemStack pStack) {
+    public int getUseDuration(@NotNull ItemStack pStack, LivingEntity entity) {
         return 72000;
     }
     @Override
@@ -138,7 +138,7 @@ public class SculkAxe extends AOEEmberDiggerItem{
             BlockPos start = dir.offsetBlock(pos).above(5);
             for (int i = 0; i < 10; i++) {
                 BlockPos check = start.below(i);
-                if (level.getBlockState(check).isAir() && saplingInfo.canSurvive(level.getBlockState(check), level, check)) {
+                if (level.getBlockState(check).isAir() && saplingInfo.defaultBlockState().canSurvive(level, check)) {
                     placePos = check;
                     break;
                 }
@@ -204,20 +204,20 @@ public class SculkAxe extends AOEEmberDiggerItem{
         List<BlockPos> ret = new ArrayList<>();
         //check the 3 available positions to see if it's viable to place all 3 saplings.
         BlockPos work = pos.offset(pXOffset + 1, 0, pZOffset);
-        if (level.getBlockState(work).isAir() && sapling.canSurvive(level.getBlockState(work), level, work)) {
+        if (level.getBlockState(work).isAir() && sapling.defaultBlockState().canSurvive(level, work)) {
             ret.add(work);
         } else {
             return ret;
         }
         work = pos.offset(pXOffset, 0, pZOffset + 1);
-        if (level.getBlockState(work).isAir() && sapling.canSurvive(level.getBlockState(work), level, work)) {
+        if (level.getBlockState(work).isAir() && sapling.defaultBlockState().canSurvive(level, work)) {
             ret.add(work);
         } else {
             ret.clear();
             return ret;
         }
         work = pos.offset(pXOffset + 1, 0, pZOffset + 1);
-        if (level.getBlockState(work).isAir() && sapling.canSurvive(level.getBlockState(work), level, work)) {
+        if (level.getBlockState(work).isAir() && sapling.defaultBlockState().canSurvive(level, work)) {
             ret.add(work);
         } else {
             ret.clear();

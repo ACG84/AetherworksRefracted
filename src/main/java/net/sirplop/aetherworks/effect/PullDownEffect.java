@@ -20,13 +20,13 @@ public class PullDownEffect extends MobEffect {
     }
 
     @Override
-    public void applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
+    public boolean applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
         if (!pLivingEntity.level().isClientSide() || isClientPlayer(pLivingEntity)) {
             //pLivingEntity.push(0, -0.25 * (1 + pAmplifier), 0);
             pLivingEntity.push(0, -0.1f * (1f + pAmplifier), 0);
         }
 
-        super.applyEffectTick(pLivingEntity, pAmplifier);
+        return super.applyEffectTick(pLivingEntity, pAmplifier);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -35,7 +35,7 @@ public class PullDownEffect extends MobEffect {
     }
 
     @Override
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+    public boolean shouldApplyEffectTickThisTick(int pDuration, int pAmplifier) {
         return true;
     }
 }

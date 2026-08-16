@@ -124,7 +124,7 @@ public class AWBlockTags  extends BlockTagsProvider {
                 BlockTags.BASE_STONE_OVERWORLD,
                 BlockTags.BASE_STONE_NETHER,
                 BlockTags.NYLIUM,
-                Tags.Blocks.SANDSTONE
+                Tags.Blocks.SANDSTONE_BLOCKS
         );
         tag(HOVH_RIGHTCLICK).add(
                 Blocks.SWEET_BERRY_BUSH,
@@ -152,7 +152,7 @@ public class AWBlockTags  extends BlockTagsProvider {
                 BlockTags.BASE_STONE_OVERWORLD,
                 BlockTags.BASE_STONE_NETHER,
                 BlockTags.NYLIUM,
-                Tags.Blocks.SANDSTONE
+                Tags.Blocks.SANDSTONE_BLOCKS
         );
         tag(POBS_BANNED).add(
                 Blocks.BEDROCK,

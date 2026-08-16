@@ -53,11 +53,11 @@ public class AWItemTags extends ItemTagsProvider {
         tag(BLOCK_SHARDS).add(AWRegistry.AETHERIUM_SHARD_BLOCK.get().asItem());
         tag(Tags.Items.COBBLESTONE).add(AWRegistry.SUEVITE_COBBLE.get().asItem());
         tag(Tags.Items.STONE).add(AWRegistry.SUEVITE.get().asItem());
-        tag(Tags.Items.GLASS).add(
+        tag(Tags.Items.GLASS_BLOCKS).add(
                 AWRegistry.GLASS_AETHERIUM.get().asItem(),
                 AWRegistry.GLASS_AETHERIUM_BORDERLESS.get().asItem()
         );
-        tag(Tags.Items.GLASS_BLUE).add(
+        tag(Tags.Items.GLASS_BLOCKS).add(
                 AWRegistry.GLASS_AETHERIUM.get().asItem(),
                 AWRegistry.GLASS_AETHERIUM_BORDERLESS.get().asItem()
         );

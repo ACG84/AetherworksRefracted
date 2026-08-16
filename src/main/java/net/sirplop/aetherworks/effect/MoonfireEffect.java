@@ -16,18 +16,18 @@ public class MoonfireEffect extends MobEffect {
     }
 
     @Override
-    public void applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
+    public boolean applyEffectTick(LivingEntity pLivingEntity, int pAmplifier) {
         if (!pLivingEntity.level().isClientSide()) {
             DamageSource source = new DamageMoonEmber(pLivingEntity.level().registryAccess().registry(Registries.DAMAGE_TYPE).get()
                     .getHolderOrThrow(AWDamageTypes.MOON_EMBER_KEY), null, null);
             pLivingEntity.hurt(source, AWConfig.MOONGAZE_STRENGTH.get().floatValue());
         }
 
-        super.applyEffectTick(pLivingEntity, pAmplifier);
+        return super.applyEffectTick(pLivingEntity, pAmplifier);
     }
 
     @Override
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+    public boolean shouldApplyEffectTickThisTick(int pDuration, int pAmplifier) {
         int i = 40 >> pAmplifier;
         if (i > 0) {
             return pDuration % i == 0;

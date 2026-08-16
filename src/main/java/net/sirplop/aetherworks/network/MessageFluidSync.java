@@ -33,7 +33,7 @@ public record MessageFluidSync(ItemStack held, FluidStack fluid, int capacity) i
         ctx.enqueueWork(() -> {
             //FluidHandlerItemStack now wraps a mutable component holder rather than raw NBT.
             FluidHandlerItemStack stack = new FluidHandlerItemStack(
-                    AWDataComponents.FLUID_CONTENT.get(), msg.held(), msg.capacity());
+                    AWDataComponents.FLUID_CONTENT, msg.held(), msg.capacity());
             setFluid(stack, msg.fluid());
         });
     }
