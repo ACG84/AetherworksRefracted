@@ -4,10 +4,10 @@ import net.minecraft.world.InteractionResult;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.sirplop.aetherworks.item.tool.AmethystHoe;
 
-@Mod.EventBusSubscriber(modid = Aetherworks.MODID)
+@EventBusSubscriber(modid = Aetherworks.MODID)
 public class AWEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     //we need to do this in a very high priority event because right-click-harvest mods

@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
-    protected final Lazy<Integer> capacity = () -> AWConfig.PRISMARINE_SHOVEL_CAPACITY.get() * 1000;
+    protected final Lazy<Integer> capacity = Lazy.of(() -> AWConfig.PRISMARINE_SHOVEL_CAPACITY.get() * 1000);
 
     private final GlowParticleOptions particle = new GlowParticleOptions(getParticleColor(), 1, 15);
 
@@ -61,9 +61,9 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
     @Override
     public boolean showAmount() { return true; }
 
-    @Override
-    public ICapabilityProvider initCapabilities(@NotNull ItemStack stack, @Nullable CompoundTag nbt)
-    {
+    //Item.initCapabilities is gone in 1.21; the fluid handler is registered against the item
+    //in AWCapabilities instead.
+    public FluidHandlerItemStack createFluidHandler(ItemStack stack) {
         return new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT, stack, capacity.get());
     }
 

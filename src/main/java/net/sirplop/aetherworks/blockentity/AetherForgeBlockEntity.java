@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import com.rekindled.embers.util.CapabilityCompat;
+
 import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
 
 import net.minecraft.core.HolderLookup;
@@ -297,7 +299,7 @@ public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtr
             return true;
         }
         else if (entity instanceof FluidVesselBlockEntity vessel) {
-            this.fluidHandlers.add(vessel.getCapability(ForgeCapabilities.FLUID_HANDLER).resolve().get());
+            this.fluidHandlers.add(CapabilityCompat.getCapability(vessel, ForgeCapabilities.FLUID_HANDLER).orElse(null));
             return true;
         }
 
@@ -347,7 +349,7 @@ public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtr
                 return heatCapability.getCapability(cap, side);
             }
         }
-        return super.getCapability(cap, side);
+        return LazyOptional.empty();
     }
 
     @Override

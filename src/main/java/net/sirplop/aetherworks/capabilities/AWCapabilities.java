@@ -20,6 +20,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.api.capabilities.IHeatCapability;
+import net.sirplop.aetherworks.item.tool.PrismarineShovel;
 
 /**
  * Capabilities work in two layers after the 1.21 rewrite.
@@ -40,6 +41,12 @@ public class AWCapabilities {
         for (DeferredHolder<BlockEntityType<?>, ? extends BlockEntityType<?>> entry : AWRegistry.BLOCK_ENTITY_TYPES.getEntries()) {
             registerLegacyBlockEntityCapabilities(event, entry.get());
         }
+
+        //Item.initCapabilities was removed in 1.21, so the Prismarine Shovel's tank is
+        //registered here instead of being built inside the item.
+        event.registerItem(Capabilities.FluidHandler.ITEM,
+                (stack, context) -> ((PrismarineShovel) stack.getItem()).createFluidHandler(stack),
+                AWRegistry.SHOVEL_PRISMARINE.get());
     }
 
     @SuppressWarnings("unchecked")

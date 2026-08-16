@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.item.tool;
 
+import net.sirplop.aetherworks.AWDataComponents;
+
 import com.rekindled.embers.particle.GlowParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,7 +40,7 @@ public class SlimeShovel extends AOEEmberDiggerItem implements IHudFocus {
     }
 
     public ItemStack getFocus(ItemStack held) {
-        return ItemStack.of(held.getOrCreateTag().getCompound(MessageFocusedStack.FOCUS_TAG));
+        return held.getOrDefault(AWDataComponents.FOCUS.get(), ItemStack.EMPTY);
     }
 
     @Override
@@ -100,7 +102,7 @@ public class SlimeShovel extends AOEEmberDiggerItem implements IHudFocus {
 
         if (result == InteractionResult.PASS && context.getHand() == InteractionHand.MAIN_HAND)
         {
-            ItemStack focused = ItemStack.of(usedItem.getOrCreateTag().getCompound(MessageFocusedStack.FOCUS_TAG));
+            ItemStack focused = usedItem.getOrDefault(AWDataComponents.FOCUS.get(), ItemStack.EMPTY);
             if (focused.getItem().equals(context.getLevel().getBlockState(context.getClickedPos()).getBlock().asItem()))
                 return InteractionResult.PASS;
             AWExchangeNode node = new AWExchangeNode(context.getPlayer(), context.getLevel(), context.getClickedPos(),

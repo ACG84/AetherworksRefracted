@@ -102,7 +102,7 @@ public class LexiconReceptacleBlockEntity extends BlockEntity implements IExtraC
                 return lazyLexicon.cast();
             return lazyStorage.cast();
         }
-        return super.getCapability(cap, side);
+        return LazyOptional.empty();
     }
     @Override
     public boolean hasCapabilityDescription(Capability<?> capability) {

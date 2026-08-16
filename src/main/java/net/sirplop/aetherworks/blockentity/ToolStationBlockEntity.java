@@ -126,7 +126,7 @@ public class ToolStationBlockEntity extends BlockEntity implements IForgePart, I
         if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER) {
             return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, holder);
         }
-        return super.getCapability(cap, side);
+        return LazyOptional.empty();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import com.rekindled.embers.util.CapabilityCompat;
+
 import net.minecraft.core.HolderLookup;
 
 import com.rekindled.embers.api.tile.IDialEntity;
@@ -46,7 +48,7 @@ public class HeatDialBlockEntity extends BlockEntity  implements IDialEntity {
             Direction facing = state.getValue(BlockStateProperties.FACING);
             BlockEntity blockEntity = level.getBlockEntity(worldPosition.relative(facing, -1));
             if (blockEntity != null) {
-                IHeatCapability cap = blockEntity.getCapability(AWCapabilities.HEAT_CAPABILITY, facing.getOpposite()).orElse(blockEntity.getCapability(AWCapabilities.HEAT_CAPABILITY, null).orElse(null));
+                IHeatCapability cap = CapabilityCompat.getCapability(blockEntity, AWCapabilities.HEAT_CAPABILITY, facing.getOpposite()).orElse(CapabilityCompat.getCapability(blockEntity, AWCapabilities.HEAT_CAPABILITY, null).orElse(null));
                 if (cap != null) {
                     nbt.putDouble(IHeatCapability.HEAT, cap.getHeat());
                     nbt.putDouble(IHeatCapability.HEAT_CAPACITY, cap.getHeatCapacity());

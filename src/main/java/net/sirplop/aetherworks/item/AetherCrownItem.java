@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.item;
 
+import net.minecraft.core.Holder;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
@@ -87,7 +89,7 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
             return;
         //there's a bug in the slot index for inventoryTick - it resets every "compartment", so multiple slots end up sharing indices.
         boolean inRightSlot = false;
-        for (ItemStack armor : entity.getArmorAndBodyArmorSlots()) {
+        for (ItemStack armor : entity.getArmorSlots()) {
             if (armor == stack) {
                 inRightSlot = true;
                 break;

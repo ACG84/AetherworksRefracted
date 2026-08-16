@@ -106,7 +106,7 @@ public class AetheriumAnvilBlockEntity extends BlockEntity implements IForgePart
         if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER) {
             return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, holder);
         }
-        return super.getCapability(cap, side);
+        return LazyOptional.empty();
     }
     @Override
     public boolean hasCapabilityDescription(Capability<?> capability) {

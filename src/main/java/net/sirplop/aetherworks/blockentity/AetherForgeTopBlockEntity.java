@@ -41,7 +41,7 @@ public class AetherForgeTopBlockEntity extends BlockEntity implements IExtraDial
         BlockEntityDirection multiblock = getAttachedMultiblock();
         if (multiblock != null && multiblock.blockEntity != null)
             return multiblock.blockEntity.getCapability(cap, multiblock.direction);
-        return super.getCapability(cap, side);
+        return LazyOptional.empty();
     }
 
     @Override
