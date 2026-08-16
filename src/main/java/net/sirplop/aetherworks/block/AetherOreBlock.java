@@ -16,7 +16,7 @@ import net.sirplop.aetherworks.util.Utils;
 
 public class AetherOreBlock extends DropExperienceBlock {
     public AetherOreBlock(Properties pProperties, IntProvider pXpRange) {
-        super(pProperties, pXpRange);
+        super(pXpRange, pProperties);
     }
     public static final GlowParticleOptions GLOW = new GlowParticleOptions(Utils.AETHERIUM_COLOR, 0.75F, 20);
 

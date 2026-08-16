@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_suevite_big_tile": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "aetherworks:suevite_big_tile"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:suevite_big_tile_wall_from_suevite_big_tile_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_suevite_big_tile",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:suevite_big_tile_wall_from_suevite_big_tile_stonecutting"
+    ]
+  },
+  "sends_telemetry_event": false
+}

@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.item;
 
+import com.rekindled.embers.util.CapabilityCompat;
+
 
 import com.rekindled.embers.api.capabilities.EmbersCapabilities;
 import com.rekindled.embers.item.EmberStorageItem;
@@ -33,9 +35,9 @@ public class AetherEmberBulbItem extends EmberStorageItem implements IEmbersCuri
 
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        var cap = stack.getCapability(EmbersCapabilities.EMBER_CAPABILITY, null);
+        var cap = CapabilityCompat.getCapability(stack, EmbersCapabilities.EMBER_CAPABILITY, null);
         if (cap.isPresent())
-            MoonlightRepair.tryFillWithEmber(cap.resolve().get(), world, entity, AWConfig.MOONSNARE_STRENGTH.get());
+            MoonlightRepair.tryFillWithEmber(cap.orElse(null), world, entity, AWConfig.MOONSNARE_STRENGTH.get());
     }
 
     @Override

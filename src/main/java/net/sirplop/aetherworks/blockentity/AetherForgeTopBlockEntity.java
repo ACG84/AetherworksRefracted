@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import com.rekindled.embers.util.CapabilityCompat;
+
 import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
 
 import java.util.List;
@@ -40,7 +42,7 @@ public class AetherForgeTopBlockEntity extends BlockEntity implements IExtraDial
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
         BlockEntityDirection multiblock = getAttachedMultiblock();
         if (multiblock != null && multiblock.blockEntity != null)
-            return multiblock.blockEntity.getCapability(cap, multiblock.direction);
+            return CapabilityCompat.getCapability(multiblock.blockEntity, cap, multiblock.direction);
         return LazyOptional.empty();
     }
 

@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.block;
 
+import net.minecraft.world.ItemInteractionResult;
+
 import net.minecraft.world.level.block.BaseEntityBlock;
 
 import com.mojang.serialization.MapCodec;
@@ -70,7 +72,8 @@ public class LexiconReceptacleBlock extends BaseEntityBlock implements SimpleWat
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    //Block.use split into useItemOn/useWithoutItem in 1.21; these all consult the held item.
+    protected ItemInteractionResult useItemOn(ItemStack heldStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof LexiconReceptacleBlockEntity receptacle) {
             ItemStack heldItem = player.getItemInHand(hand);
             if (hit.getDirection() == Direction.UP) {
@@ -82,7 +85,7 @@ public class LexiconReceptacleBlock extends BaseEntityBlock implements SimpleWat
                         receptacle.lexiconInventory.setStackInSlot(0, ItemStack.EMPTY);
                         if (level.isClientSide)
                             player.playSound(EmbersSounds.BAUBLE_UNEQUIP.get(), 1.0f, (level.random.nextFloat() * 0.2f) + 0.8f);
-                        return InteractionResult.SUCCESS;
+                        return ItemInteractionResult.SUCCESS;
                     }
                 }
                 else {
@@ -95,7 +98,7 @@ public class LexiconReceptacleBlock extends BaseEntityBlock implements SimpleWat
                             player.setItemInHand(hand, leftover);
                             if (level.isClientSide)
                                 player.playSound(EmbersSounds.BAUBLE_UNEQUIP.get(), 1.0f, (level.random.nextFloat() * 0.2f) + 0.8f);
-                            return InteractionResult.SUCCESS;
+                            return ItemInteractionResult.SUCCESS;
                         }
                     }
                 }
@@ -106,13 +109,13 @@ public class LexiconReceptacleBlock extends BaseEntityBlock implements SimpleWat
                 ItemStack leftover = receptacle.inventory.insertItem(0, heldItem, false);
                 if (!leftover.equals(heldItem)) {
                     player.setItemInHand(hand, leftover);
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
 
  */
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

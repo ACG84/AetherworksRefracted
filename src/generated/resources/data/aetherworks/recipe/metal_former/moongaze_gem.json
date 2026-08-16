@@ -1,0 +1,17 @@
+{
+  "type": "aetherworks:metal_forming",
+  "craft_time": 600,
+  "fluid": {
+    "amount": 810,
+    "fluid": "aetherworks:aether_gas"
+  },
+  "input": {
+    "item": "aetherworks:potion_gem"
+  },
+  "match_exactly": true,
+  "output": {
+    "id": "aetherworks:potion_gem",
+    "nbt": "{CustomPotionEffects:[{Ambient:1b,Amplifier:0b,CurativeItems:[{Count:1b,id:\"minecraft:milk_bucket\"}],Duration:200,Id:0,ShowIcon:1b,ShowParticles:1b,\"c:id\":\"aetherworks:moonfire\"}],gem_color:-8210433}"
+  },
+  "temperature": 2400
+}

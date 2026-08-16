@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.block.forge;
 
+import net.minecraft.world.ItemInteractionResult;
+
+import com.rekindled.embers.util.CapabilityCompat;
+
 import net.minecraft.world.level.block.BaseEntityBlock;
 
 import com.mojang.serialization.MapCodec;
@@ -77,19 +81,20 @@ public class MetalFormerBlock extends HorizontalWaterloggableEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    //Block.use split into useItemOn/useWithoutItem in 1.21; these all consult the held item.
+    protected ItemInteractionResult useItemOn(ItemStack heldStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof MetalFormerBlockEntity former) {
             ItemStack heldItem = player.getItemInHand(hand);
             if (!heldItem.isEmpty()) {
-                IFluidHandler cap = former.getCapability(ForgeCapabilities.FLUID_HANDLER, hit.getDirection()).orElse(null);
+                IFluidHandler cap = CapabilityCompat.getCapability(former, ForgeCapabilities.FLUID_HANDLER, hit.getDirection()).orElse(null);
                 if (cap != null && FluidUtil.interactWithFluidHandler(player, hand, cap)) {
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
             } else if (former.inventory.getStackInSlot(0).isEmpty())
                 former.progress = 0;
-            return Misc.useItemOnInventory(former.inventory, level, player, hand);
+            return ItemInteractionResult.sidedSuccess(Misc.useItemOnInventory(former.inventory, level, player, hand).consumesAction());
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -97,7 +102,7 @@ public class MetalFormerBlock extends HorizontalWaterloggableEntityBlock {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity != null) {
-                IItemHandler handler = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(null);
+                IItemHandler handler = CapabilityCompat.getCapability(blockEntity, ForgeCapabilities.ITEM_HANDLER, null).orElse(null);
                 if (handler != null) {
                     Misc.spawnInventoryInWorld(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, handler);
                     level.updateNeighbourForOutputSignal(pos, this);

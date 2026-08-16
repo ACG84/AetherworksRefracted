@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.block.forge;
 
+import net.minecraft.world.ItemInteractionResult;
+
+import com.rekindled.embers.util.CapabilityCompat;
+
 import net.minecraft.world.level.block.BaseEntityBlock;
 
 import com.mojang.serialization.MapCodec;
@@ -76,27 +80,28 @@ public class AetheriumAnvilBlock extends HorizontalWaterloggableEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    //Block.use split into useItemOn/useWithoutItem in 1.21; these all consult the held item.
+    protected ItemInteractionResult useItemOn(ItemStack heldStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof AetheriumAnvilBlockEntity anvil) {
             ItemStack heldItem = player.getItemInHand(hand);
             if (!heldItem.isEmpty()) {
                 if (heldItem.getItem() == RegistryManager.TINKER_HAMMER.get()) {
                     anvil.onHit();
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
                 ItemStack leftover = anvil.inventory.insertItem(0, heldItem, false);
                 if (!leftover.equals(heldItem)) {
                     player.setItemInHand(hand, leftover);
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
             if (!anvil.inventory.getStackInSlot(0).isEmpty()) {
                 level.addFreshEntity(new ItemEntity(level, player.position().x, player.position().y, player.position().z, anvil.inventory.getStackInSlot(0)));
                 anvil.inventory.setStackInSlot(0, ItemStack.EMPTY);
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
@@ -104,7 +109,7 @@ public class AetheriumAnvilBlock extends HorizontalWaterloggableEntityBlock {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity != null) {
-                IItemHandler handler = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, null).orElse(null);
+                IItemHandler handler = CapabilityCompat.getCapability(blockEntity, ForgeCapabilities.ITEM_HANDLER, null).orElse(null);
                 if (handler != null) {
                     Misc.spawnInventoryInWorld(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, handler);
                     level.updateNeighbourForOutputSignal(pos, this);

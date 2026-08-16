@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.api.damage;
 
+import net.minecraft.world.item.component.CustomData;
+
+import net.minecraft.core.component.DataComponents;
+
 import net.minecraft.server.level.ServerLevel;
 
 import net.minecraft.core.Holder;
@@ -71,13 +75,11 @@ public class EffectDamageCrossbowQuartz extends EffectDamagePotion{
             return;
         float damage = this.damage;
         if (sourceItem != null && !sourceItem.isEmpty()) {
-            CompoundTag tag = sourceItem.getOrCreateTag();
-            CompoundTag exp;
-            if (tag.contains("exponential_damage")) {
-                exp = tag.getCompound("exponential_damage");
-            } else {
-                exp = new CompoundTag();
-            }
+            //Arbitrary per-stack bookkeeping lives in the CUSTOM_DATA component now.
+            CompoundTag root = sourceItem.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+            CompoundTag exp = root.contains("exponential_damage")
+                    ? root.getCompound("exponential_damage")
+                    : new CompoundTag();
             long time = System.currentTimeMillis();
             if (exp.contains(entity.getStringUUID()))
             { //entity has been struck before - but was it recent enough?
@@ -98,7 +100,8 @@ public class EffectDamageCrossbowQuartz extends EffectDamagePotion{
                 multTag.putInt("damage", 1);
                 exp.put(entity.getStringUUID(), multTag);
             }
-            tag.put("exponential_damage", exp);
+            root.put("exponential_damage", exp);
+            sourceItem.set(DataComponents.CUSTOM_DATA, CustomData.of(root));
             if (shooter instanceof Player player)
                 player.getInventory().setChanged();
         }

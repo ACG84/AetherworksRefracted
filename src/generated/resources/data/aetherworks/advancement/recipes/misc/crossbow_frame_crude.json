@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_aether_ingot": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "aetherworks:ingot_aether"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "aetherworks:crossbow_frame_crude"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_aether_ingot",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "aetherworks:crossbow_frame_crude"
+    ]
+  },
+  "sends_telemetry_event": false
+}

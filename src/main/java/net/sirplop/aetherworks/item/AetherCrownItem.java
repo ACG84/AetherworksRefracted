@@ -89,7 +89,7 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
             return;
         //there's a bug in the slot index for inventoryTick - it resets every "compartment", so multiple slots end up sharing indices.
         boolean inRightSlot = false;
-        for (ItemStack armor : entity.getArmorSlots()) {
+        for (ItemStack armor : ((LivingEntity) entity).getArmorAndBodyArmorSlots()) {
             if (armor == stack) {
                 inRightSlot = true;
                 break;
@@ -212,7 +212,7 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
         @Override
         public int getColor(ItemStack itemStack, int i) {
             if (i == 1 && AetherCrownItem.hasAttachedGem(itemStack)) {
-                return AetherCrownItem.getAttachedGem(itemStack).getOrCreateTag().getInt(PotionGemItem.POTION_COLOR);
+                return PotionGemItem.getColor(AetherCrownItem.getAttachedGem(itemStack));
             }
             else if (i == 0)
                 return 0xFFFFFFFF;

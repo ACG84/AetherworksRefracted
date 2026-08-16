@@ -79,7 +79,7 @@ public class MetalFormerBlockEntity extends FluidHandlerBlockEntity implements I
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag nbt = super.getUpdateTag(registries);
-        this.tank.writeToNBT(nbt);
+        this.tank.writeToNBT(registries, nbt);
         nbt.put("inventory", inventory.serializeNBT(registries));
         nbt.putInt("progress", progress);
         return nbt;

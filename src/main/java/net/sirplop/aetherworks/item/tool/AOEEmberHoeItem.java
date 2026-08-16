@@ -70,9 +70,7 @@ public abstract class AOEEmberHoeItem extends AOEEmberDiggerItem implements ITog
                 if (!level.isClientSide) {
                     consumer.accept(pContext);
                     if (player != null) {
-                        pContext.getItemInHand().hurtAndBreak(1, player, (p_150845_) -> {
-                            p_150845_.broadcastBreakEvent(pContext.getHand());
-                        });
+                        pContext.getItemInHand().hurtAndBreak(1, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
                     }
                 }
 

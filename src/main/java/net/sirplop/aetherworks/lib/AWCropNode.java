@@ -107,12 +107,12 @@ public class AWCropNode extends AWHarvestNode {
             for (Direction dir : Direction.values()) {
                 BlockPos check = pos.relative(dir);
                 BlockState checkState = level.getBlockState(check);
-                replant = checkState.canSustainPlant(level, check, dir.getOpposite(), state);
+                replant = checkState.canSustainPlant(level, check, dir.getOpposite(), state).isTrue();
                 if (replant)
                     break;
             }
             if (!replant && block instanceof CocoaBlock crop)
-                replant = crop.canSurvive(state, level, pos);
+                replant = state.canSurvive(level, pos);
 
             IntegerProperty age = getAge(state);
             if (isMature(state, age)) {

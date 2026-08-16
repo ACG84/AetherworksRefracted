@@ -16,11 +16,9 @@ public class AWHarvestHelper {
 
     public static void onServerTick(LevelTickEvent.Post event)
     {
+        //LevelTickEvent.Post already fires at end of tick, so the old phase check is redundant.
         if (event.getLevel().isClientSide())
             return;
-        {
-            return;
-        }
         Stack<UUID> toRemove = new Stack<>();
         for (Map.Entry<UUID, AWHarvestNode> uuidawHarvestNodeEntry : nodes.entrySet())
         {

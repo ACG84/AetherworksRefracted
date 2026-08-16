@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+
 import net.minecraft.core.HolderLookup;
 
 import com.mojang.serialization.Codec;
@@ -142,10 +144,17 @@ public class AetheriumAnvilRecipe implements IAetheriumAnvilRecipe {
     }
     public static class Serializer implements RecipeSerializer<AetheriumAnvilRecipe> {
 
+        //The stack fields sit inline next to "chance", so the entry needs an inline stack codec
+        //rather than ItemStack.CODEC nested under its own key.
+        private static final MapCodec<ItemStack> INLINE_STACK = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                BuiltInRegistries.ITEM.holderByNameCodec().fieldOf("id").forGetter(ItemStack::getItemHolder),
+                Codec.INT.optionalFieldOf("count", 1).forGetter(ItemStack::getCount)
+        ).apply(instance, ItemStack::new));
+
         //Each output entry is either a concrete stack or a tag, with its weight alongside.
         private static final Codec<Pair<Either<ItemStack, TagKey<Item>>, Double>> ENTRY_CODEC =
                 RecordCodecBuilder.create(instance -> instance.group(
-                        Codec.mapEither(ItemStack.CODEC.fieldOf("result"),
+                        Codec.mapEither(INLINE_STACK,
                                 TagKey.codec(Registries.ITEM).fieldOf("tag")).forGetter(Pair::getFirst),
                         Codec.DOUBLE.fieldOf("chance").forGetter(Pair::getSecond)
                 ).apply(instance, Pair::of));

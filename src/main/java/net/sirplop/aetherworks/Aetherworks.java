@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks;
 
+import net.minecraft.world.entity.player.Player;
+
+import net.minecraft.client.renderer.entity.EntityRenderer;
+
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -206,9 +210,9 @@ public class Aetherworks
         static void registerLayers(EntityRenderersEvent.AddLayers event) {
             event.getSkins().forEach(skin ->
             {
-                LivingEntityRenderer<?, ?> renderer = event.getSkin(skin);
-                if (renderer != null)
-                    renderer.addLayer(new AetherCrownGemLayer(renderer, event.getEntityModels()));
+                EntityRenderer<? extends Player> renderer = event.getSkin(skin);
+                if (renderer instanceof LivingEntityRenderer<?, ?> living)
+                    living.addLayer(new AetherCrownGemLayer(living, event.getEntityModels()));
             });
             //The renderer map is private in 1.21, so walk the event's own entity types instead.
             event.getEntityTypes().forEach(type -> {

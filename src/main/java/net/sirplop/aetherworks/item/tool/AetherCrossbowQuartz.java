@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.item.tool;
 
+import net.minecraft.world.item.component.CustomData;
+
+import net.minecraft.core.component.DataComponents;
+
 import net.minecraft.world.entity.EquipmentSlot;
 
 import com.rekindled.embers.api.event.EmberProjectileEvent;
@@ -44,7 +48,7 @@ public class AetherCrossbowQuartz extends AetherCrossbow {
 
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         boolean changed = false;
         if (tag.contains("exponential_damage")) {
             CompoundTag exp = tag.getCompound("exponential_damage");

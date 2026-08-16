@@ -411,7 +411,7 @@ public class AWRegistry {
             EmbersAPI.registerEmberResonance(Ingredient.of(AETHER_CROWN.get()), 2.5);
             EmbersAPI.registerWearableLens(Ingredient.of(AETHER_CROWN.get())); //of course it's a lens!
 
-            FluidInteractionRegistry.addInteraction(AETHERIUM_GAS.FLUID.get().getFluidType(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.WATER_TYPE.get(),
+            FluidInteractionRegistry.addInteraction(AETHERIUM_GAS.FLUID.get().getFluidType(), new FluidInteractionRegistry.InteractionInformation(NeoForgeMod.WATER_TYPE.value(),
                     fluidState -> fluidState.isSource() ? SUEVITE.get().defaultBlockState() : SUEVITE_COBBLE.get().defaultBlockState()));
         });
     }

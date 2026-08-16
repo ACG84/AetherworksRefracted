@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.datagen;
 
+import net.minecraft.core.HolderLookup;
+
 import net.minecraft.core.registries.Registries;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,8 +26,8 @@ import java.util.stream.Collectors;
 
 public class AWBlockLootTables extends BlockLootSubProvider {
 
-    public AWBlockLootTables() {
-        super(Set.of(), FeatureFlags.VANILLA_SET);
+    public AWBlockLootTables(HolderLookup.Provider registries) {
+        super(Set.of(), FeatureFlags.VANILLA_SET, registries);
     }
 
     @Nonnull
@@ -77,7 +79,7 @@ public class AWBlockLootTables extends BlockLootSubProvider {
         return createSilkTouchDispatchTable(pBlock, this.applyExplosionDecay(pBlock,
                 LootItem.lootTableItem(item)
                         .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 3.0F)))
-                        .apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))));
+                        .apply(ApplyBonusCount.addOreBonusCount(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE)))));
     }
 
     protected  LootTable.Builder createStoneDrops(Block block, ItemLike item) {

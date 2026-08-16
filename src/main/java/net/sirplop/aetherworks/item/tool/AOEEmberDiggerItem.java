@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.item.tool;
 
+import net.sirplop.aetherworks.AWDataComponents;
+
 import com.rekindled.embers.item.ClockworkPickaxeItem;
 import com.rekindled.embers.particle.GlowParticleOptions;
 import com.rekindled.embers.particle.SparkParticleOptions;

@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:stonecutting",
-  "count": 1,
-  "ingredient": {
-    "item": "aetherworks:suevite_small_tile"
-  },
-  "result": "aetherworks:suevite_small_tile_stairs"
-}

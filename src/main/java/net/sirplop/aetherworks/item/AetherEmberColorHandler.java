@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.item;
 
+import com.rekindled.embers.util.CapabilityCompat;
+
 import com.rekindled.embers.EmbersClientEvents;
 import com.rekindled.embers.api.capabilities.EmbersCapabilities;
 import com.rekindled.embers.api.power.IEmberCapability;
@@ -15,9 +17,9 @@ import net.sirplop.aetherworks.util.Utils;
 public class AetherEmberColorHandler implements ItemColor {
     public int getColor(ItemStack stack, int tintIndex) {
         if (tintIndex == 0) {
-            LazyOptional<IEmberCapability> opt = stack.getCapability(EmbersCapabilities.EMBER_CAPABILITY, null);
+            LazyOptional<IEmberCapability> opt = CapabilityCompat.getCapability(stack, EmbersCapabilities.EMBER_CAPABILITY, null);
             if (opt.isPresent()) {
-                IEmberCapability capability = opt.resolve().get();
+                IEmberCapability capability = opt.orElse(null);
                 float coeff = (float)(capability.getEmber() / capability.getEmberCapacity());
                 float timerSine = ((float)Math.sin(6.0 * Math.toRadians((double)(EmbersClientEvents.ticks % 360))) + 1.0F) / 2.0F;
 

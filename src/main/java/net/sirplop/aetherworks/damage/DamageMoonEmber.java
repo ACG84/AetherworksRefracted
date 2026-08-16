@@ -58,7 +58,7 @@ public class DamageMoonEmber extends DamageSource {
         if (entity == null) {
             return Component.translatable(s, new Object[]{livingEntity.getDisplayName()});
         } else {
-            return !itemstack.isEmpty() && itemstack.hasCustomHoverName() ? Component.translatable(s + ".item", new Object[]{livingEntity.getDisplayName(), ((Entity)entity).getDisplayName(), itemstack.getDisplayName()}) : Component.translatable(s + ".player", new Object[]{livingEntity.getDisplayName(), ((Entity)entity).getDisplayName()});
+            return !itemstack.isEmpty() && itemstack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME) ? Component.translatable(s + ".item", new Object[]{livingEntity.getDisplayName(), ((Entity)entity).getDisplayName(), itemstack.getDisplayName()}) : Component.translatable(s + ".player", new Object[]{livingEntity.getDisplayName(), ((Entity)entity).getDisplayName()});
         }
     }
 }

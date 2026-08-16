@@ -1,0 +1,70 @@
+{
+  "values": [
+    "#minecraft:lava",
+    "aetherworks:alchemic_precursor",
+    {
+      "id": "#forge:molten_aluminum",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_brass",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_bronze",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_copper",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_dawnstone",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_constantan",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_electrum",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_gold",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_invar",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_iron",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_lead",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_nickel",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_platinum",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_tin",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_uranium",
+      "required": false
+    },
+    {
+      "id": "#forge:molten_zinc",
+      "required": false
+    }
+  ]
+}

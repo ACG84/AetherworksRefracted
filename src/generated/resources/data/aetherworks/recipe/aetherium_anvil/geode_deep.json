@@ -1,0 +1,98 @@
+{
+  "type": "aetherworks:aetherium_anvil",
+  "difficulty": 1,
+  "emberPerHit": 10,
+  "input": {
+    "item": "aetherworks:geode_deep"
+  },
+  "numberOfHits": 1,
+  "result": [
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "embers:ember_crystal"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "embers:ember_shard"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "embers:ember_grit"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "minecraft:deepslate"
+    },
+    {
+      "chance": 7.5,
+      "count": 1,
+      "id": "minecraft:sculk"
+    },
+    {
+      "chance": 7.5,
+      "count": 1,
+      "id": "minecraft:dripstone_block"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "aetherworks:aether_shard"
+    },
+    {
+      "chance": 5.0,
+      "count": 4,
+      "id": "minecraft:lapis_lazuli"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:pointed_dripstone"
+    },
+    {
+      "chance": 5.0,
+      "count": 4,
+      "id": "minecraft:redstone"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:raw_iron"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:raw_copper"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:raw_gold"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "embers:raw_lead"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "embers:raw_silver"
+    },
+    {
+      "chance": 1.5,
+      "count": 1,
+      "id": "minecraft:diamond"
+    },
+    {
+      "chance": 0.5,
+      "count": 1,
+      "id": "minecraft:echo_shard"
+    }
+  ],
+  "temperatureMax": 2100,
+  "temperatureMin": 700
+}

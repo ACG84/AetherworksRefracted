@@ -285,9 +285,7 @@ public class PrismBlockEntity extends BlockEntity {
             isStructureValid = pTag.getBoolean("valid");
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(this.getBlockPos().below(3).north(4).east(4),
-                this.getBlockPos().south(4).west(4));
+        return AABB.encapsulatingFullBlocks(this.getBlockPos().below(3).north(4).east(4), this.getBlockPos().south(4).west(4));
     }
 }

@@ -129,7 +129,7 @@ public class AWFluidNode extends AWHarvestNode {
             Block block = blockstate.getBlock();
             if (drain) { //drain
                 if (block instanceof BucketPickup bucketpickup) {
-                    val = !bucketpickup.pickupBlock(level, pos, blockstate).isEmpty();
+                    val = !bucketpickup.pickupBlock(null, level, pos, blockstate).isEmpty();
                 } else if (blockstate.getBlock() instanceof LiquidBlock) {
                     level.setBlock(pos, Blocks.AIR.defaultBlockState(), 1 | 2);
                     val = true;

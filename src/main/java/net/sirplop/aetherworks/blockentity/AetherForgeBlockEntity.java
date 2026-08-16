@@ -359,10 +359,8 @@ public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtr
         heatCapability.invalidate();
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(this.getBlockPos().above(1).north(2).east(2),
-                this.getBlockPos().south(2).west(2));
+        return AABB.encapsulatingFullBlocks(this.getBlockPos().above(1).north(2).east(2), this.getBlockPos().south(2).west(2));
     }
 
     @Override

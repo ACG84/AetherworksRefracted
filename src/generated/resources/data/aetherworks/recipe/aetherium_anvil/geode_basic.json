@@ -1,0 +1,108 @@
+{
+  "type": "aetherworks:aetherium_anvil",
+  "difficulty": 1,
+  "emberPerHit": 10,
+  "input": {
+    "item": "aetherworks:geode_basic"
+  },
+  "numberOfHits": 1,
+  "result": [
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "minecraft:stone"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "minecraft:calcite"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "minecraft:tuff"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "minecraft:andesite"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "minecraft:diorite"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "minecraft:granite"
+    },
+    {
+      "chance": 10.0,
+      "count": 1,
+      "id": "aetherworks:suevite"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "aetherworks:aether_shard"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:coal"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:amethyst_shard"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:raw_iron"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:raw_copper"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:raw_gold"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "embers:raw_lead"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "embers:raw_silver"
+    },
+    {
+      "chance": 5.0,
+      "count": 1,
+      "id": "minecraft:moss_block"
+    },
+    {
+      "chance": 0.5,
+      "count": 1,
+      "id": "minecraft:emerald"
+    },
+    {
+      "chance": 0.5,
+      "count": 1,
+      "id": "minecraft:diamond"
+    },
+    {
+      "chance": 0.25,
+      "count": 1,
+      "id": "minecraft:budding_amethyst"
+    }
+  ],
+  "temperatureMax": 2100,
+  "temperatureMin": 700
+}

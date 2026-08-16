@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.block;
 
+import com.rekindled.embers.util.CapabilityCompat;
+
 import com.rekindled.embers.block.DialBaseBlock;
 import com.rekindled.embers.util.DecimalFormats;
 import net.minecraft.core.BlockPos;
@@ -44,7 +46,7 @@ public class HeatDialBlock extends DialBaseBlock {
     public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         BlockEntity blockEntity = level.getBlockEntity(pos.relative(state.getValue(FACING), -1));
         if (blockEntity != null) {
-            IHeatCapability cap = blockEntity.getCapability(AWCapabilities.HEAT_CAPABILITY, state.getValue(FACING).getOpposite()).orElse(blockEntity.getCapability(AWCapabilities.HEAT_CAPABILITY, null).orElse(null));
+            IHeatCapability cap = CapabilityCompat.getCapability(blockEntity, AWCapabilities.HEAT_CAPABILITY, state.getValue(FACING).getOpposite()).orElse(CapabilityCompat.getCapability(blockEntity, AWCapabilities.HEAT_CAPABILITY, null).orElse(null));
             if (cap != null) {
                 if (cap.getHeat() >= cap.getHeatCapacity())
                     return 15;
