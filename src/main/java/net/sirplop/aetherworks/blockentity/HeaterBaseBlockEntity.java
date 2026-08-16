@@ -24,7 +24,7 @@ import net.minecraft.world.level.material.Fluid;
 import com.rekindled.embers.compat.legacy.capabilities.Capability;
 import com.rekindled.embers.compat.legacy.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.FluidHandlerBlockEntity;
+import com.rekindled.embers.blockentity.FluidHandlerBlockEntity;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 

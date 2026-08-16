@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import com.mojang.datafixers.util.Either;
 import com.rekindled.embers.recipe.FluidIngredient;
 import net.minecraft.core.RegistryAccess;
@@ -29,7 +31,7 @@ public interface IAetheriumAnvilRecipe extends Recipe<AetheriumAnvilContext> {
     }
 
     @Override
-    public default ItemStack getResultItem(RegistryAccess registry) {
+    public default ItemStack getResultItem(HolderLookup.Provider registry) {
         return getResultItem();
     }
 

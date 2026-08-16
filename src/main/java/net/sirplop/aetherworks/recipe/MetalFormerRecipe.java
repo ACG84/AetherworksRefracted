@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.rekindled.embers.recipe.FluidIngredient;
@@ -66,7 +68,7 @@ public class MetalFormerRecipe implements IMetalFormerRecipe{
     }
 
     @Override
-    public ItemStack assemble(MetalFormerContext context, RegistryAccess registry) {
+    public ItemStack assemble(MetalFormerContext context, HolderLookup.Provider registry) {
         for (int i = 0; i < context.getContainerSize(); i++) {
             if (input.test(context.getItem(i))) {
                 context.removeItem(i, 1);

@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.item;
 
+import net.sirplop.aetherworks.AWDataComponents;
+
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.rekindled.embers.Embers;
@@ -129,41 +131,32 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
     }
 
     public static void attachGem(ItemStack holder, ItemStack gem) {
-        holder.getOrCreateTag().put("gem", gem.serializeNBT(registries));
+        holder.set(AWDataComponents.CROWN_GEM.get(), gem.copy());
     }
 
     public static ItemStack detachGem(ItemStack holder) {
-        if (holder.getOrCreateTag().contains("gem")) {
-            ItemStack gem = ItemStack.of(holder.getOrCreateTag().getCompound("gem"));
-            holder.getOrCreateTag().remove("gem");
-            return gem;
-        }
-        return ItemStack.EMPTY;
+        ItemStack gem = holder.remove(AWDataComponents.CROWN_GEM.get());
+        return gem == null ? ItemStack.EMPTY : gem;
     }
 
     public static ItemStack getAttachedGem(ItemStack holder) {
-        if (holder.getOrCreateTag().contains("gem")) {
-            return ItemStack.of(holder.getOrCreateTag().getCompound("gem"));
-        }
-        return ItemStack.EMPTY;
+        return holder.getOrDefault(AWDataComponents.CROWN_GEM.get(), ItemStack.EMPTY);
     }
 
+    //Armor textures are addressed by ArmorMaterial.Layer now instead of a free-form type string.
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        if (type != null && type.equals("overlay")) {
-            return Aetherworks.MODID + ":textures/models/armor/aether_crown_colorable.png";
-        }
-        return Aetherworks.MODID + ":textures/models/armor/aether_crown.png";
+    public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
+        return ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID,
+                "textures/models/armor/" + (layer.dyeable() ? "aether_crown_colorable.png" : "aether_crown.png"));
     }
 
+    //Attribute modifiers are a data component in 1.21; a broken crown simply contributes none.
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> modifiers = super.getAttributeModifiers(slot, stack);
-        super.getDefaultAttributeModifiers(slot);
+    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         if (isBroken(stack)) {
-            return ImmutableMultimap.of();
+            return ItemAttributeModifiers.EMPTY;
         }
-        return modifiers;
+        return super.getDefaultAttributeModifiers(stack);
     }
 
     @Override
@@ -172,7 +165,7 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
     }
 
     @Override
-    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<Item> onBroken) {
         return isBroken(stack) ? 0 : amount;
     }
 
@@ -181,7 +174,7 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, TooltipContext level, List<Component> tooltip, TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltip, isAdvanced);
         tooltip.add(Component.translatable("aetherworks.tooltip.cycle_mode", Component.keybind("key.aetherworks.mode_change")).withStyle(ChatFormatting.GOLD));
 
@@ -194,8 +187,8 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
             tooltip.add(Component.translatable(Aetherworks.MODID + ".tooltip.crown_target.hostiles").withStyle(ChatFormatting.GRAY));
         }
         tooltip.add(Component.translatable(Aetherworks.MODID + ".tooltip.crown_gem").withStyle(ChatFormatting.GRAY));
-        if (stack.getOrCreateTag().contains("gem")) {
-            ItemStack gem = ItemStack.of(stack.getOrCreateTag().getCompound("gem"));
+        ItemStack gem = getAttachedGem(stack);
+        if (!gem.isEmpty()) {
             PotionGemItem.addTooltip(PotionGemItem.getEffects(gem), tooltip);
         } else
             tooltip.add(PotionGemItem.NO_EFFECT);

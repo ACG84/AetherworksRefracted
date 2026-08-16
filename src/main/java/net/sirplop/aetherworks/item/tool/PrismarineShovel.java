@@ -50,7 +50,7 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
 
     @Override
     public ItemStack getFocus(ItemStack stack) {
-        FluidHandlerItemStack fStack = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), stack, capacity.get());
+        FluidHandlerItemStack fStack = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT, stack, capacity.get());
         if (fStack.getFluid().isEmpty())
             return null;
         else {
@@ -64,7 +64,7 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
     @Override
     public ICapabilityProvider initCapabilities(@NotNull ItemStack stack, @Nullable CompoundTag nbt)
     {
-        return new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), stack, capacity.get());
+        return new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT, stack, capacity.get());
     }
 
     @Override
@@ -79,7 +79,7 @@ public class PrismarineShovel extends AOEEmberDiggerItem implements IHudFocus {
             if (level.isClientSide())
                 return InteractionResultHolder.pass(stack);
 
-            FluidHandlerItemStack fStack = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), stack, capacity.get());
+            FluidHandlerItemStack fStack = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT, stack, capacity.get());
 
             BlockPos pos = blockHitResult.getBlockPos();
             BlockPos posRel = blockHitResult.getBlockPos().relative(blockHitResult.getDirection());

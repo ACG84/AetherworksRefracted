@@ -3,7 +3,9 @@ package net.sirplop.aetherworks.item;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.sirplop.aetherworks.AWDataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
@@ -18,27 +20,23 @@ public class Lexicon extends Item {
     public static final String LEXICON_AMOUNT = "lexicon_amount";
 
     public static ItemStack getStoredItem(ItemStack stack) {
-        if (stack.getOrCreateTag().contains(Lexicon.LEXICON_ITEM))
-            return ItemStack.of(stack.getOrCreateTag().getCompound(LEXICON_ITEM));
-        return ItemStack.EMPTY;
+        return stack.getOrDefault(AWDataComponents.LEXICON_ITEM.get(), ItemStack.EMPTY);
     }
     public static int getStoredItemCount(ItemStack stack) {
-        if (stack.getOrCreateTag().contains(Lexicon.LEXICON_AMOUNT))
-            return stack.getOrCreateTag().getInt(LEXICON_AMOUNT);
-        return 0;
+        return stack.getOrDefault(AWDataComponents.LEXICON_AMOUNT.get(), 0);
     }
     public static void setStoredItem(ItemStack lexicon, ItemStack toSet, int count) {
-        lexicon.getOrCreateTag().put(LEXICON_ITEM, toSet.serializeNBT(registries));
-        lexicon.getOrCreateTag().putInt(LEXICON_AMOUNT, count);
+        lexicon.set(AWDataComponents.LEXICON_ITEM.get(), toSet.copy());
+        lexicon.set(AWDataComponents.LEXICON_AMOUNT.get(), count);
     }
     public static int setStoredAmount(ItemStack lexicon, int count) {
         int val = Math.max(0, count);
-        lexicon.getOrCreateTag().putInt(LEXICON_AMOUNT, val);
+        lexicon.set(AWDataComponents.LEXICON_AMOUNT.get(), val);
         return val;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag isAdvanced) {
+    public void appendHoverText(ItemStack stack, TooltipContext level, List<Component> tooltip, TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltip, isAdvanced);
         ItemStack stored = getStoredItem(stack);
         if (stored.isEmpty())

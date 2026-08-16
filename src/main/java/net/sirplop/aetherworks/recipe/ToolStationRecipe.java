@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.RegistryAccess;
@@ -54,7 +56,7 @@ public class ToolStationRecipe implements IToolStationRecipe{
     }
 
     @Override
-    public ItemStack assemble(RecipeWrapper context, RegistryAccess registry) {
+    public ItemStack assemble(RecipeWrapper context, HolderLookup.Provider registry) {
         for (int i = 0; i < inputs.size(); i++) {
             if (inputs.get(i).test(context.getItem(i))) {
                 context.removeItemNoUpdate(i);

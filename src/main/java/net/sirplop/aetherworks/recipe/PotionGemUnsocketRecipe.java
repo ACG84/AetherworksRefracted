@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -44,7 +46,7 @@ public class PotionGemUnsocketRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
         ItemStack crownStack = ItemStack.EMPTY;
         for (int i = 0; i < container.getContainerSize(); i++) {
             if (!container.getItem(i).isEmpty() && container.getItem(i).getItem() instanceof AetherCrownItem) {
@@ -81,7 +83,7 @@ public class PotionGemUnsocketRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
         return new ItemStack(AWRegistry.AETHER_CROWN.get());
     }
 

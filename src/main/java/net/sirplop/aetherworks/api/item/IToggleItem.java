@@ -6,6 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.sirplop.aetherworks.AWDataComponents;
 import net.sirplop.aetherworks.network.MessageToggleItem;
 import net.sirplop.aetherworks.network.PacketHandler;
 
@@ -20,8 +21,8 @@ public interface IToggleItem {
     }
 
     default byte getToggled(ItemStack stack) {
-        if (stack != null && stack.getOrCreateTag().contains(KEY))
-            return stack.getOrCreateTag().getByte(KEY);
+        if (stack != null)
+            return stack.getOrDefault(AWDataComponents.TOGGLE_MODE.get(), (byte) 0);
         return 0;
     }
 

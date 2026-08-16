@@ -277,7 +277,7 @@ public class PrismBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load(@NotNull CompoundTag pTag) {
+    protected void loadAdditional(@NotNull CompoundTag pTag, HolderLookup.Provider registries) {
         super.loadAdditional(pTag, registries);
         if (pTag.contains("work"))
             canWork = pTag.getBoolean("work");

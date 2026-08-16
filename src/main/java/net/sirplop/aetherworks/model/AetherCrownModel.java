@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.model;
 
+import net.sirplop.aetherworks.AWDataComponents;
+
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -43,7 +45,7 @@ public class AetherCrownModel extends HumanoidModel<LivingEntity> {
     }
     public void setup(LivingEntity entity, ItemStack itemStack) {
         if (gem != null) {
-            gem.visible = itemStack.getOrCreateTag().contains("gem");
+            gem.visible = itemStack.has(AWDataComponents.CROWN_GEM.get());
         }
     }
 

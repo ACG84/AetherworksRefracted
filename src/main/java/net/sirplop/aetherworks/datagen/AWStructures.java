@@ -17,7 +17,6 @@ import net.minecraft.world.level.levelgen.structure.StructureSpawnOverride;
 import net.minecraft.world.level.levelgen.structure.TerrainAdjustment;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.sirplop.aetherworks.Aetherworks;
 import net.sirplop.aetherworks.worldgen.MeteorStructure;
 
@@ -27,7 +26,7 @@ public class AWStructures {
     public static final ResourceKey<Structure> METEOR = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "meteor"));
 
     public static void generateStructures(BootstapContext<Structure> bootstrap) {
-        HolderGetter<Biome> biome = bootstrap.lookup(ForgeRegistries.Keys.BIOMES);
+        HolderGetter<Biome> biome = bootstrap.lookup(Registries.BIOME);
         HolderSet<Biome> overworldBiomes = biome.getOrThrow(BiomeTags.IS_OVERWORLD);
         bootstrap.register(METEOR, new MeteorStructure(new Structure.StructureSettings(overworldBiomes, Map.of(MobCategory.AMBIENT,
                 new StructureSpawnOverride(StructureSpawnOverride.BoundingBoxType.STRUCTURE, WeightedRandomList.create())),

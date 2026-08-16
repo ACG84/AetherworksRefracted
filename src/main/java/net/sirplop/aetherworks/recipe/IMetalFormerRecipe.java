@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import com.rekindled.embers.recipe.FluidIngredient;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +27,7 @@ public interface IMetalFormerRecipe extends Recipe<MetalFormerContext> {
     }
 
     @Override
-    public default ItemStack getResultItem(RegistryAccess registry) {
+    public default ItemStack getResultItem(HolderLookup.Provider registry) {
         return getResultItem();
     }
 

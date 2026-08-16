@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.datagen;
 
+import net.minecraft.core.registries.Registries;
+
+import net.minecraft.core.registries.BuiltInRegistries;
+
 import com.rekindled.embers.block.MechEdgeBlockBase;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +15,6 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.neoforged.neoforge.client.model.generators.*;
 import net.neoforged.neoforge.client.model.generators.ModelFile.ExistingModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.registries.ForgeRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.sirplop.aetherworks.AWRegistry;
@@ -157,7 +160,7 @@ public class AWBlockStates extends BlockStateProvider {
         simpleBlockItem(registryObject.get(), modelFile);
     }
     public void blockWithRenderType(DeferredHolder<Block, ? extends Block> registryObject, String texture, String renderType) {
-        ModelFile modelFile = models().cubeAll(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(registryObject.get())).getPath(),
+        ModelFile modelFile = models().cubeAll(Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(registryObject.get())).getPath(),
                 ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + texture))
                 .renderType(renderType);
         //block model
@@ -167,7 +170,7 @@ public class AWBlockStates extends BlockStateProvider {
     }
 
     public void blockWithItemTexture(DeferredHolder<Block, ? extends Block> registryObject, String texture) {
-        ModelFile modelFile = models().cubeAll(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(registryObject.get())).getPath(),
+        ModelFile modelFile = models().cubeAll(Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(registryObject.get())).getPath(),
                 ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + texture));
         //block model
         simpleBlock(registryObject.get(), modelFile);
@@ -200,7 +203,7 @@ public class AWBlockStates extends BlockStateProvider {
 
     public void dial(DeferredHolder<Block, ? extends Block> registryObject, String texture) {
         //block model
-        ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(registryObject.get());
+        ResourceLocation loc = BuiltInRegistries.BLOCK.getKey(registryObject.get());
         ModelFile model = models().withExistingParent(loc.toString(), ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "dial"))
                 .texture("dial", ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + texture))
                 .texture("particle", ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "block/" + texture));
@@ -211,7 +214,7 @@ public class AWBlockStates extends BlockStateProvider {
     }
 
     public void flatItem(DeferredHolder<Block, ? extends Block> registryObject, String texture) {
-        ResourceLocation loc = ForgeRegistries.BLOCKS.getKey(registryObject.get());
+        ResourceLocation loc = BuiltInRegistries.BLOCK.getKey(registryObject.get());
         itemModels().getBuilder(loc.toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(loc.getNamespace(), "item/" + texture));
@@ -232,13 +235,13 @@ public class AWBlockStates extends BlockStateProvider {
     public ItemModelBuilder simpleBlockAndItemAdjust(DeferredHolder<Block, ? extends Block> registryObject, String model) {
         ExistingModelFile file = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, model));
         simpleBlock(registryObject.get(), file);
-        return itemModels().getBuilder(ForgeRegistries.BLOCKS.getKey(registryObject.get())
+        return itemModels().getBuilder(BuiltInRegistries.BLOCK.getKey(registryObject.get())
                 .getPath()).parent(file);
     }
     public ItemModelBuilder horzBlockAndItemAdjust(DeferredHolder<Block, ? extends Block> registryObject, String model) {
         ExistingModelFile file = models().getExistingFile(ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, model));
         horizontalBlock(registryObject.get(), file);
-        return itemModels().getBuilder(ForgeRegistries.BLOCKS.getKey(registryObject.get())
+        return itemModels().getBuilder(BuiltInRegistries.BLOCK.getKey(registryObject.get())
                 .getPath()).parent(file);
     }
 

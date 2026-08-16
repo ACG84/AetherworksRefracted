@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import net.sirplop.aetherworks.AWDataComponents;
 import com.google.gson.JsonObject;
 import net.minecraft.core.RegistryAccess;
@@ -55,7 +57,7 @@ public class DrainRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
         ItemStack shovel = ItemStack.EMPTY;
 
         for (int i = 0; i < container.getContainerSize(); i++) {
@@ -65,7 +67,7 @@ public class DrainRecipe implements CraftingRecipe {
             }
         }
         if (!shovel.isEmpty()) {
-            MessageFluidSync.setFluid(new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), shovel, AWConfig.PRISMARINE_SHOVEL_CAPACITY.get() * 1000), FluidStack.EMPTY);
+            MessageFluidSync.setFluid(new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT, shovel, AWConfig.PRISMARINE_SHOVEL_CAPACITY.get() * 1000), FluidStack.EMPTY);
             return shovel;
         }
         return ItemStack.EMPTY;
@@ -77,7 +79,7 @@ public class DrainRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public @NotNull ItemStack getResultItem(HolderLookup.Provider pRegistryAccess) {
         return new ItemStack(AWRegistry.SHOVEL_PRISMARINE.get());
     }
 

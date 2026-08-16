@@ -1,6 +1,8 @@
 package net.sirplop.aetherworks;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -16,12 +18,8 @@ import net.minecraft.world.level.dimension.DimensionType;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ForgeBiomeTagsProvider;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.registries.ForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryManager;
-import net.neoforged.neoforge.registries.tags.ITag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -88,31 +86,27 @@ public class AWConfig {
         for (String val : list.get()) {
             if (val.charAt(0) == '#') { //it's a tag, get it!
                 ResourceLocation location = ResourceLocation.parse(val.substring(1));
-                ITag<Block> tag = getBlockTagFrom(location);
-                if (tag != null) {
-                    for (Block block : tag) {
-                        ret.add(block);
-                    }
-                }
+                getBlockTagFrom(location).ifPresent(tag -> tag.forEach(holder -> ret.add(holder.value())));
             } else {
                 ResourceLocation location = ResourceLocation.parse(val);
-                if (ForgeRegistries.BLOCKS.containsKey(location)) {
-                    ret.add(ForgeRegistries.BLOCKS.getValue(location));
-                }
+                BuiltInRegistries.BLOCK.getOptional(location).ifPresent(ret::add);
             }
         }
         return ret;
     }
 
-    public static Map<MobEffect, MobEffect> getPotionGemReplacements() {
-        Map<MobEffect, MobEffect> ret = new HashMap<>();
+    //Effects are referred to by Holder in 1.21, so the replacement map holds holders too.
+    public static Map<Holder<MobEffect>, Holder<MobEffect>> getPotionGemReplacements() {
+        Map<Holder<MobEffect>, Holder<MobEffect>> ret = new HashMap<>();
         for (String val : POTION_GEM_BANNED.get()) {
             String[] split = val.split("\\|");
             ResourceLocation left = ResourceLocation.parse(split[0]);
             ResourceLocation right = ResourceLocation.parse(split[1]);
-            if (ForgeRegistries.MOB_EFFECTS.containsKey(left)) {
-                if (ForgeRegistries.MOB_EFFECTS.containsKey(right)) {
-                    ret.put(ForgeRegistries.MOB_EFFECTS.getValue(left), ForgeRegistries.MOB_EFFECTS.getValue(right));
+            Optional<Holder.Reference<MobEffect>> from = BuiltInRegistries.MOB_EFFECT.getHolder(left);
+            Optional<Holder.Reference<MobEffect>> to = BuiltInRegistries.MOB_EFFECT.getHolder(right);
+            if (from.isPresent()) {
+                if (to.isPresent()) {
+                    ret.put(from.get(), to.get());
                 }
                 else
                     Aetherworks.LOGGER.atError().log("Malformed output potion effect: "+split[1]);
@@ -122,12 +116,8 @@ public class AWConfig {
         return ret;
     }
 
-    private static @Nullable ITag<Block> getBlockTagFrom(ResourceLocation location) {
-        TagKey<Block> blockKey = BlockTags.create(location);
-        if (Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).isKnownTagName(blockKey)) {
-            return ForgeRegistries.BLOCKS.tags().getTag(blockKey);
-        }
-        return null;
+    private static Optional<HolderSet.Named<Block>> getBlockTagFrom(ResourceLocation location) {
+        return BuiltInRegistries.BLOCK.getTag(BlockTags.create(location));
     }
 
     public static Set<Block> getSameBlocks(Block target) {
@@ -138,8 +128,7 @@ public class AWConfig {
                 Set<Block> blocks = new HashSet<>();
                 for (String b : split) {
                     ResourceLocation loc = ResourceLocation.parse(b);
-                    if (ForgeRegistries.BLOCKS.containsKey(loc))
-                        blocks.add(ForgeRegistries.BLOCKS.getValue(loc));
+                    BuiltInRegistries.BLOCK.getOptional(loc).ifPresent(blocks::add);
                 }
                 for (Block block : blocks) {
                     if (SAME_BLOCK_SET.get(block) == null) {
@@ -242,7 +231,7 @@ public class AWConfig {
             String[] split = potions.split("\\|");
             ResourceLocation left = ResourceLocation.parse(split[0]);
             ResourceLocation right = ResourceLocation.parse(split[1]);
-            return ForgeRegistries.MOB_EFFECTS.containsKey(left) && ForgeRegistries.MOB_EFFECTS.containsKey(right);
+            return BuiltInRegistries.MOB_EFFECT.containsKey(left) && BuiltInRegistries.MOB_EFFECT.containsKey(right);
         }
         return false;
     }

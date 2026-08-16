@@ -61,9 +61,8 @@ public class Utils {
                     item.copy());
             entityItem.setDefaultPickUpDelay();
 
-            if (item.hasTag()) {
-                entityItem.getItem().setTag(item.getTag().copy());
-            }
+            //Components already ride along with ItemStack.copy() above, so there is no
+            //separate tag to transplant any more.
 
             float factor = 0.05F;
             entityItem.lerpMotion(

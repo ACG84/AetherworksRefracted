@@ -37,7 +37,7 @@ public class AWFluidNode extends AWHarvestNode {
                        @Nullable GlowParticleOptions particle, double damageChance, boolean pickup) {
         super(harvester, level, beginning, range * 1000, canHarvest, particle, damageChance);
         this.drain = pickup;
-        this.fluidHandler = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT.get(), usedItem, this.range);
+        this.fluidHandler = new FluidHandlerItemStack(AWDataComponents.FLUID_CONTENT, usedItem, this.range);
         if (drain)
             this.targetfluid = level.getFluidState(beginning).getType();
         else

@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -122,7 +124,7 @@ public class AetheriumAnvilRecipe implements IAetheriumAnvilRecipe {
     }
 
     @Override
-    public ItemStack assemble(AetheriumAnvilContext context, RegistryAccess registryAccess) {
+    public ItemStack assemble(AetheriumAnvilContext context, HolderLookup.Provider registryAccess) {
         for (int i = 0; i < context.getContainerSize(); i++) {
             if (input.test(context.getItem(i))) {
                 context.removeItem(i, 1);
