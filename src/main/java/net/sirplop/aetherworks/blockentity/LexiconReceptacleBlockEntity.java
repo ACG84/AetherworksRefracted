@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
+
 import net.minecraft.core.HolderLookup;
 
 import com.rekindled.embers.Embers;
@@ -36,7 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class LexiconReceptacleBlockEntity extends BlockEntity implements IExtraCapabilityInformation {
+public class LexiconReceptacleBlockEntity extends BlockEntity implements IExtraCapabilityInformation , ICapabilityProvider{
 
     public LexiconHandler inventory;
     public final LazyOptional<IItemHandler> lazyStorage;
@@ -189,7 +191,7 @@ public class LexiconReceptacleBlockEntity extends BlockEntity implements IExtraC
                     Lexicon.setStoredAmount(lexiconStack, Math.min(Lexicon.getStoredItemCount(lexiconStack) + inserted, amount));
                 }
                 if (inserted == stack.getCount()) return ItemStack.EMPTY;
-                return ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - inserted);
+                return stack.copyWithCount(stack.getCount() - inserted);
             }
             return stack;
         }
@@ -213,7 +215,7 @@ public class LexiconReceptacleBlockEntity extends BlockEntity implements IExtraC
                 if (!simulate) {
                     Lexicon.setStoredAmount(lexiconStack, stored - amount);
                 }
-                return ItemHandlerHelper.copyStackWithSize(out, amount);
+                return out.copyWithCount(amount);
             }
         }
 
@@ -226,7 +228,7 @@ public class LexiconReceptacleBlockEntity extends BlockEntity implements IExtraC
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             if (slot == 0) {
                 ItemStack lexiconStack = lexiconInventory.getStackInSlot(0);
-                return ItemStack.isSameItemSameTags(Lexicon.getStoredItem(lexiconStack), stack);
+                return ItemStack.isSameItemSameComponents(Lexicon.getStoredItem(lexiconStack), stack);
             }
             return false;
         }

@@ -63,7 +63,7 @@ public class TuningCylinderAugment extends AugmentBase {
         boolean isHot = currentBiome.is(AWBiomeTags.TC_HOT_GEODES);
         boolean isCold = currentBiome.is(AWBiomeTags.TC_COLD_GEODES);
         boolean isMagic = currentBiome.is(AWBiomeTags.TC_MAGIC_GEODES);
-        boolean isDeep = AWConfig.isDeepGeodeDimension(level.dimensionTypeId()) &&
+        boolean isDeep = AWConfig.isDeepGeodeDimension(level.dimensionTypeRegistration().unwrapKey().orElse(null)) &&
                 pos.getY() < AWConfig.AUGMENT_TUNING_CYLINDER_BIOME_DEEP_DEPTH.get();
 
         ItemStack geode;

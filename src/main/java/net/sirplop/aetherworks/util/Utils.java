@@ -105,7 +105,7 @@ public class Utils {
         if (!match || !canHarvest)
             return List.of();
 
-        ForgeHooks.onBlockBreakEvent(level, player.gameMode.getGameModeForPlayer(), player, pos);
+        CommonHooks.fireBlockBreak(level, player.gameMode.getGameModeForPlayer(), player, pos, level.getBlockState(pos));
         level.destroyBlock(pos, false, player);
         List<ItemStack> drops = List.of();
         if (!player.isCreative()) {

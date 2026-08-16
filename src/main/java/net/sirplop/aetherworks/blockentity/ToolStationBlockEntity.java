@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
+
 import net.minecraft.core.HolderLookup;
 
 import com.rekindled.embers.Embers;
@@ -37,7 +39,7 @@ import org.joml.Random;
 
 import java.util.List;
 
-public class ToolStationBlockEntity extends BlockEntity implements IForgePart, IExtraCapabilityInformation {
+public class ToolStationBlockEntity extends BlockEntity implements IForgePart, IExtraCapabilityInformation , ICapabilityProvider{
 
     public ToolStationBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(AWRegistry.TOOL_STATION_BLOCK_ENTITY.get(), pPos, pBlockState);

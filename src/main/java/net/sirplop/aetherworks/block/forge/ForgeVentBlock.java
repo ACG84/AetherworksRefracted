@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.block.forge;
 
+import net.minecraft.world.level.block.BaseEntityBlock;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
@@ -12,6 +16,14 @@ import net.sirplop.aetherworks.api.block.HorizontalWaterloggableEntityBlock;
 import org.jetbrains.annotations.Nullable;
 
 public class ForgeVentBlock extends HorizontalWaterloggableEntityBlock {
+
+    //1.20.5 made BaseEntityBlock require a codec so blocks can round-trip through data.
+    public static final MapCodec<ForgeVentBlock> CODEC = simpleCodec(ForgeVentBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public ForgeVentBlock(Properties pProperties) { super(pProperties); }
 
     public static final VoxelShape NORTH_AABB = Block.box(0,0,0,16,16,2);

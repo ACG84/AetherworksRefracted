@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -24,6 +26,14 @@ import net.sirplop.aetherworks.blockentity.PrismBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class PrismBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+
+    //1.20.5 made BaseEntityBlock require a codec so blocks can round-trip through data.
+    public static final MapCodec<PrismBlock> CODEC = simpleCodec(PrismBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public PrismBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.WATERLOGGED, false));

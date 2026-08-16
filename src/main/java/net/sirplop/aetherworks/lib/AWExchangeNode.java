@@ -65,7 +65,7 @@ public class AWExchangeNode extends AWHarvestNode
         BlockState currentState = this.level.getBlockState(pos);
         List<ItemStack> stacks = Block.getDrops(currentState, (ServerLevel) this.level, pos, level.getBlockEntity(pos));
         BlockState toSet = ((BlockItem) is.getItem()).getBlock().defaultBlockState();
-        ForgeHooks.onBlockBreakEvent(level, ((ServerPlayer)this.harvester).gameMode.getGameModeForPlayer(), (ServerPlayer)this.harvester, pos);
+        CommonHooks.fireBlockBreak(level, ((ServerPlayer)this.harvester).gameMode.getGameModeForPlayer(), (ServerPlayer)this.harvester, pos, level.getBlockState(pos));
 
         SoundType sound = currentState.getBlock().getSoundType(state, this.level, pos, this.harvester);
         this.level.playSound(null, pos, sound.getBreakSound(), SoundSource.BLOCKS, sound.getVolume(), sound.getPitch());

@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.block;
 
+import net.minecraft.world.level.block.BaseEntityBlock;
+
+import com.mojang.serialization.MapCodec;
+
 import com.rekindled.embers.datagen.EmbersSounds;
 import com.rekindled.embers.util.Misc;
 import net.minecraft.core.BlockPos;
@@ -33,6 +37,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class LexiconReceptacleBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+
+    //1.20.5 made BaseEntityBlock require a codec so blocks can round-trip through data.
+    public static final MapCodec<LexiconReceptacleBlock> CODEC = simpleCodec(LexiconReceptacleBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public LexiconReceptacleBlock(Properties pProperties) {
         super(pProperties);
         this.registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.WATERLOGGED, false));

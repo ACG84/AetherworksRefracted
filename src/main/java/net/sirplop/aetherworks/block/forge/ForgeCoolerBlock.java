@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.block.forge;
 
+import net.minecraft.world.level.block.BaseEntityBlock;
+
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,6 +22,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ForgeCoolerBlock extends HorizontalWaterloggableEntityBlock {
+
+    //1.20.5 made BaseEntityBlock require a codec so blocks can round-trip through data.
+    public static final MapCodec<ForgeCoolerBlock> CODEC = simpleCodec(ForgeCoolerBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
 
     public ForgeCoolerBlock(Properties pProperties) { super(pProperties); }
 

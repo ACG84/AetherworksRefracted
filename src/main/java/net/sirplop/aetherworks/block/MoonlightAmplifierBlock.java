@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.block;
 
+import net.minecraft.world.level.block.BaseEntityBlock;
+
+import com.mojang.serialization.MapCodec;
+
 import com.rekindled.embers.particle.GlowParticleOptions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,6 +30,14 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class MoonlightAmplifierBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
+
+    //1.20.5 made BaseEntityBlock require a codec so blocks can round-trip through data.
+    public static final MapCodec<MoonlightAmplifierBlock> CODEC = simpleCodec(MoonlightAmplifierBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public MoonlightAmplifierBlock(Properties pProperties) {
         super(pProperties);
         registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(BlockStateProperties.WATERLOGGED, false));;

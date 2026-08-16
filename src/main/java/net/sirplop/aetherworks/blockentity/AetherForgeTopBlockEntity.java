@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
+
 import java.util.List;
 
 import com.rekindled.embers.RegistryManager;
@@ -16,7 +18,7 @@ import com.rekindled.embers.compat.legacy.capabilities.Capability;
 import com.rekindled.embers.compat.legacy.LazyOptional;
 import net.sirplop.aetherworks.AWRegistry;
 
-public class AetherForgeTopBlockEntity extends BlockEntity implements IExtraDialInformation, IExtraCapabilityInformation{
+public class AetherForgeTopBlockEntity extends BlockEntity implements IExtraDialInformation, IExtraCapabilityInformation, ICapabilityProvider{
 
     public AetherForgeTopBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(AWRegistry.AETHER_FORGE_TOP_BLOCK_ENTITY.get(), pPos, pBlockState);

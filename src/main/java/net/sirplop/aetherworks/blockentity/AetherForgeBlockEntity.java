@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
+
 import net.minecraft.core.HolderLookup;
 
 import com.rekindled.embers.api.capabilities.EmbersCapabilities;
@@ -45,7 +47,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtraDialInformation {
+public class AetherForgeBlockEntity extends BlockEntity implements IForge, IExtraDialInformation , ICapabilityProvider{
     public AetherForgeBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(AWRegistry.AETHER_FORGE_BLOCK_ENTITY.get(), pPos, pBlockState);
         emberCapability.setEmberCapacity(5000);

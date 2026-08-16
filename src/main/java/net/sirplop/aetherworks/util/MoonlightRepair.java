@@ -32,7 +32,7 @@ public class MoonlightRepair {
     private static boolean isValidMoonlit(Level level, Entity entity) {
         var dim = level.dimensionType();
         float time = dim.timeOfDay(level.getDayTime());
-        return (time >= MOONRISE && time <= MOONSET || AWConfig.isMoonlitDimension(level.dimensionTypeId()))
+        return (time >= MOONRISE && time <= MOONSET || AWConfig.isMoonlitDimension(level.dimensionTypeRegistration().unwrapKey().orElse(null)))
                 && (level.canSeeSky(entity.getOnPos().above(2)) || !dim.hasSkyLight());
     }
 }

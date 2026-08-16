@@ -3,7 +3,7 @@ package net.sirplop.aetherworks.datagen;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class AWStructures {
     public static final ResourceKey<Structure> METEOR = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "meteor"));
 
-    public static void generateStructures(BootstapContext<Structure> bootstrap) {
+    public static void generateStructures(BootstrapContext<Structure> bootstrap) {
         HolderGetter<Biome> biome = bootstrap.lookup(Registries.BIOME);
         HolderSet<Biome> overworldBiomes = biome.getOrThrow(BiomeTags.IS_OVERWORLD);
         bootstrap.register(METEOR, new MeteorStructure(new Structure.StructureSettings(overworldBiomes, Map.of(MobCategory.AMBIENT,
@@ -36,7 +36,7 @@ public class AWStructures {
 
     public static final ResourceKey<StructureSet> METEOR_SET = ResourceKey.create(Registries.STRUCTURE_SET, ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "meteor"));
 
-    public static void generateSets(BootstapContext<StructureSet> bootstrap) {
+    public static void generateSets(BootstrapContext<StructureSet> bootstrap) {
         HolderGetter<Structure> structure = bootstrap.lookup(Registries.STRUCTURE);
 
         bootstrap.register(METEOR_SET, new StructureSet(structure.getOrThrow(METEOR),

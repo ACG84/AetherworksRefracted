@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.api.damage;
 
+import net.minecraft.server.level.ServerLevel;
+
 import net.minecraft.core.Holder;
 
 import com.rekindled.embers.api.projectile.IProjectileEffect;
@@ -97,15 +99,16 @@ public class EffectDamagePotion implements IProjectileEffect {
             }
 
             if (projectileEntity != null && !projectileEntity.level().isClientSide && shooter instanceof LivingEntity livingShooter) {
-                EnchantmentHelper.doPostHurtEffects(livingTarget, shooter);
-                EnchantmentHelper.doPostDamageEffects(livingShooter, livingTarget);
+                //doPostHurtEffects/doPostDamageEffects collapsed into doPostAttackEffects in 1.21.
+                if (livingTarget.level() instanceof ServerLevel serverLevel)
+                    EnchantmentHelper.doPostAttackEffects(serverLevel, livingTarget, livingTarget.damageSources().generic());
             }
 
             if (livingTarget.isAffectedByPotions()) {
                 for(MobEffectInstance mobeffectinstance : effectInstances) {
                     Holder<MobEffect> mobeffect = mobeffectinstance.getEffect();
-                    if (mobeffect.isInstantenous()) {
-                        mobeffect.applyInstantenousEffect(projectileEntity, shooter, livingTarget, mobeffectinstance.getAmplifier(), 1);
+                    if (mobeffect.value().isInstantenous()) {
+                        mobeffect.value().applyInstantenousEffect(projectileEntity, shooter, livingTarget, mobeffectinstance.getAmplifier(), 1);
                     } else {
                         MobEffectInstance mobeffectinstance1 = new MobEffectInstance(mobeffect, mobeffectinstance.getDuration(), mobeffectinstance.getAmplifier(), mobeffectinstance.isAmbient(), mobeffectinstance.isVisible());
                         livingTarget.addEffect(mobeffectinstance1, entity);

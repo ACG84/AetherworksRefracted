@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.blockentity;
 
+import com.rekindled.embers.compat.legacy.capabilities.ICapabilityProvider;
+
 import net.minecraft.core.HolderLookup;
 
 import com.rekindled.embers.Embers;
@@ -35,7 +37,7 @@ import net.sirplop.aetherworks.util.Utils;
 
 import java.util.List;
 
-public class AetheriumAnvilBlockEntity extends BlockEntity implements IForgePart, IExtraCapabilityInformation, ITopHammerable {
+public class AetheriumAnvilBlockEntity extends BlockEntity implements IForgePart, IExtraCapabilityInformation, ITopHammerable , ICapabilityProvider{
 
     public AetheriumAnvilBlockEntity(BlockPos pos, BlockState state) {
         super(AWRegistry.AETHERIUM_ANVIL_BLOCK_ENTITY.get(), pos, state);

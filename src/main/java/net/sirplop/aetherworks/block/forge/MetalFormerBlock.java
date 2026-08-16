@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.block.forge;
 
+import net.minecraft.world.level.block.BaseEntityBlock;
+
+import com.mojang.serialization.MapCodec;
+
 import com.rekindled.embers.util.Misc;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,6 +35,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MetalFormerBlock extends HorizontalWaterloggableEntityBlock {
+
+    //1.20.5 made BaseEntityBlock require a codec so blocks can round-trip through data.
+    public static final MapCodec<MetalFormerBlock> CODEC = simpleCodec(MetalFormerBlock::new);
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
     public MetalFormerBlock(Properties pProperties) {
         super(pProperties);
     }

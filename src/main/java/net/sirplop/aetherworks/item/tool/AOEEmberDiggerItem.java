@@ -251,7 +251,7 @@ public abstract class AOEEmberDiggerItem extends DiggerItem implements IToggleEm
             return true;
 
         if (!newStack.isDamageableItem() || !oldStack.isDamageableItem())
-            return !ItemStack.isSameItemSameTags(newStack, oldStack);
+            return !ItemStack.isSameItemSameComponents(newStack, oldStack);
 
         CompoundTag newTag = newStack.getTag();
         CompoundTag oldTag = oldStack.getTag();
