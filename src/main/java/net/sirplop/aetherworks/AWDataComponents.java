@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks;
 
+import net.minecraft.core.component.DataComponents;
+
 import com.mojang.serialization.Codec;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;

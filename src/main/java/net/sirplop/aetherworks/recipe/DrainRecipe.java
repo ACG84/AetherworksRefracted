@@ -7,7 +7,10 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.crafting.CraftingInput;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -26,10 +29,8 @@ import javax.annotation.Nullable;
 public class DrainRecipe implements CraftingRecipe {
     public static final DrainRecipe.Serializer SERIALIZER = new DrainRecipe.Serializer();
 
-    public final ResourceLocation id;
 
-    public DrainRecipe(ResourceLocation id) {
-        this.id = id;
+    public DrainRecipe() {
     }
 
 
@@ -39,9 +40,9 @@ public class DrainRecipe implements CraftingRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer container, Level level) {
+    public boolean matches(CraftingInput container, Level level) {
         ItemStack shovel = ItemStack.EMPTY;
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof PrismarineShovel) {
@@ -57,10 +58,10 @@ public class DrainRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput container, HolderLookup.Provider registryAccess) {
         ItemStack shovel = ItemStack.EMPTY;
 
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             if (!container.getItem(i).isEmpty() && container.getItem(i).getItem() instanceof PrismarineShovel) {
                 shovel = container.getItem(i).copyWithCount(1);
                 break;
@@ -93,10 +94,6 @@ public class DrainRecipe implements CraftingRecipe {
         return false;
     }
 
-    @Override
-    public @NotNull ResourceLocation getId() {
-        return id;
-    }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -104,18 +101,18 @@ public class DrainRecipe implements CraftingRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<DrainRecipe> {
+        //These recipes have no serialised data, so both codecs are constants.
+        private static final MapCodec<DrainRecipe> CODEC = MapCodec.unit(DrainRecipe::new);
+        private static final StreamCodec<RegistryFriendlyByteBuf, DrainRecipe> STREAM_CODEC = StreamCodec.unit(new DrainRecipe());
 
         @Override
-        public @NotNull DrainRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            return new DrainRecipe(recipeId);
+        public @NotNull MapCodec<DrainRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable DrainRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-            return new DrainRecipe(recipeId);
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, DrainRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
-
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull DrainRecipe recipe) { }
     }
 }

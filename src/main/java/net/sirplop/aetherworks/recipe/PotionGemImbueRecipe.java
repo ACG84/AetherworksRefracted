@@ -5,7 +5,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.crafting.CraftingInput;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
@@ -24,17 +27,15 @@ public class PotionGemImbueRecipe implements CraftingRecipe {
 
     public static final Serializer SERIALIZER = new Serializer();
 
-    public final ResourceLocation id;
 
-    public PotionGemImbueRecipe(ResourceLocation id) {
-        this.id = id;
+    public PotionGemImbueRecipe() {
     }
 
     @Override
-    public boolean matches(CraftingContainer container, @NotNull Level level) {
+    public boolean matches(CraftingInput container, @NotNull Level level) {
         ItemStack gem = ItemStack.EMPTY;
         ItemStack potion = ItemStack.EMPTY;
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof PotionGemItem) {
@@ -54,16 +55,16 @@ public class PotionGemImbueRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingContainer container, @NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack assemble(CraftingInput container, @NotNull RegistryAccess registryAccess) {
         ItemStack gem = ItemStack.EMPTY;
 
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             if (!container.getItem(i).isEmpty() && container.getItem(i).getItem() instanceof PotionGemItem) {
                 gem = container.getItem(i).copyWithCount(1);
             }
         }
         if (!gem.isEmpty()) {
-            for (int i = 0; i < container.getContainerSize(); i++) {
+            for (int i = 0; i < container.size(); i++) {
                 ItemStack stack = container.getItem(i);
                 if (!stack.isEmpty() && stack.getItem() instanceof PotionItem) {
                     ((PotionGemItem)gem.getItem()).setEffects(stack, gem);
@@ -75,9 +76,9 @@ public class PotionGemImbueRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-        NonNullList<ItemStack> bottles = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
-        for (int i = 0; i < container.getContainerSize(); i++) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingInput container) {
+        NonNullList<ItemStack> bottles = NonNullList.withSize(container.size(), ItemStack.EMPTY);
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty() && stack.getItem() instanceof PotionItem potion) {
                 bottles.set(i, new ItemStack(Items.GLASS_BOTTLE.asItem(), 1));
@@ -107,10 +108,6 @@ public class PotionGemImbueRecipe implements CraftingRecipe {
         return false;
     }
 
-    @Override
-    public @NotNull ResourceLocation getId() {
-        return id;
-    }
 
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
@@ -123,18 +120,18 @@ public class PotionGemImbueRecipe implements CraftingRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<PotionGemImbueRecipe> {
+        //These recipes have no serialised data, so both codecs are constants.
+        private static final MapCodec<PotionGemImbueRecipe> CODEC = MapCodec.unit(PotionGemImbueRecipe::new);
+        private static final StreamCodec<RegistryFriendlyByteBuf, PotionGemImbueRecipe> STREAM_CODEC = StreamCodec.unit(new PotionGemImbueRecipe());
 
         @Override
-        public @NotNull PotionGemImbueRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            return new PotionGemImbueRecipe(recipeId);
+        public @NotNull MapCodec<PotionGemImbueRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable PotionGemImbueRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-            return new PotionGemImbueRecipe(recipeId);
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, PotionGemImbueRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
-
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull PotionGemImbueRecipe recipe) { }
     }
 }

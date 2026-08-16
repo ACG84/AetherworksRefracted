@@ -7,7 +7,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.crafting.CraftingInput;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -23,10 +26,8 @@ public class LexiconRecipe implements CraftingRecipe {
 
     public static final LexiconRecipe.Serializer SERIALIZER = new LexiconRecipe.Serializer();
 
-    public final ResourceLocation id;
 
-    public LexiconRecipe(ResourceLocation id) {
-        this.id = id;
+    public LexiconRecipe() {
     }
 
     @Override
@@ -35,10 +36,10 @@ public class LexiconRecipe implements CraftingRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer container, Level level) {
+    public boolean matches(CraftingInput container, Level level) {
         ItemStack lexicon = ItemStack.EMPTY;
         ItemStack lexiconInsert = ItemStack.EMPTY;
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof Lexicon) {
@@ -56,11 +57,11 @@ public class LexiconRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingContainer container, @NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack assemble(CraftingInput container, @NotNull RegistryAccess registryAccess) {
         ItemStack lexicon = ItemStack.EMPTY;
         ItemStack insert = ItemStack.EMPTY;
 
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             if (!container.getItem(i).isEmpty()) {
                 if (container.getItem(i).getItem() instanceof Lexicon) {
                     lexicon = container.getItem(i).copyWithCount(1);
@@ -80,9 +81,9 @@ public class LexiconRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-        NonNullList<ItemStack> remains = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
-        for (int i = 0; i < container.getContainerSize(); i++) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingInput container) {
+        NonNullList<ItemStack> remains = NonNullList.withSize(container.size(), ItemStack.EMPTY);
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
                 if (!(stack.getItem() instanceof Lexicon)) {
@@ -113,10 +114,6 @@ public class LexiconRecipe implements CraftingRecipe {
         return false;
     }
 
-    @Override
-    public @NotNull ResourceLocation getId() {
-        return id;
-    }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -124,18 +121,18 @@ public class LexiconRecipe implements CraftingRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<LexiconRecipe> {
+        //These recipes have no serialised data, so both codecs are constants.
+        private static final MapCodec<LexiconRecipe> CODEC = MapCodec.unit(LexiconRecipe::new);
+        private static final StreamCodec<RegistryFriendlyByteBuf, LexiconRecipe> STREAM_CODEC = StreamCodec.unit(new LexiconRecipe());
 
         @Override
-        public @NotNull LexiconRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            return new LexiconRecipe(recipeId);
+        public @NotNull MapCodec<LexiconRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable LexiconRecipe fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-            return new LexiconRecipe(recipeId);
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, LexiconRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
-
-        @Override
-        public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull LexiconRecipe recipe) { }
     }
 }

@@ -337,7 +337,7 @@ public class AWRegistry {
                     .title(Component.translatable("itemgroup." + Aetherworks.MODID))
                     .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
                     .displayItems((params, output) -> {
-                        for (DeferredItem<Item> item : ITEMS.getEntries()) {
+                        for (DeferredHolder<Item, ? extends Item> item : ITEMS.getEntries()) {
                             output.accept(item.get());
 
                             if (item.get() instanceof EmberStorageItem)
@@ -393,8 +393,8 @@ public class AWRegistry {
                 @Override
                 public @NotNull ItemStack execute(BlockSource source, ItemStack stack) {
                     DispensibleContainerItem container = (DispensibleContainerItem)stack.getItem();
-                    BlockPos blockpos = source.getPos().relative(source.getBlockState().getValue(DispenserBlock.FACING));
-                    Level level = source.getLevel();
+                    BlockPos blockpos = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
+                    Level level = source.level();
                     if (container.emptyContents(null, level, blockpos, null)) {
                         container.checkExtraContent(null, level, stack, blockpos);
                         return new ItemStack(Items.BUCKET);
@@ -479,11 +479,11 @@ public class AWRegistry {
         public String name;
         public DeferredBlock<Block> block;
         public DeferredBlock<StairBlock> stairs;
-        public DeferredItem<Item> stairsItem;
+        public DeferredItem<BlockItem> stairsItem;
         public DeferredBlock<SlabBlock> slab;
-        public DeferredItem<Item> slabItem;
+        public DeferredItem<BlockItem> slabItem;
         public DeferredBlock<WallBlock> wall;
-        public DeferredItem<Item> wallItem;
+        public DeferredItem<BlockItem> wallItem;
 
         public StoneDecoBlocks(String name, DeferredBlock<Block> block, Properties properties, boolean stairs, boolean slab, boolean wall) {
             this.stairs = null;
@@ -496,7 +496,7 @@ public class AWRegistry {
             this.block = block;
             if (stairs) {
                 this.stairs = BLOCKS.register(name + "_stairs", () ->
-                        new StairBlock(() -> block.get().defaultBlockState(), properties));
+                        new StairBlock(block.get().defaultBlockState(), properties));
                 this.stairsItem = registerBlockItem(name + "_stairs", this.stairs);
             }
 

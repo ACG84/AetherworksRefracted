@@ -1,5 +1,9 @@
 package net.sirplop.aetherworks.item;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+
 import net.sirplop.aetherworks.AWDataComponents;
 
 import net.minecraft.ChatFormatting;
@@ -16,7 +20,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.registries.ForgeRegistries;
+
 import net.sirplop.aetherworks.AWConfig;
 import net.sirplop.aetherworks.AWRegistry;
 import net.sirplop.aetherworks.Aetherworks;

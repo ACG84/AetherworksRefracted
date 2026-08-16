@@ -1,5 +1,8 @@
 package net.sirplop.aetherworks.item;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+
 import net.sirplop.aetherworks.AWDataComponents;
 
 import com.google.common.collect.ImmutableMultimap;
@@ -49,7 +52,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class AetherCrownItem extends ArmorItem implements IToggleItem {
-    public AetherCrownItem(ArmorMaterial material, Type type, Properties properties) {
+    public AetherCrownItem(Holder<ArmorMaterial> material, Type type, Properties properties) {
         super(material, type, properties);
     }
 
@@ -84,7 +87,7 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
             return;
         //there's a bug in the slot index for inventoryTick - it resets every "compartment", so multiple slots end up sharing indices.
         boolean inRightSlot = false;
-        for (ItemStack armor : entity.getArmorSlots()) {
+        for (ItemStack armor : entity.getArmorAndBodyArmorSlots()) {
             if (armor == stack) {
                 inRightSlot = true;
                 break;

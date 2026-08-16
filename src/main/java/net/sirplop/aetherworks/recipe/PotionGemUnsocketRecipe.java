@@ -7,7 +7,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.crafting.CraftingInput;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -22,16 +25,14 @@ public class PotionGemUnsocketRecipe implements CraftingRecipe {
 
     public static final Serializer SERIALIZER = new Serializer();
 
-    public final ResourceLocation id;
 
-    public PotionGemUnsocketRecipe(ResourceLocation id) {
-        this.id = id;
+    public PotionGemUnsocketRecipe() {
     }
 
     @Override
-    public boolean matches(CraftingContainer container, Level level) {
+    public boolean matches(CraftingInput container, Level level) {
         ItemStack crown = ItemStack.EMPTY;
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (stack.getItem() instanceof AetherCrownItem) {
                 if (!crown.isEmpty() || !AetherCrownItem.hasAttachedGem(stack))
@@ -42,13 +43,13 @@ public class PotionGemUnsocketRecipe implements CraftingRecipe {
             if (!stack.isEmpty())
                 return false;
         }
-        return !crown.isEmpty() && container.getContainerSize() >= 1;
+        return !crown.isEmpty() && container.size() >= 1;
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput container, HolderLookup.Provider registryAccess) {
         ItemStack crownStack = ItemStack.EMPTY;
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             if (!container.getItem(i).isEmpty() && container.getItem(i).getItem() instanceof AetherCrownItem) {
                 crownStack = container.getItem(i).copy();
             }
@@ -60,10 +61,10 @@ public class PotionGemUnsocketRecipe implements CraftingRecipe {
     }
 
     @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-        NonNullList<ItemStack> gems = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+    public NonNullList<ItemStack> getRemainingItems(CraftingInput container) {
+        NonNullList<ItemStack> gems = NonNullList.withSize(container.size(), ItemStack.EMPTY);
         int index = 0;
-        for (int i = 0; i < container.getContainerSize(); i++) {
+        for (int i = 0; i < container.size(); i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
                 if (stack.getItem() instanceof AetherCrownItem) {
@@ -97,10 +98,6 @@ public class PotionGemUnsocketRecipe implements CraftingRecipe {
         return false;
     }
 
-    @Override
-    public ResourceLocation getId() {
-        return id;
-    }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
@@ -113,19 +110,18 @@ public class PotionGemUnsocketRecipe implements CraftingRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<PotionGemUnsocketRecipe> {
+        //These recipes have no serialised data, so both codecs are constants.
+        private static final MapCodec<PotionGemUnsocketRecipe> CODEC = MapCodec.unit(PotionGemUnsocketRecipe::new);
+        private static final StreamCodec<RegistryFriendlyByteBuf, PotionGemUnsocketRecipe> STREAM_CODEC = StreamCodec.unit(new PotionGemUnsocketRecipe());
 
         @Override
-        public PotionGemUnsocketRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            return new PotionGemUnsocketRecipe(recipeId);
+        public @NotNull MapCodec<PotionGemUnsocketRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public @Nullable PotionGemUnsocketRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            return new PotionGemUnsocketRecipe(recipeId);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, PotionGemUnsocketRecipe recipe) {
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, PotionGemUnsocketRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }
