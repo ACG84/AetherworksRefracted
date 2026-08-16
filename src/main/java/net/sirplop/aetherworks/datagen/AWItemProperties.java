@@ -34,7 +34,7 @@ public class AWItemProperties {
             if (p_239427_2_ == null) {
                 return 0.0F;
             } else {
-                return CrossbowItem.isCharged(p_239427_0_) ? 0.0F : (float)(p_239427_0_.getUseDuration() - p_239427_2_.getUseItemRemainingTicks()) / (float)CrossbowItem.getChargeDuration(p_239427_0_);
+                return CrossbowItem.isCharged(p_239427_0_) ? 0.0F : (float)(p_239427_0_.getUseDuration(p_239427_0_) - p_239427_2_.getUseItemRemainingTicks()) / (float)CrossbowItem.getChargeDuration(p_239427_0_, p_239427_0_);
             }
         });
         ItemProperties.register(AWRegistry.CROSSBOW_QUARTZ.get(), ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "pulling"), (p_239426_0_, p_239426_1_, p_239426_2_, intIn) -> {
@@ -48,7 +48,7 @@ public class AWItemProperties {
             if (p_239427_2_ == null) {
                 return 0.0F;
             } else {
-                return CrossbowItem.isCharged(p_239427_0_) ? 0.0F : (float)(p_239427_0_.getUseDuration() - p_239427_2_.getUseItemRemainingTicks()) / (float)CrossbowItem.getChargeDuration(p_239427_0_);
+                return CrossbowItem.isCharged(p_239427_0_) ? 0.0F : (float)(p_239427_0_.getUseDuration(p_239427_0_) - p_239427_2_.getUseItemRemainingTicks()) / (float)CrossbowItem.getChargeDuration(p_239427_0_, p_239427_0_);
             }
         });
         ItemProperties.register(AWRegistry.CROSSBOW_MAGMA.get(), ResourceLocation.fromNamespaceAndPath(Aetherworks.MODID, "pulling"), (p_239426_0_, p_239426_1_, p_239426_2_, intIn) -> {

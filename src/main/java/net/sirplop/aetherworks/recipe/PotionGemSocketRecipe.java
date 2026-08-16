@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.world.item.PotionItem;
@@ -80,7 +82,7 @@ public class PotionGemSocketRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingInput container, @NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack assemble(CraftingInput container, @NotNull HolderLookup.Provider registryAccess) {
         ItemStack crown = ItemStack.EMPTY;
 
         for (int i = 0; i < container.size(); i++) {
@@ -110,7 +112,8 @@ public class PotionGemSocketRecipe implements CraftingRecipe {
                     if (crown.hasAttachedGem(stack)) {
                         ItemStack gem = crown.getAttachedGem(stack);
                         for (int x = 0; x < container.size(); x++) {
-                            if (container.canPlaceItem(x, gem)) {
+                            //CraftingInput dropped canPlaceItem; a free slot is the equivalent check.
+                            if (container.getItem(x).isEmpty()) {
                                 gems.set(x, gem);
                                 return gems;
                             }
@@ -130,7 +133,7 @@ public class PotionGemSocketRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack getResultItem(@NotNull HolderLookup.Provider registryAccess) {
         return new ItemStack(AWRegistry.AETHER_CROWN.get());
     }
 

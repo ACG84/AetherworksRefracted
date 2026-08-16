@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.worldgen;
 
+import com.mojang.serialization.MapCodec;
+
 import com.google.common.math.StatsAccumulator;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -21,7 +23,7 @@ import java.util.Optional;
 // This is basically a heavily modified Applied Energistics 2 meteorite.
 public class MeteorStructure extends Structure {
 
-    public static final Codec<MeteorStructure> CODEC = simpleCodec(MeteorStructure::new);
+    public static final MapCodec<MeteorStructure> CODEC = simpleCodec(MeteorStructure::new);
     public static StructureType<MeteorStructure> TYPE = () -> MeteorStructure.CODEC;
 
 

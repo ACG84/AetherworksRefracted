@@ -57,7 +57,7 @@ public class LexiconRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingInput container, @NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack assemble(CraftingInput container, @NotNull HolderLookup.Provider registryAccess) {
         ItemStack lexicon = ItemStack.EMPTY;
         ItemStack insert = ItemStack.EMPTY;
 

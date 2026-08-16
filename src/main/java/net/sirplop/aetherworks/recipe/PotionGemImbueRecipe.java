@@ -1,5 +1,7 @@
 package net.sirplop.aetherworks.recipe;
 
+import net.minecraft.core.HolderLookup;
+
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -55,7 +57,7 @@ public class PotionGemImbueRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingInput container, @NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack assemble(CraftingInput container, @NotNull HolderLookup.Provider registryAccess) {
         ItemStack gem = ItemStack.EMPTY;
 
         for (int i = 0; i < container.size(); i++) {
@@ -94,7 +96,7 @@ public class PotionGemImbueRecipe implements CraftingRecipe {
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack getResultItem(@NotNull HolderLookup.Provider registryAccess) {
         return new ItemStack(AWRegistry.AETHER_CROWN.get());
     }
 
