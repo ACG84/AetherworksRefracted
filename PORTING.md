@@ -11,9 +11,14 @@ tables load. The only errors left in the log come from Embers itself (loot table
 Create-integration blocks, and common metal tags nothing else provides) and from vanilla
 chunk generation.
 
-**Not yet verified:** nothing has been tested on a *client* or in actual gameplay. Rendering,
-GUI overlays, and the reworked item/capability behaviour all need a play session. There is
-also no world-migration path from 1.20.1 saves — see "Known gaps" below.
+`./gradlew runClient` also starts cleanly: the mod's resource pack loads, every model bakes,
+texture atlases stitch, shaders compile and the JEI plugin initialises, with **no Aetherworks
+errors**. That run found four real client-side bugs, now fixed (see below).
+
+**Not yet verified:** actual gameplay. The headless container only has software OpenGL
+(llvmpipe), which renders far too slowly to drive the title screen through to joining a world,
+so nothing has been *seen* on screen and no block/item has been placed or used. There is also
+no world-migration path from 1.20.1 saves — see "Known gaps" below.
 
 ## Dependency
 
@@ -76,10 +81,30 @@ and `EntityRenderDispatcher.renderers`) are both reachable through public 1.21 A
 5. **A latent bug was fixed incidentally.** `MessageFluidSync.decode` read `buf.capacity()`
    instead of the encoded int; the `StreamCodec.composite` rewrite makes this correct.
 
+## Bugs the client run caught
+
+1. `"loader": "forge:fluid_container"` in the four bucket models had been rewritten to `c:` by
+   the datapack namespace sweep. Model loaders live under `neoforge:`, not `c:`.
+2. Block model faces renamed `forge_data` to `neoforge_data` in 1.21 (anvil, ore, tool station).
+3. `"model": "forge:fluid"` in the gas blockstates likewise became `neoforge:fluid`.
+4. `crossbow_Base.json` had a capital letter. Every model referenced it as `crossbow_base`, so
+   it was already broken on case-sensitive filesystems; 1.21 rejects non-lowercase resource
+   paths outright, which finally surfaced it. Renamed to `crossbow_base.json`.
+
+## Dev conveniences added
+
+`./gradlew runClient` accepts three optional properties:
+
+- `-PquickPlay=<save>` — boot straight into a singleplayer world
+- `-PquickPlayServer=<host:port>` — join a server on launch
+- `-PsmallWindow` — 400x300 window, for software-rendered/headless runs
+
 ## Known gaps
 
-- **No client testing.** Renderers, the aetheriometer overlay, the crown gem layer and JEI
-  integration compile and register but have not been seen running.
+- **No gameplay testing.** Renderers, the aetheriometer overlay, the crown gem layer and JEI
+  integration all load without error, but nothing has been rendered in a world or interacted
+  with. The AoE mining hook change and the data-component conversions especially want a play
+  session.
 - **No world migration.** Items saved by the 1.20.1 build keep their old NBT, which 1.21 will
   not read into the new data components. Existing tools will lose their toggle state, focus,
   socketed gem, lexicon contents and stored fluid. A `DataFixer`, or a one-off conversion on

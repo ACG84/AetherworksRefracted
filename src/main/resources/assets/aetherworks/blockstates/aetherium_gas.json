@@ -2,13 +2,13 @@
 	"forge_marker": 1,
 	"variants": {
 		"fluid": {
-			"model": "forge:fluid",
+			"model": "neoforge:fluid",
 			"custom": { 
 				"fluid": "aetherworks.aetherium_gas" 
 			}
 		},
 		"inventory": {
-			"model": "forge:fluid",
+			"model": "neoforge:fluid",
 			"transform": "forge:default-item",
 			"custom": {
 				"fluid": "aetherworks.aetherium_gas",

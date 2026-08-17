@@ -21,12 +21,12 @@
 	  {   "from": [ 0, 0, 0 ],
             "to": [ 16, 16, 16 ],
             "faces": {
-                "down":  { "texture": "#ore", "cullface": "down",  "forge_data": { "block_light": 10 } },
-                "up":  	 { "texture": "#ore", "cullface": "up",    "forge_data": { "block_light": 10 } },
-                "north": { "texture": "#ore", "cullface": "north", "forge_data": { "block_light": 10 } },
-                "south": { "texture": "#ore", "cullface": "south", "forge_data": { "block_light": 10 } },
-                "west":  { "texture": "#ore", "cullface": "west",  "forge_data": { "block_light": 10 } },
-                "east":  { "texture": "#ore", "cullface": "east",  "forge_data": { "block_light": 10 } }
+                "down":  { "texture": "#ore", "cullface": "down",  "neoforge_data": { "block_light": 10 } },
+                "up":  	 { "texture": "#ore", "cullface": "up",    "neoforge_data": { "block_light": 10 } },
+                "north": { "texture": "#ore", "cullface": "north", "neoforge_data": { "block_light": 10 } },
+                "south": { "texture": "#ore", "cullface": "south", "neoforge_data": { "block_light": 10 } },
+                "west":  { "texture": "#ore", "cullface": "west",  "neoforge_data": { "block_light": 10 } },
+                "east":  { "texture": "#ore", "cullface": "east",  "neoforge_data": { "block_light": 10 } }
             }
         }
   ]

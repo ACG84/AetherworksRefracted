@@ -3,5 +3,5 @@
   "cover_is_mask": false,
   "flip_gas": true,
   "fluid": "aetherworks:aether_gas",
-  "loader": "c:fluid_container"
+  "loader": "neoforge:fluid_container"
 }

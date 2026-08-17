@@ -65,6 +65,19 @@ neoForge {
             client()
             gameDirectory = file('run/client')
             programArguments.addAll '--username', 'Dev'
+            // A small window keeps the software renderer usable in headless CI-style runs.
+            if (project.hasProperty('smallWindow')) {
+                programArguments.addAll '--width', '400', '--height', '300'
+            }
+            // ./gradlew runClient -PquickPlay=<save name> boots straight into a world,
+            // which is handy for checking rendering without clicking through the menus.
+            if (project.hasProperty('quickPlay')) {
+                programArguments.addAll '--quickPlaySingleplayer', project.property('quickPlay').toString()
+            }
+            // ...or -PquickPlayServer=localhost to join a running dev server instead.
+            if (project.hasProperty('quickPlayServer')) {
+                programArguments.addAll '--quickPlayMultiplayer', project.property('quickPlayServer').toString()
+            }
         }
 
         server {
