@@ -1,0 +1,4 @@
+[13Sep2026 04:57:18.120] [main/DEBUG] [io.netty.util.internal.logging.InternalLoggerFactory/]: Using SLF4J as the default logging framework
+[13Sep2026 04:57:18.132] [main/DEBUG] [io.netty.util.ResourceLeakDetector/]: -Dio.netty.leakDetection.level: simple
+[13Sep2026 04:57:18.132] [main/DEBUG] [io.netty.util.ResourceLeakDetector/]: -Dio.netty.leakDetection.targetRecords: 4
+[13Sep2026 04:57:18.681] [main/WARN] [net.minecraft.DetectedVersion/]: Missing version information!

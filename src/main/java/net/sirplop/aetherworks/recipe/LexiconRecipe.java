@@ -123,7 +123,11 @@ public class LexiconRecipe implements CraftingRecipe {
     public static class Serializer implements RecipeSerializer<LexiconRecipe> {
         //These recipes have no serialised data, so both codecs are constants.
         private static final MapCodec<LexiconRecipe> CODEC = MapCodec.unit(LexiconRecipe::new);
-        private static final StreamCodec<RegistryFriendlyByteBuf, LexiconRecipe> STREAM_CODEC = StreamCodec.unit(new LexiconRecipe());
+        //StreamCodec.unit asserts the encoded value equals the instance handed to it, and these
+        //recipes have no equals(), so syncing threw on join. Nothing needs writing, so encode is
+        //a no-op and decode just builds a fresh instance.
+        private static final StreamCodec<RegistryFriendlyByteBuf, LexiconRecipe> STREAM_CODEC =
+                StreamCodec.of((buf, recipe) -> {}, buf -> new LexiconRecipe());
 
         @Override
         public @NotNull MapCodec<LexiconRecipe> codec() {

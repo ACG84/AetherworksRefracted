@@ -161,7 +161,11 @@ public class PotionGemSocketRecipe implements CraftingRecipe {
     public static class Serializer implements RecipeSerializer<PotionGemSocketRecipe> {
         //These recipes have no serialised data, so both codecs are constants.
         private static final MapCodec<PotionGemSocketRecipe> CODEC = MapCodec.unit(PotionGemSocketRecipe::new);
-        private static final StreamCodec<RegistryFriendlyByteBuf, PotionGemSocketRecipe> STREAM_CODEC = StreamCodec.unit(new PotionGemSocketRecipe());
+        //StreamCodec.unit asserts the encoded value equals the instance handed to it, and these
+        //recipes have no equals(), so syncing threw on join. Nothing needs writing, so encode is
+        //a no-op and decode just builds a fresh instance.
+        private static final StreamCodec<RegistryFriendlyByteBuf, PotionGemSocketRecipe> STREAM_CODEC =
+                StreamCodec.of((buf, recipe) -> {}, buf -> new PotionGemSocketRecipe());
 
         @Override
         public @NotNull MapCodec<PotionGemSocketRecipe> codec() {

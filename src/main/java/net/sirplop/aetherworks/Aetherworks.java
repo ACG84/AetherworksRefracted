@@ -113,6 +113,13 @@ public class Aetherworks
         AWRegistry.init(event);
         event.enqueueWork(AWResearch::initResearch);
 
+        //Opt-in regression guard for the recipe StreamCodecs, which otherwise only fail when a
+        //player joins and the server sends update_recipes. Enable with
+        //-Daetherworks.codecSelfTest=true (the runServer/runClient tasks accept -D via JVM args).
+        if (Boolean.getBoolean("aetherworks.codecSelfTest")) {
+            NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStartedEvent e) ->
+                    net.sirplop.aetherworks.recipe.AWCodecSelfTest.run(e.getServer().registryAccess()));
+        }
         NeoForge.EVENT_BUS.addListener(AWHarvestHelper::onServerTick);
         NeoForge.EVENT_BUS.addListener(AWHarvestHelper::onLevelUnload);
         NeoForge.EVENT_BUS.addListener(AWHarvestHelper::onPlayerLeave);

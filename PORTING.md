@@ -91,6 +91,33 @@ and `EntityRenderDispatcher.renderers`) are both reachable through public 1.21 A
    it was already broken on case-sensitive filesystems; 1.21 rejects non-lowercase resource
    paths outright, which finally surfaced it. Renamed to `crossbow_base.json`.
 
+## Bug found in play testing
+
+**`update_recipes` failed to encode on world load**, disconnecting the client with
+`IllegalStateException: Can't encode 'PotionGemUnsocketRecipe@a', expected 'PotionGemUnsocketRecipe@b'`.
+
+`StreamCodec.unit(value)` does not simply write nothing — its `encode` *asserts* that the value
+being encoded `equals` the instance it was constructed with. The five dataless crafting recipes
+have no `equals()`, and `MapCodec.unit(X::new)` builds a fresh instance per datapack load, so the
+identity check could never pass and recipe sync threw for every player joining.
+
+Fixed by giving those five a genuinely dataless stream codec:
+
+```java
+StreamCodec.of((buf, recipe) -> {}, buf -> new X());
+```
+
+`AWCodecSelfTest` was added as a regression guard: it round-trips all eight recipe serializers'
+stream codecs exactly as the server does on join. It is opt-in, since the failure is otherwise
+invisible until a player connects:
+
+```
+./gradlew runServer -Daetherworks.codecSelfTest=true     # look for AW-CODEC-SELFTEST in the log
+```
+
+It was validated both ways — all eight pass on the fixed code, and reintroducing
+`StreamCodec.unit` on one recipe reproduces the original exception verbatim.
+
 ## Dev conveniences added
 
 `./gradlew runClient` accepts three optional properties:
@@ -101,10 +128,10 @@ and `EntityRenderDispatcher.renderers`) are both reachable through public 1.21 A
 
 ## Known gaps
 
-- **No gameplay testing.** Renderers, the aetheriometer overlay, the crown gem layer and JEI
-  integration all load without error, but nothing has been rendered in a world or interacted
-  with. The AoE mining hook change and the data-component conversions especially want a play
-  session.
+- **Limited gameplay testing.** Recipe sync is now verified, but renderers, the aetheriometer
+  overlay, the crown gem layer and JEI have only been confirmed to *load* — nothing has been
+  rendered in a world or interacted with from this container. The AoE mining hook change and the
+  data-component conversions especially want a play session.
 - **No world migration.** Items saved by the 1.20.1 build keep their old NBT, which 1.21 will
   not read into the new data components. Existing tools will lose their toggle state, focus,
   socketed gem, lexicon contents and stored fluid. A `DataFixer`, or a one-off conversion on
