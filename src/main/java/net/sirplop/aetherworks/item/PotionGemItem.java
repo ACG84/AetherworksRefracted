@@ -165,7 +165,8 @@ public class PotionGemItem extends Item {
         @Override
         public int getColor(ItemStack itemStack, int i) {
             if (i == 0 && itemStack.has(AWDataComponents.POTION_COLOR.get())) {
-                return itemStack.get(AWDataComponents.POTION_COLOR.get());
+                //Stored as plain RGB; item tints are ARGB in 1.21 so force full alpha.
+                return 0xFF000000 | itemStack.get(AWDataComponents.POTION_COLOR.get());
             }
             return 0xFFFFFFFF;
         }

@@ -212,11 +212,12 @@ public class AetherCrownItem extends ArmorItem implements IToggleItem {
         @Override
         public int getColor(ItemStack itemStack, int i) {
             if (i == 1 && AetherCrownItem.hasAttachedGem(itemStack)) {
-                return PotionGemItem.getColor(AetherCrownItem.getAttachedGem(itemStack));
+                //Item tints are ARGB in 1.21; the stored gem colour is plain RGB.
+                return 0xFF000000 | PotionGemItem.getColor(AetherCrownItem.getAttachedGem(itemStack));
             }
             else if (i == 0)
                 return 0xFFFFFFFF;
-            return 0x0021b2ff;
+            return 0xFF21b2ff;
         }
     }
 }

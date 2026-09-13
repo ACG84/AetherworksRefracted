@@ -118,6 +118,23 @@ invisible until a player connects:
 It was validated both ways — all eight pass on the fixed code, and reintroducing
 `StreamCodec.unit` on one recipe reproduces the original exception verbatim.
 
+## Second bug found in play testing
+
+**Moonsnare jars and cartridges rendered as nothing.** 1.21 switched item tints from RGB to
+**ARGB**, so a handler returning a colour without an alpha byte is fully transparent rather than
+opaque. Three handlers were affected:
+
+| Handler | Returned | Now |
+|---|---|---|
+| `AetherEmberColorHandler` | `Misc.intColor(r,g,b)`, `16777215` | `0xFF000000 \| ...`, `0xFFFFFFFF` |
+| `PotionGemItem.ColorHandler` | raw `POTION_COLOR` (RGB) | `0xFF000000 \| ...` |
+| `AetherCrownItem.ColorHandler` | gem colour (RGB), `0x0021b2ff` | `0xFF000000 \| ...`, `0xFF21b2ff` |
+
+Only the ember items were reported, but potion gems and the crown's gem overlay had the same
+fault. Embers Re-Ignited's own ported handlers do exactly this (`0xFF000000 | Misc.intColor(...)`
+and `0xFFFFFFFF`), which is what the fix follows. Colour *data* is still stored as plain RGB —
+alpha is forced only on the render path.
+
 ## Dev conveniences added
 
 `./gradlew runClient` accepts three optional properties:

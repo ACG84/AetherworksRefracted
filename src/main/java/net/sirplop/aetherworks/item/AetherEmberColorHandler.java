@@ -26,9 +26,11 @@ public class AetherEmberColorHandler implements ItemColor {
                 int r = (int)(255.0F * (1.0F - coeff) + (64.0F * timerSine + 128.0F) * coeff);
                 int g = 255 - (int)(64 * timerSine * coeff);;
                 int b = 255 - (int)(128 * timerSine * coeff);;
-                return Misc.intColor(r, g, b);
+                //1.21 treats item tints as ARGB, so the alpha byte has to be set or the
+                //layer renders fully transparent.
+                return 0xFF000000 | Misc.intColor(r, g, b);
             }
         }
-        return 16777215;
+        return 0xFFFFFFFF;
     }
 }
